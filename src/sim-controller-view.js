@@ -16,7 +16,6 @@ export default class SimControllerView extends React.Component {
     if(setFrames) {
       setFrames(FRAMES);
     }
-    debugger;
   }
   render() {
     const setFrame = this.props.setFrame;

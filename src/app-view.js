@@ -42,7 +42,6 @@ export default class AppView extends React.Component {
       this.firebaseImp.update({frame: frame});
     }.bind(this);
     const setFrames = function(frames) {
-      debugger
       this.firebaseImp.update({frames: frames});
     }.bind(this);
 
