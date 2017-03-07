@@ -9,6 +9,7 @@
   "author": "npaessel@concord.org",
   "license": "MIT",
   "dependencies": {
+    "copy-webpack-plugin": "^4.0.1",
     "firebase": "^3.7.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
