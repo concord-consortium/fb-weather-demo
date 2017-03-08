@@ -11,4 +11,5 @@ if they are not already installed  your development system.  Also install `live-
 3. Start `webpack --watch`
 4. Open a new terminal window and run `live-server .` from the top directory of this project.
 4. Open [http://localhost:8080/](http://localhost:8080/) See also [weather-station.html](http://localhost:8080/weather-station.html) and [sim-controller.html](http://localhost:8080/sim-controller.html)
+note: `127.0.0.1` will not work at the moment, because it isn't a white-listed host on the firebase site.
 5. Work.

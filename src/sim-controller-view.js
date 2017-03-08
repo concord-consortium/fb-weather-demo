@@ -13,8 +13,10 @@ export default class SimControllerView extends React.Component {
 
   componentDidMount() {
     const setFrames = this.props.setFrames;
+    const stringFrames = JSON.stringify(FRAMES);
     if(setFrames) {
-      setFrames(FRAMES);
+      // TODO: hacky, set the frames after we are loaded avoid some race condition.
+      setTimeout(() => setFrames(FRAMES), 2000);
     }
   }
   render() {
