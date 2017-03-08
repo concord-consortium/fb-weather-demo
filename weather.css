@@ -4,3 +4,12 @@ body {
   color: hsla(100,10%,25%,1);
   margin: 2em;
 }
+
+.component {
+  background-color: hsla(50,20%,95%,1);
+  width: 400px;
+  padding: 1em;
+  margin: 2em;
+  border-radius: 0.2em;
+  box-shadow: 1px 1px 4px hsla(0,0%,50%,0.5);
+}

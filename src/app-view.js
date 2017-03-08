@@ -47,7 +47,6 @@ export default class AppView extends React.Component {
 
     return (
       <div className="SimControllerView">
-        Hello From App
         <WeatherStation frame={frame} frames={frames} />
         <SimController  frame={frame} frames={frames} setFrame={setFrame} setFrames={setFrames}/>
       </div>

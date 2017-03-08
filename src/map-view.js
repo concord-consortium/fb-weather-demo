@@ -8,10 +8,10 @@ export default class MapView extends React.Component {
   }
 
   componentDidMount() {
-      this.updateCanvas();
+    this.updateCanvas();
   }
   componentDidUpdate() {
-      this.updateCanvas();
+    this.updateCanvas();
   }
 
   drawRect(ctx,x,y,v) {

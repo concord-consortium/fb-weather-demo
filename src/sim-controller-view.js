@@ -1,5 +1,6 @@
 import React from "react";
 import Frames from "./initial-frames";
+import MapView from "./map-view";
 
 const FRAMES = Frames();
 const div = React.DOM.div;
@@ -26,10 +27,17 @@ export default class SimControllerView extends React.Component {
       frameNumber = frameNumber % NUM_FRAMES;
       setFrame(frameNumber);
     };
+    const frame = this.props.frame;
+    const frames = this.props.frames;
+    const mapData = frames ?  frames[frame] : [ [0,0,0], [0,0,0], [0,0,0] ];
     return (
-      <div className="SimControllerView">
-        Hello From SimControllerView
-        <button name="next" className="next-frame" value="next" onClick={nextFrame.bind(this)}> Next Frame </button>
+      <div className="SimControllerView component">
+
+        <div className="id"> Sumulation Controller: </div>
+        <MapView data={mapData}/>
+        <div className="controls">
+          <button name="next" className="next-frame" value="next" onClick={nextFrame.bind(this)}> Next Frame </button>
+        </div>
       </div>
 
     );

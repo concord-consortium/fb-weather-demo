@@ -14,11 +14,11 @@ export default class WeatherStationView extends React.Component {
     const frame = this.props.frame;
     const frames = this.props.frames;
     const mapData = frames ?  frames[frame] : [ [0,0,0], [0,0,0], [0,0,0] ];
+    const temp = mapData[1][1];
     return (
-      <div className="WeatherStationView">
-        Hello From WeatherStationView
-        <div className="frame">Frame Number: {frame}</div>
-        <MapView data={mapData}/>
+      <div className="WeatherStationView component">
+        <div className="id"> Weather Station (B,2) </div>
+        <div className="temp"> Temperature = {temp}°</div>
       </div>
     );
   }
