@@ -26,7 +26,7 @@ export default class FirebaseImp {
 
   reqAuth() {
     var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithRedirect  (provider)
+    firebase.auth().signInWithRedirect(provider)
     .then(this.finishAuth.bind(this))
     .catch(this.failAuth.bind(this));
   }
@@ -39,9 +39,14 @@ export default class FirebaseImp {
 
   finishAuth(result) {
     this.user = result.user;
-    this.dataRef = firebase.database().ref(this.refName);
+    this.setDataRef(this.refName);
     this.registerFirebaseHandlers();
     this.log("logged in");
+  }
+
+  setDataRef(refString) {
+    this.refName = refString;
+    this.dataRef = firebase.database().ref(this.refName);
   }
 
   registerFirebaseHandlers () {
