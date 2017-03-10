@@ -1,9 +1,14 @@
-import React from "react";
-import MapView from "./map-view";
+import React, { PropTypes } from "react";
+//import MapView from "./map-view";
 
 const div = React.DOM.div;
 
 export default class WeatherStationView extends React.Component {
+
+  static propTypes = {
+    frame: PropTypes.number,
+    frames: PropTypes.array
+  }
 
   constructor(props){
     super(props);

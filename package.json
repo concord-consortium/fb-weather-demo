@@ -4,6 +4,7 @@
   "description": "A Demo app (one to throw away) for simulating weather in a classroom",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint *.js src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "npaessel@concord.org",
@@ -16,9 +17,11 @@
   },
   "devDependencies": {
     "babel-core": "^6.23.1",
+    "babel-eslint": "^7.1.1",
     "babel-loader": "^6.3.2",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-react": "^6.3.13",
+    "babel-preset-stage-2": "^6.22.0",
     "eslint": "^3.15.0",
     "eslint-config-standard": "^6.2.1",
     "eslint-plugin-promise": "^3.4.1",

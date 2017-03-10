@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PropTypes } from "react";
 import Frames from "./initial-frames";
 import MapView from "./map-view";
 
@@ -8,13 +8,20 @@ const NUM_FRAMES = FRAMES.length;
 
 export default class SimControllerView extends React.Component {
 
+  static propTypes = {
+    frame: PropTypes.number,
+    frames: PropTypes.array,
+    setFrame: PropTypes.func,
+    setFrames: PropTypes.func
+  }
+
   constructor(props){
     super(props);
   }
 
   componentDidMount() {
     const setFrames = this.props.setFrames;
-    const stringFrames = JSON.stringify(FRAMES);
+    // const stringFrames = JSON.stringify(FRAMES);
     if(setFrames) {
       // TODO: hacky, set the frames after we are loaded avoid some race condition.
       setTimeout(() => setFrames(FRAMES), 2000);

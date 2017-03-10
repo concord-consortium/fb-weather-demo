@@ -1,7 +1,11 @@
-import React from "react";
+import React, { PropTypes } from "react";
 
 
 export default class MapView extends React.Component {
+
+  static propTypes = {
+    data: PropTypes.array
+  }
 
   constructor(props){
     super(props);
