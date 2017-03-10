@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint *.js src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "live-server .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch"
   },
   "author": "npaessel@concord.org",
   "license": "MIT",
