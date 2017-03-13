@@ -4,6 +4,7 @@ import SimController from "./sim-controller-view";
 import WeatherStation from "./weather-station-view";
 import FirebaseImp from "./firebase-imp";
 import QueryString from "query-string";
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 
 const div = React.DOM.div;
 
@@ -49,10 +50,10 @@ export default class AppView extends React.Component {
     return true;
   }
 
-  render() {
+  renderNowShowing() {
     const frames = this.state.frames;//  || {}).frames;
     const frame  =  ( this.state || {}).frame;
-    const nowShowing = this.state.nowShowing;
+
 
     const setFrame = function(frame) {
       this.firebaseImp.update({frame: frame});
@@ -62,6 +63,7 @@ export default class AppView extends React.Component {
       this.firebaseImp.update({frames: frames});
     }.bind(this);
 
+    const nowShowing = this.state.nowShowing;
     switch(nowShowing){
       case "teacher":
         return(
@@ -78,7 +80,7 @@ export default class AppView extends React.Component {
           <WeatherStation
             frame={frame}
             frames={frames}
-         />
+        />
         );
 
       default:
@@ -86,5 +88,13 @@ export default class AppView extends React.Component {
           <div className="choose"> Choose teacher or student </div>
         );
     }
+  }
+  render() {
+    const showingComponent = this.renderNowShowing();
+    return(
+      <MuiThemeProvider>
+        {showingComponent}
+      </MuiThemeProvider>
+    );
   }
 }

@@ -13,3 +13,18 @@ body {
   border-radius: 0.2em;
   box-shadow: 1px 1px 4px hsla(0,0%,50%,0.5);
 }
+
+table.GridView {
+  display: inline;
+  margin: 1em;
+}
+
+table.GridView td {
+  width: 0.5em;
+  height: 0.5em;
+  background-color: hsl(0,0%,80%);
+}
+
+table.GridView td.set {
+  background-color: hsl(0,0%,10%);
+}

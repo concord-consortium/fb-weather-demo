@@ -1,6 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import AppView from "./app-view";
+import injectTapEventPlugin from "react-tap-event-plugin";
 
-//const props = {};
-ReactDOM.render(<AppView props/>, document.getElementById("App"));
+
+injectTapEventPlugin();
+
+ReactDOM.render(<AppView/>, document.getElementById("App"));
