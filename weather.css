@@ -28,3 +28,10 @@ table.GridView td {
 table.GridView td.set {
   background-color: hsl(0,0%,10%);
 }
+
+.SimControllerView {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+}

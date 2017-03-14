@@ -1,6 +1,5 @@
 import React, { PropTypes } from "react";
 
-
 export default class MapView extends React.Component {
 
   static propTypes = {
@@ -40,7 +39,9 @@ export default class MapView extends React.Component {
 
   render() {
     return (
-      <canvas ref="canvas" width={300} height={300} className="map"/>
+      <div className="MapView">
+        <canvas ref="canvas" width={300} height={300} className="map"/>
+      </div>
     );
   }
 }
