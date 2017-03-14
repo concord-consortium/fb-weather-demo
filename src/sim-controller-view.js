@@ -79,7 +79,7 @@ export default class SimControllerView extends React.Component {
           Time: {frame}
         </CardTitle>
         <CardMedia>
-          <MapView data={mapData}/>
+          <MapView data={mapData} gridRoster={this.props.gridRoster}/>
         </CardMedia>
         <CardActions>
           <FloatingActionButton

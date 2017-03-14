@@ -12,13 +12,14 @@ export default class WeatherStationView extends React.Component {
 
   static propTypes = {
     frames: PropTypes.array,
-    frame: PropTypes.number
+    frame: PropTypes.number,
+    updateUserData: PropTypes.func
   }
 
   constructor(props){
     super(props);
     this.state = {
-      groupName: "",
+      name: "",
       gridX: 0,
       gridY: 0,
       showConfig: false
@@ -26,6 +27,22 @@ export default class WeatherStationView extends React.Component {
   }
 
   componentDidMount() {}
+
+  componentDidUpdate() {
+    const props = this.props;
+    const state = this.state;
+    // Send user updates to Firebase after state has updated.
+    const updateFunc = function() {
+      props.updateUserData({
+        name: state.name,
+        gridX: state.gridX,
+        gridY: state.gridY
+      });
+    };
+    // TODO: Better debouncing?
+    if(this.pending) { clearTimeout(this.pending); }
+    this.pending = setTimeout(updateFunc,1000);
+  }
 
   showConfig() {
     this.setState({showConfig:true});
@@ -35,6 +52,10 @@ export default class WeatherStationView extends React.Component {
     this.setState({showConfig:false});
   }
 
+  setConfig(data) {
+    this.setState(data);
+  }
+
   render() {
     const frameNumber = this.props.frame;
     const frames = this.props.frames;
@@ -42,8 +63,8 @@ export default class WeatherStationView extends React.Component {
     const x = this.state.gridX;
     const y = this.state.gridY;
     const tempData = mapData[y][x];
-    const name = this.state.groupName;
-    const change = this.setState.bind(this);
+    const name = this.state.name;
+    const change = this.setConfig.bind(this);
     const infoStyle = {
       display: "flex",
       flexDirection: "row",
@@ -88,6 +109,6 @@ export default class WeatherStationView extends React.Component {
           <WeatherStationConfigView x={x} y={y} name={name} change={change} />
         </Dialog>
       </Card>
-    )
+    );
   }
 }

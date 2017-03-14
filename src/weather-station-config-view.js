@@ -41,7 +41,7 @@ export default class WeatherStationConfigView extends React.Component {
   }
 
   setName(evt) {
-    this.change({groupName: evt.target.value});
+    this.change({name: evt.target.value});
   }
 
   renderOptions(max) {

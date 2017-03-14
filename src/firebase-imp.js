@@ -54,6 +54,7 @@ export default class FirebaseImp {
     this.amOnline = firebase.database().ref(".info/connected");
     this.uuid = Math.floor(Math.random() * 10000);
     this.userRef = firebase.database().ref(`${this.refName}/presence/${this.uuid}`);
+
     const userRef = this.userRef;
     const log = this.log.bind(this);
     const uuid = this.uuid;
@@ -63,7 +64,7 @@ export default class FirebaseImp {
       updateUserData({
         oneline: true,
         uuid: uuid,
-        name: "testing"
+        name: "(no name)"
       });
       if (snapshot.val()) {
         userRef.onDisconnect().remove();
@@ -81,6 +82,7 @@ export default class FirebaseImp {
     const setData = this.setData.bind(this);
     const log = this.log.bind(this);
     ref.on("value", setData);
+
     // TBD: Best way to listen to events with better granularity.
     ref.on("child_changed", function(data){ log("child_changed:" + data);});
     ref.on("child_added", function(data)  { log("child added: " + data); });

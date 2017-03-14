@@ -77,7 +77,20 @@ export default class AppView extends React.Component {
     const nowShowing = this.state.nowShowing;
     const chooseTeacher = this.chooseTeacher.bind(this);
     const chooseStudent = this.chooseStudent.bind(this);
-
+    const gridRoster = {};
+    const roster = [];
+    let   stationRecord;
+    for(let id in this.state.presence) {
+      stationRecord = this.state.presence[id];
+      roster.push(stationRecord);
+      if((stationRecord.gridX != undefined) && (stationRecord.gridY != undefined)) {
+        if(gridRoster[stationRecord.gridX] == undefined) {
+          gridRoster[stationRecord.gridX] = {};
+        }
+        gridRoster[stationRecord.gridX][stationRecord.gridY] = stationRecord.name;
+      }
+    }
+    
     const setFrame = function(frame) {
       this.firebaseImp.update({frame: frame});
     }.bind(this);
@@ -86,19 +99,24 @@ export default class AppView extends React.Component {
       this.firebaseImp.update({frames: frames});
     }.bind(this);
 
+    const updateUserData = function(data) {
+      this.firebaseImp.updateUserData(data);
+    }.bind(this);
+
     switch(nowShowing){
       case "teacher":
         return(
           <SimController
             frame={frame}
             frames={frames}
+            gridRoster={gridRoster}
             setFrame={setFrame}
             setFrames={setFrames}
           />
         );
 
       case "student":
-        return(<WeatherStation frame={frame} frames={frames} />);
+        return(<WeatherStation frame={frame} frames={frames} updateUserData={updateUserData}/>);
 
       default:
         return(<ChooseView chooseTeacher={chooseTeacher} chooseStudent={chooseStudent}/>);
