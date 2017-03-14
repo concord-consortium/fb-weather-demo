@@ -7,7 +7,7 @@ body {
 
 .component {
   background-color: hsla(50,20%,95%,1);
-  width: 400px;
+  /*width: 400px;*/
   padding: 1em;
   margin: 2em;
   border-radius: 0.2em;
@@ -29,9 +29,14 @@ table.GridView td.set {
   background-color: hsl(0,0%,10%);
 }
 
-.SimControllerView {
+.MapView {
   display: flex;
   align-content: center;
   justify-content: center;
+  align-items: center;
   flex-direction: column;
+}
+.MapView canvas {
+  width: 300px;
+  height: 300px;
 }

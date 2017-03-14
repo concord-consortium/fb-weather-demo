@@ -3,6 +3,7 @@ import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import RaisedButton from "material-ui/RaisedButton";
 import WeatherStationConfigView from "./weather-station-config-view";
+import {Card, CardText, CardActions, CardMedia, CardTitle} from "material-ui/Card";
 import GridView from "./grid-view";
 
 const div = React.DOM.div;
@@ -43,6 +44,12 @@ export default class WeatherStationView extends React.Component {
     const tempData = mapData[y][x];
     const name = this.state.groupName;
     const change = this.setState.bind(this);
+    const infoStyle = {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start"
+    };
 
     const actions = [
       <FlatButton
@@ -54,13 +61,23 @@ export default class WeatherStationView extends React.Component {
     ];
 
     return (
-      <div className="WeatherStationView component">
-        <GridView x={x} y={y} rows={3} cols={3} />
-        <div className="id"> Weather Station {name} </div>
-        <div className="frameNumber">Frame: {frameNumber}</div>
-        <div className="temp"> Temperature = {tempData}°</div>
-        <br/>
-        <RaisedButton label="Set station" onTouchTap={this.showConfig.bind(this)} />
+      <Card>
+        <CardText>
+          <div style={infoStyle}>
+            <div>
+              <div className="name">{name || "(no name provided)"}</div>
+            </div>
+            <GridView x={x} y={y} rows={3} cols={3} />
+          </div>
+        </CardText>
+        <CardMedia
+          overlay={<CardTitle title={`Temperature ${tempData}°`} subtitle={`Time: ${frameNumber}`} />}
+        >
+          <img src="img/farm.jpg"/>
+        </CardMedia>
+        <CardActions>
+          <RaisedButton label="Set station" onTouchTap={this.showConfig.bind(this)} />
+        </CardActions>
         <Dialog
           title="Configure weather station"
           actions={actions}
@@ -70,7 +87,7 @@ export default class WeatherStationView extends React.Component {
         >
           <WeatherStationConfigView x={x} y={y} name={name} change={change} />
         </Dialog>
-      </div>
-    );
+      </Card>
+    )
   }
 }

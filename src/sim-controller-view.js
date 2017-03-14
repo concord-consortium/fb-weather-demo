@@ -3,11 +3,8 @@ import Frames from "./initial-frames";
 import MapView from "./map-view";
 import {Card, CardMedia, CardActions, CardTitle} from "material-ui/Card";
 import FloatingActionButton from "material-ui/FloatingActionButton";
-import IconButton from "material-ui/IconButton";
-import {Toolbar, ToolbarGroup} from "material-ui/ToolBar";
 
 const FRAMES = Frames();
-const div = React.DOM.div;
 const NUM_FRAMES = FRAMES.length;
 
 export default class SimControllerView extends React.Component {
@@ -21,6 +18,9 @@ export default class SimControllerView extends React.Component {
 
   constructor(props){
     super(props);
+    this.state = {
+      playing: false
+    };
   }
 
   componentDidMount() {
@@ -39,11 +39,17 @@ export default class SimControllerView extends React.Component {
   }
 
   play() {
+    if(this.interval) {
+      clearInterval(this.interval);
+    }
     this.interval = setInterval( () => this.nextFrame(), 1000);
+    this.setState({playing: true});
   }
 
   pause() {
     clearInterval(this.interval);
+    this.interval = null;
+    this.setState({playing: false});
   }
 
   rewind() {
@@ -58,36 +64,43 @@ export default class SimControllerView extends React.Component {
     const frame = this.props.frame;
     const frames = this.props.frames;
     const mapData = frames ?  frames[frame] : [ [0,0,0], [0,0,0], [0,0,0] ];
+    const disablePlay = !! this.interval;
+    const disablePause = ! disablePlay;
     const buttonStyle = {
-      "marginLeft": "1em",
       "backgroundColor": "hsl(10,40%,50%)"
     };
+    const cardStyle = {
+      width: "300px"
+    };
+
     return (
-      <div className="component SimControllerView">
-        <div className="title">
-          Simulation Controller
-        </div>
-        <MapView data={mapData}/>
-        <Toolbar>
-          <ToolbarGroup>
-            <FloatingActionButton
-              iconClassName="icon-skip_previous"
-              style={buttonStyle}
-              backgroundColor="hsl(10,40%,50%)"
-              onTouchTap={rewind}/>
-            <FloatingActionButton
-              iconClassName="icon-play_circle_filled"
-              backgroundColor="hsl(10,40%,50%)"
-              style={buttonStyle}
-              onTouchTap={play}/>
-            <FloatingActionButton
-              iconClassName="icon-pause_circle_filled"
-              backgroundColor="hsl(10,40%,50%)"
-              style={buttonStyle}
-              onTouchTap={pause}/>
-          </ToolbarGroup>
-        </Toolbar>
-      </div>
+      <Card style={cardStyle}>
+        <CardTitle>
+          Time: {frame}
+        </CardTitle>
+        <CardMedia>
+          <MapView data={mapData}/>
+        </CardMedia>
+        <CardActions>
+          <FloatingActionButton
+            iconClassName="icon-skip_previous"
+            style={buttonStyle}
+            backgroundColor="hsl(10,40%,50%)"
+            onTouchTap={rewind}/>
+          <FloatingActionButton
+            iconClassName="icon-play_circle_filled"
+            backgroundColor="hsl(10,40%,50%)"
+            disabled={disablePlay}
+            style={buttonStyle}
+            onTouchTap={play}/>
+          <FloatingActionButton
+            iconClassName="icon-pause_circle_filled"
+            backgroundColor="hsl(10,40%,50%)"
+            style={buttonStyle}
+            disabled={disablePause}
+            onTouchTap={pause}/>
+        </CardActions>
+      </Card>
 
     );
   }
