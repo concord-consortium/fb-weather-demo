@@ -21,14 +21,14 @@ export default class GridView extends React.Component {
       rows = [];
       for(let x = 0; x < this.props.cols; x++) {
         if(this.props.x == x && this.props.y == y) {
-          rows.push(<td className="set"/>);
+          rows.push(<td key={`${x}-${y}`} className="set"/>);
         }
         else {
-          rows.push(<td className="blank"/>);
+          rows.push(<td key={`${x}-${y}`}className="blank"/>);
         }
       }
-      result.push(<tr>{rows}</tr>);
+      result.push(<tr key={y}>{rows}</tr>);
     }
-    return(<table className="GridView">{result}</table>);
+    return(<table className="GridView"><tbody>{result}</tbody></table>);
   }
 }
