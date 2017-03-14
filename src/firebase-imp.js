@@ -40,6 +40,7 @@ export default class FirebaseImp {
   finishAuth(result) {
     this.user = result.user;
     this.setDataRef(this.refName);
+    this.setupPresence();
     this.registerFirebaseHandlers();
     this.log("logged in");
   }
@@ -47,6 +48,31 @@ export default class FirebaseImp {
   setDataRef(refString) {
     this.refName = refString;
     this.dataRef = firebase.database().ref(this.refName);
+  }
+
+  setupPresence() {
+    this.amOnline = firebase.database().ref(".info/connected");
+    this.uuid = Math.floor(Math.random() * 10000);
+    this.userRef = firebase.database().ref(`${this.refName}/presence/${this.uuid}`);
+    const userRef = this.userRef;
+    const log = this.log.bind(this);
+    const uuid = this.uuid;
+    const updateUserData = this.updateUserData.bind(this);
+    this.amOnline.on("value", function(snapshot) {
+      log("online -- ");
+      updateUserData({
+        oneline: true,
+        uuid: uuid,
+        name: "testing"
+      });
+      if (snapshot.val()) {
+        userRef.onDisconnect().remove();
+      }
+    });
+  }
+
+  updateUserData(data) {
+    this.userRef.update(data);
   }
 
   registerFirebaseHandlers () {
