@@ -2,8 +2,9 @@ import React, { PropTypes }  from "react";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import RaisedButton from "material-ui/RaisedButton";
-import WeatherStationConfigView from "./weather-station-config-view";
 import {Card, CardText, CardActions, CardMedia, CardTitle} from "material-ui/Card";
+
+import WeatherStationConfigView from "./weather-station-config-view";
 import GridView from "./grid-view";
 
 const div = React.DOM.div;

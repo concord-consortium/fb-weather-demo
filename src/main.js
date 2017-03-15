@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import AppView from "./app-view";
+import AppView from "./components/app-view"
 import injectTapEventPlugin from "react-tap-event-plugin";
 
 

@@ -1,13 +1,13 @@
 import React, { PropTypes } from "react";
-import Frames from "./initial-frames";
-import MapView from "./map-view";
 import {Card, CardMedia, CardActions, CardTitle} from "material-ui/Card";
 import FloatingActionButton from "material-ui/FloatingActionButton";
+import Frames from "../initial-frames";
+import MapView from "./map-view";
 
 const FRAMES = Frames();
 const NUM_FRAMES = FRAMES.length;
 
-export default class SimControllerView extends React.Component {
+export default class TeacherView extends React.Component {
 
   static propTypes = {
     frame: PropTypes.number,
@@ -25,7 +25,6 @@ export default class SimControllerView extends React.Component {
 
   componentDidMount() {
     const setFrames = this.props.setFrames;
-    // const stringFrames = JSON.stringify(FRAMES);
     if(setFrames) {
       // TODO: hacky, set the frames after we are loaded avoid some race condition.
       setTimeout(() => setFrames(FRAMES), 2000);

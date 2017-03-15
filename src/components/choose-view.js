@@ -1,8 +1,6 @@
 import React, {PropTypes} from "react";
 
 import RaisedButton from "material-ui/RaisedButton";
-import FontIcon from "material-ui/FontIcon";
-
 import {Card, CardActions, CardHeader} from "material-ui/Card";
 
 export default class ChooseView extends React.Component {

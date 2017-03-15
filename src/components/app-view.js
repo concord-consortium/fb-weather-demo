@@ -1,13 +1,12 @@
 import React from "react";
-
-import SimController from "./sim-controller-view";
-import WeatherStation from "./weather-station-view";
-import FirebaseImp from "./firebase-imp";
 import QueryString from "query-string";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import ChooseView from "./choose-view";
 
-// const div = React.DOM.div;
+import FirebaseImp from "../firebase-imp";
+
+import TeacherView from "./teacher-view";
+import WeatherStation from "./weather-station-view";
+import ChooseView from "./choose-view";
 
 export default class AppView extends React.Component {
   constructor(props){
@@ -106,7 +105,7 @@ export default class AppView extends React.Component {
     switch(nowShowing){
       case "teacher":
         return(
-          <SimController
+          <TeacherView
             frame={frame}
             frames={frames}
             gridRoster={gridRoster}
