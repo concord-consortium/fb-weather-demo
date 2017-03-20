@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 6
 install:
-  - travis_retry yarn
+  - travis_retry npm install
   - travis_retry gem install s3_website -v 2.12.3
 before_script: webpack
 script: deploy/s3_deploy.sh
