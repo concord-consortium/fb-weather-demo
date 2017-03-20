@@ -1,11 +1,11 @@
 /* global module:true, require:true __dirname */
-
-var path = require("path");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const path = require("path");
 
 module.exports = {
-  entry: "./src/main.js",
+  entry: "./src/js/main.js",
   output: {
-    path: path.resolve(__dirname, "js"),
+    path: path.resolve(__dirname, "dist"),
     filename: "main.bundle.js"
   },
   module: {
@@ -20,6 +20,12 @@ module.exports = {
       }
     ]
   },
+  plugins:[
+    new CopyWebpackPlugin([
+      { from: "src/html/"},
+      { from: "src/img/", to: "img"},
+      { from: "src/fonts/", to: "fonts"},
+    ])],
   stats: {
     colors: true
   },

@@ -1,0 +1,42 @@
+body {
+  background-color: hsla(50,20%,90%,1);
+  font-family: helvetica, sans-serif;
+  color: hsla(100,10%,25%,1);
+  margin: 2em;
+}
+
+.component {
+  background-color: hsla(50,20%,95%,1);
+  /*width: 400px;*/
+  padding: 1em;
+  margin: 2em;
+  border-radius: 0.2em;
+  box-shadow: 1px 1px 4px hsla(0,0%,50%,0.5);
+}
+
+table.GridView {
+  display: inline;
+  margin: 1em;
+}
+
+table.GridView td {
+  width: 0.5em;
+  height: 0.5em;
+  background-color: hsl(0,0%,80%);
+}
+
+table.GridView td.set {
+  background-color: hsl(0,0%,10%);
+}
+
+.MapView {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.MapView canvas {
+  width: 300px;
+  height: 300px;
+}
