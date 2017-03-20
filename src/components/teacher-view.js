@@ -66,7 +66,7 @@ export default class TeacherView extends React.Component {
     const disablePlay = !! this.interval;
     const disablePause = ! disablePlay;
     const buttonStyle = {
-      "backgroundColor": "hsl(10,40%,50%)"
+      // "backgroundColor": "hsl(10,40%,50%)"
     };
     const cardStyle = {
       width: "300px"
@@ -84,17 +84,14 @@ export default class TeacherView extends React.Component {
           <FloatingActionButton
             iconClassName="icon-skip_previous"
             style={buttonStyle}
-            backgroundColor="hsl(10,40%,50%)"
             onTouchTap={rewind}/>
           <FloatingActionButton
             iconClassName="icon-play_circle_filled"
-            backgroundColor="hsl(10,40%,50%)"
             disabled={disablePlay}
             style={buttonStyle}
             onTouchTap={play}/>
           <FloatingActionButton
             iconClassName="icon-pause_circle_filled"
-            backgroundColor="hsl(10,40%,50%)"
             style={buttonStyle}
             disabled={disablePause}
             onTouchTap={pause}/>
