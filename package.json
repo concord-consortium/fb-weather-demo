@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint *.js src",
     "start": "live-server .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "watch": "webpack --watch"
   },
   "author": "npaessel@concord.org",
@@ -34,11 +34,15 @@
     "eslint-plugin-react": "^6.10.0",
     "eslint-plugin-standard": "^2.0.1",
     "extract-text-webpack-plugin": "^2.1.0",
+    "jest": "^19.0.2",
     "live-server": "^1.2.0",
     "style-loader": "^0.14.1",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1",
     "yarn": "^0.20.3"
   },
-  "repository": {}
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/concord-consortium/fb-weather-demo.git"
+  }
 }
