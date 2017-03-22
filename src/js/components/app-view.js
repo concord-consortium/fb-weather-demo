@@ -6,6 +6,7 @@ import FirebaseImp from "../firebase-imp";
 
 import TeacherView from "./teacher-view";
 import WeatherStation from "./weather-station-view";
+import ClassView from "./class-view";
 import ChooseView from "./choose-view";
 
 export default class AppView extends React.Component {
@@ -70,12 +71,17 @@ export default class AppView extends React.Component {
     this.updateHashParam("show","teacher");
   }
 
+  chooseClassroom() {
+    this.updateHashParam("show", "classroom");
+  }
+
   renderNowShowing() {
     const frames = this.state.frames;
     const frame  =  ( this.state || {}).frame;
     const nowShowing = this.state.nowShowing;
     const chooseTeacher = this.chooseTeacher.bind(this);
     const chooseStudent = this.chooseStudent.bind(this);
+    const chooseClassroom = this.chooseClassroom.bind(this);
     const gridRoster = {};
     const roster = [];
     let   stationRecord;
@@ -89,7 +95,7 @@ export default class AppView extends React.Component {
         gridRoster[stationRecord.gridX][stationRecord.gridY] = stationRecord.name;
       }
     }
-    
+
     const setFrame = function(frame) {
       this.firebaseImp.update({frame: frame});
     }.bind(this);
@@ -117,8 +123,20 @@ export default class AppView extends React.Component {
       case "student":
         return(<WeatherStation frame={frame} frames={frames} updateUserData={updateUserData}/>);
 
+      case "classroom":
+        return(<ClassView
+          width={600}
+          height={600}
+          frame={frame}
+          frames={frames}
+          updateUserData={updateUserData}/>);
+
       default:
-        return(<ChooseView chooseTeacher={chooseTeacher} chooseStudent={chooseStudent}/>);
+        return(<ChooseView
+          chooseTeacher={chooseTeacher}
+          chooseStudent={chooseStudent}
+          chooseClassroom={chooseClassroom}
+          />);
     }
   }
   render() {
