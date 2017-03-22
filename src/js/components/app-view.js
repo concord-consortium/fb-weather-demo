@@ -16,7 +16,10 @@ export default class AppView extends React.Component {
       frame: 0,
       frames: null,
       session: "default",
-      nowShowing: "choose"
+      nowShowing: "choose",
+      prefs: {
+        showBaseMap: false
+      }
     };
     this.firebaseImp = new FirebaseImp(this.state.session);
   }
@@ -104,6 +107,10 @@ export default class AppView extends React.Component {
       this.firebaseImp.update({frames: frames});
     }.bind(this);
 
+    const setPrefs = function(prefs) {
+      this.firebaseImp.update({prefs: prefs});
+    }.bind(this);
+
     const updateUserData = function(data) {
       this.firebaseImp.updateUserData(data);
     }.bind(this);
@@ -114,14 +121,23 @@ export default class AppView extends React.Component {
           <TeacherView
             frame={frame}
             frames={frames}
+            prefs={this.state.prefs}
             gridRoster={gridRoster}
             setFrame={setFrame}
             setFrames={setFrames}
+            setPrefs={setPrefs}
           />
         );
 
       case "student":
-        return(<WeatherStation frame={frame} frames={frames} updateUserData={updateUserData}/>);
+        return(
+          <WeatherStation
+            frame={frame}
+            frames={frames}
+            prefs={this.state.prefs}
+            updateUserData={updateUserData}
+            />
+        );
 
       case "classroom":
         return(<ClassView
@@ -129,6 +145,7 @@ export default class AppView extends React.Component {
           height={600}
           frame={frame}
           frames={frames}
+          prefs={this.state.prefs}
           updateUserData={updateUserData}/>);
 
       default:

@@ -14,9 +14,11 @@ export default class TeacherView extends React.Component {
   static propTypes = {
     frame: PropTypes.number,
     frames: PropTypes.array,
+    prefs: PropTypes.object,
     gridRoster: PropTypes.array,
     setFrame: PropTypes.func,
-    setFrames: PropTypes.func
+    setFrames: PropTypes.func,
+    setPrefs: PropTypes.func
   }
 
   constructor(props){
@@ -61,6 +63,30 @@ export default class TeacherView extends React.Component {
     this.props.setFrame(0);
   }
 
+  renderPrefButton(label, key) {
+    const toggleStyle = {
+      marginBottom: 16
+    };
+
+    const prefFactory = function(key) {
+      const returnF = function(e,v) {
+        const update = this.props.prefs;
+        update[key] = v;
+        this.props.setPrefs(update);
+      };
+      return returnF.bind(this);
+    }.bind(this);
+
+    return(
+      <Toggle
+        label={label}
+        style={toggleStyle}
+        onToggle={prefFactory(key)}
+        defaultToggled={this.props.prefs[key]}
+      />
+    );
+  }
+
   render() {
     const rewind = this.rewind.bind(this);
     const play   = this.play.bind(this);
@@ -77,12 +103,11 @@ export default class TeacherView extends React.Component {
         tab: value,
       });
     };
+
+
     const styles = {
       block: {
         maxWidth: 250,
-      },
-      toggle: {
-        marginBottom: 16,
       },
       thumbOff: {
         backgroundColor: "#ffcccc",
@@ -107,30 +132,12 @@ export default class TeacherView extends React.Component {
           <Tab label="Configure" value="configure">
             <CardText>
               <div className="toggles" style={styles.block}>
-                <Toggle
-                  label="Base map"
-                  style={styles.toggle}
-                />
-                <Toggle
-                  label="Grid lines"
-                  style={styles.toggle}
-                />
-                <Toggle
-                  label="Temp values"
-                  style={styles.toggle}
-                />
-                <Toggle
-                  label="Temp colors"
-                  style={styles.toggle}
-                />
-                <Toggle
-                  label="Group names"
-                  style={styles.toggle}
-                />
-                <Toggle
-                  label="Enable prediction"
-                  style={styles.toggle}
-                />
+                { this.renderPrefButton("Base map","showBaseMap") }
+                { this.renderPrefButton("Grid lines","showGridLines") }
+                { this.renderPrefButton("Temp values","showTempValues") }
+                { this.renderPrefButton("Temp colors","showTempColors") }
+                { this.renderPrefButton("Group names","showGroupNames") }
+                { this.renderPrefButton("Enable prediction","enablePrediction") }
               </div>
             </CardText>
           </Tab>

@@ -5,6 +5,7 @@ import SelectField from "material-ui/SelectField";
 
 const div = React.DOM.div;
 
+
 export default class WeatherStationConfigView extends React.Component {
 
   static propTypes = {
@@ -64,15 +65,32 @@ export default class WeatherStationConfigView extends React.Component {
     const maxX = 3;
     const maxY = 3;
 
+    const styles = {
+      config: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        aligncontent: "center",
+        width: "100%"
+      },
+      textField: {
+        display: "block",
+        margin: "1em"
+      }
+    };
+
     return (
-      <div className="WeatherStation config component">
+      <div className="component" style={styles.config}>
         <TextField
+          style={styles.textField}
           value={this.props.name}
           onChange={setName}
           hintText="your group name"
         />
 
         <SelectField
+          style={styles.textField}
           floatingLabelText="Station grid X:"
           value={x}
           autoWidth={true}
@@ -81,6 +99,7 @@ export default class WeatherStationConfigView extends React.Component {
         </SelectField>
 
         <SelectField
+          style={styles.textField}
           floatingLabelText="Station grid Y:"
           value={y}
           autoWidth={true}

@@ -19,10 +19,10 @@ export default class NewMapView extends React.Component {
     width: PropTypes.number,
     height: PropTypes.number,
     gridCount: PropTypes.number,
-    showLabels: PropTypes.bool,
-    showColors: PropTypes.bool,
-    showGrid: PropTypes.bool,
-    showMap: PropTypes.bool
+    showTempValues: PropTypes.bool,
+    showTempColors: PropTypes.bool,
+    showGridLines: PropTypes.bool,
+    showBaseMap: PropTypes.bool
   }
 
   constructor(props){
@@ -49,16 +49,15 @@ export default class NewMapView extends React.Component {
   drawRect(ctx, x, y, width, v) {
     const alpha = normalize(50,90,0,0.5, v);
     const size = width;
-    const halfsize = size / 2;
     const color = `hsla(0, 50%, 50%, ${alpha})`;
     ctx.fillStyle = color;
-    if(this.props.showColors) {
+    if(this.props.showTempColors) {
       ctx.fillRect(x*size, y*size, size, size);
     }
-    if(this.props.showLabels) {
+    if(this.props.showTempValues) {
       this.drawLabel(ctx, x*size, y*size, width,  v.toFixed(1));
     }
-    if(this.props.showGrid) {
+    if(this.props.showGridLines) {
       ctx.strokeRect(x*size, y*size, size, size);
       if(x == 0) {
         this.drawLabel(ctx, x*size, y*size, width, y);
@@ -98,7 +97,7 @@ export default class NewMapView extends React.Component {
   }
 
   renderBackground(stackedStyle) {
-    if(this.props.showMap){
+    if(this.props.showBaseMap){
       return(<img src="img/azores.jpg" style={stackedStyle} />);
     }
     return("");

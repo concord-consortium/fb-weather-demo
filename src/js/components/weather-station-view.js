@@ -1,10 +1,10 @@
 import React, { PropTypes }  from "react";
-import FlatButton from "material-ui/FlatButton";
-import {Card, CardText, CardActions, CardMedia, CardTitle} from "material-ui/Card";
+import {Card, CardText, CardMedia, CardTitle} from "material-ui/Card";
 import {Tab, Tabs} from "material-ui/Tabs";
 
 import WeatherStationConfigView from "./weather-station-config-view";
 import GridView from "./grid-view";
+import PredictionView from "./prediction-view";
 
 const div = React.DOM.div;
 
@@ -13,6 +13,7 @@ export default class WeatherStationView extends React.Component {
   static propTypes = {
     frames: PropTypes.array,
     frame: PropTypes.number,
+    prefs: PropTypes.object,
     updateUserData: PropTypes.func
   }
 
@@ -102,7 +103,7 @@ export default class WeatherStationView extends React.Component {
           </Tab>
           <Tab label="Predict" value="predict">
             <CardText>
-              TBD
+              <PredictionView enabled={this.props.prefs.enablePrediction} />
             </CardText>
           </Tab>
         </Tabs>
