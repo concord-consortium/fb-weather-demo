@@ -1,9 +1,8 @@
 import React, {PropTypes} from "react";
-import {Tabs, Tab} from 'material-ui/Tabs';
-
+import {Tabs, Tab} from "material-ui/Tabs";
 import RaisedButton from "material-ui/RaisedButton";
-import {Card, CardActions, CardHeader, CardText} from "material-ui/Card";
-import ClassView from "./class-view";
+import {Card, CardActions, CardText} from "material-ui/Card";
+
 
 export default class ChooseView extends React.Component {
 

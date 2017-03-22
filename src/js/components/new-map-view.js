@@ -1,6 +1,7 @@
 import React, { PropTypes } from "react";
 import { Kriging } from "../kriging";
 
+
 function normalize(minIn,maxIn,minOut,maxOut,input) {
   let d = maxIn  - minIn;
   let r = maxOut - minOut;
@@ -14,6 +15,15 @@ function normalArray(arrIn,minOut,maxOut) {
 }
 
 export default class NewMapView extends React.Component {
+  static propTypes = {
+    width: PropTypes.number,
+    height: PropTypes.number,
+    gridCount: PropTypes.number,
+    showLabels: PropTypes.bool,
+    showColors: PropTypes.bool,
+    showGrid: PropTypes.bool,
+    showMap: PropTypes.bool
+  }
 
   constructor(props){
     super(props);
@@ -42,9 +52,21 @@ export default class NewMapView extends React.Component {
     const halfsize = size / 2;
     const color = `hsla(0, 50%, 50%, ${alpha})`;
     ctx.fillStyle = color;
-    ctx.fillRect(x*size, y*size, size, size);
-    //this.drawLabel(ctx, x*size, y*size, width,  v.toFixed(1));
-    // ctx.strokeRect(x*size - halfsize, y*size - halfsize, size, size);
+    if(this.props.showColors) {
+      ctx.fillRect(x*size, y*size, size, size);
+    }
+    if(this.props.showLabels) {
+      this.drawLabel(ctx, x*size, y*size, width,  v.toFixed(1));
+    }
+    if(this.props.showGrid) {
+      ctx.strokeRect(x*size, y*size, size, size);
+      if(x == 0) {
+        this.drawLabel(ctx, x*size, y*size, width, y);
+      }
+      if(y == 0) {
+        this.drawLabel(ctx, x*size, y*size, width, x);
+      }
+    }
   }
 
   updateCanvas() {
@@ -75,6 +97,12 @@ export default class NewMapView extends React.Component {
     }
   }
 
+  renderBackground(stackedStyle) {
+    if(this.props.showMap){
+      return(<img src="img/azores.jpg" style={stackedStyle} />);
+    }
+    return("");
+  }
   render() {
     const height = this.props.height;
     const width = this.props.width;
@@ -82,7 +110,6 @@ export default class NewMapView extends React.Component {
     const stackedStyle = {
       position: "absolute",
       top: "0px",
-      left: "0px",
       width: width,
       height: height
     };
@@ -91,7 +118,7 @@ export default class NewMapView extends React.Component {
     };
     return (
       <div className="TestView" style={containerStyle}>
-        <img src="img/azores.jpg" style={stackedStyle} />
+        { this.renderBackground(stackedStyle) }
         <canvas ref="canvas" style={stackedStyle} width={width} height={height} className="test"/>
       </div>
     );
