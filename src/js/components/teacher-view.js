@@ -1,5 +1,7 @@
 import React, { PropTypes } from "react";
-import {Card, CardMedia, CardActions, CardTitle} from "material-ui/Card";
+import {Card, CardText, CardMedia, CardActions, CardTitle} from "material-ui/Card";
+import {Tab, Tabs} from "material-ui/Tabs";
+import Toggle from "material-ui/Toggle";
 import FloatingActionButton from "material-ui/FloatingActionButton";
 import Frames from "../initial-frames";
 import MapView from "./map-view";
@@ -19,15 +21,18 @@ export default class TeacherView extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      playing: false
+      playing: false,
+      frameRate: 2000,
+      tab: "control"
     };
   }
 
   componentDidMount() {
     const setFrames = this.props.setFrames;
+    const frameRate = this.state.frameRate;
     if(setFrames) {
       // TODO: hacky, set the frames after we are loaded avoid some race condition.
-      setTimeout(() => setFrames(FRAMES), 2000);
+      setTimeout(() => setFrames(FRAMES), frameRate);
     }
   }
 
@@ -72,30 +77,92 @@ export default class TeacherView extends React.Component {
       width: "300px"
     };
 
-    return (
-      <Card style={cardStyle}>
-        <CardTitle>
-          Time: {frame}
-        </CardTitle>
-        <CardMedia>
-          <MapView data={mapData} gridRoster={this.props.gridRoster}/>
-        </CardMedia>
-        <CardActions>
-          <FloatingActionButton
-            iconClassName="icon-skip_previous"
-            style={buttonStyle}
-            onTouchTap={rewind}/>
-          <FloatingActionButton
-            iconClassName="icon-play_circle_filled"
-            disabled={disablePlay}
-            style={buttonStyle}
-            onTouchTap={play}/>
-          <FloatingActionButton
-            iconClassName="icon-pause_circle_filled"
-            style={buttonStyle}
-            disabled={disablePause}
-            onTouchTap={pause}/>
-        </CardActions>
+    const handleChangeTab = (value) => {
+      this.setState({
+        tab: value,
+      });
+    };
+    const styles = {
+      block: {
+        maxWidth: 250,
+      },
+      toggle: {
+        marginBottom: 16,
+      },
+      thumbOff: {
+        backgroundColor: "#ffcccc",
+      },
+      trackOff: {
+        backgroundColor: "#ff9d9d",
+      },
+      thumbSwitched: {
+        backgroundColor: "red",
+      },
+      trackSwitched: {
+        backgroundColor: "#ff9d9d",
+      },
+      labelStyle: {
+        color: "red",
+      },
+    };
+    return(
+      <Card>
+         <Tabs value={this.state.tab} onChange={handleChangeTab}>
+          <Tab label="Configure" value="configure">
+            <CardText>
+              <div className="toggles" style={styles.block}>
+                <Toggle
+                  label="Base map"
+                  style={styles.toggle}
+                />
+                <Toggle
+                  label="Grid lines"
+                  style={styles.toggle}
+                />
+                <Toggle
+                  label="Temp values"
+                  style={styles.toggle}
+                />
+                <Toggle
+                  label="Temp colors"
+                  style={styles.toggle}
+                />
+                <Toggle
+                  label="Group names"
+                  style={styles.toggle}
+                />
+                <Toggle
+                  label="Enable prediction"
+                  style={styles.toggle}
+                />
+              </div>
+            </CardText>
+          </Tab>
+          <Tab label="Control" value="control">
+            <CardTitle>
+              Time: {frame}
+            </CardTitle>
+            <CardMedia>
+              <MapView data={mapData} gridRoster={this.props.gridRoster}/>
+            </CardMedia>
+            <CardActions>
+              <FloatingActionButton
+                iconClassName="icon-skip_previous"
+                style={buttonStyle}
+                onTouchTap={rewind}/>
+              <FloatingActionButton
+                iconClassName="icon-play_circle_filled"
+                disabled={disablePlay}
+                style={buttonStyle}
+                onTouchTap={play}/>
+              <FloatingActionButton
+                iconClassName="icon-pause_circle_filled"
+                style={buttonStyle}
+                disabled={disablePause}
+                onTouchTap={pause}/>
+            </CardActions>
+          </Tab>
+        </Tabs>
       </Card>
 
     );

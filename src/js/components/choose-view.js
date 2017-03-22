@@ -26,7 +26,7 @@ export default class ChooseView extends React.Component {
             </CardText>
 
             <CardActions>
-              <RaisedButton primary="true" onTouchTap={this.props.chooseStudent}>
+              <RaisedButton primary={true} onTouchTap={this.props.chooseStudent}>
                 Student
               </RaisedButton>
 
