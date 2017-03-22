@@ -14,6 +14,7 @@ export default class TeacherView extends React.Component {
   static propTypes = {
     frame: PropTypes.number,
     frames: PropTypes.array,
+    gridRoster: PropTypes.array,
     setFrame: PropTypes.func,
     setFrames: PropTypes.func
   }
@@ -70,12 +71,6 @@ export default class TeacherView extends React.Component {
     const mapData = frames ?  frames[frame] : [ [0,0,0], [0,0,0], [0,0,0] ];
     const disablePlay = !! this.interval;
     const disablePause = ! disablePlay;
-    const buttonStyle = {
-      // "backgroundColor": "hsl(10,40%,50%)"
-    };
-    const cardStyle = {
-      width: "300px"
-    };
 
     const handleChangeTab = (value) => {
       this.setState({
@@ -104,6 +99,7 @@ export default class TeacherView extends React.Component {
       labelStyle: {
         color: "red",
       },
+      button: {}
     };
     return(
       <Card>
@@ -148,16 +144,16 @@ export default class TeacherView extends React.Component {
             <CardActions>
               <FloatingActionButton
                 iconClassName="icon-skip_previous"
-                style={buttonStyle}
+                style={styles.button}
                 onTouchTap={rewind}/>
               <FloatingActionButton
                 iconClassName="icon-play_circle_filled"
                 disabled={disablePlay}
-                style={buttonStyle}
+                style={styles.button}
                 onTouchTap={play}/>
               <FloatingActionButton
                 iconClassName="icon-pause_circle_filled"
-                style={buttonStyle}
+                style={styles.button}
                 disabled={disablePause}
                 onTouchTap={pause}/>
             </CardActions>

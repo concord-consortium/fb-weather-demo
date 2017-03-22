@@ -1,8 +1,7 @@
 import React, { PropTypes }  from "react";
-import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
-import RaisedButton from "material-ui/RaisedButton";
 import {Card, CardText, CardActions, CardMedia, CardTitle} from "material-ui/Card";
+import {Tab, Tabs} from "material-ui/Tabs";
 
 import WeatherStationConfigView from "./weather-station-config-view";
 import GridView from "./grid-view";
@@ -23,6 +22,7 @@ export default class WeatherStationView extends React.Component {
       name: "",
       gridX: 0,
       gridY: 0,
+      tab: "weather",
       showConfig: false
     };
   }
@@ -72,43 +72,40 @@ export default class WeatherStationView extends React.Component {
       justifyContent: "space-between",
       alignItems: "flex-start"
     };
-
-    const actions = [
-      <FlatButton
-        label="Ok"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this.hideConfig.bind(this)}
-      />
-    ];
+    const handleChangeTab = (value) => {
+      this.setState({
+        tab: value,
+      });
+    };
 
     return (
       <Card>
-        <CardText>
-          <div style={infoStyle}>
-            <div>
-              <div className="name">{name || "(no name provided)"}</div>
-            </div>
-            <GridView x={x} y={y} rows={3} cols={3} />
-          </div>
-        </CardText>
-        <CardMedia
-          overlay={<CardTitle title={`Temperature ${tempData}°`} subtitle={`Time: ${frameNumber}`} />}
-        >
-          <img src="img/farm.jpg"/>
-        </CardMedia>
-        <CardActions>
-          <RaisedButton label="Set station" onTouchTap={this.showConfig.bind(this)} />
-        </CardActions>
-        <Dialog
-          title="Configure weather station"
-          actions={actions}
-          modal={false}
-          open={this.state.showConfig}
-          onRequestClose={this.hideConfig}
-        >
-          <WeatherStationConfigView x={x} y={y} name={name} change={change} />
-        </Dialog>
+        <Tabs value={this.state.tab} onChange={handleChangeTab}>
+          <Tab label="Configure" value="configure">
+            <WeatherStationConfigView x={x} y={y} name={name} change={change} />
+          </Tab>
+          <Tab label="Weather" value="weather">
+            <CardText>
+              <div style={infoStyle}>
+                <div>
+                  <div className="name">{name || "(no name provided)"}</div>
+                </div>
+                <GridView x={x} y={y} rows={3} cols={3} />
+              </div>
+            </CardText>
+            <CardMedia
+              overlay={
+                <CardTitle title={`Temperature ${tempData}°`} subtitle={`Time: ${frameNumber}`} />
+              }>
+              <img src="img/farm.jpg"/>
+            </CardMedia>
+          </Tab>
+          <Tab label="Predict" value="predict">
+            <CardText>
+              TBD
+            </CardText>
+          </Tab>
+        </Tabs>
       </Card>
     );
   }
