@@ -77,7 +77,7 @@ export default class NewMapView extends React.Component {
     const numRows = Math.floor(width / gridWidth);
     const data = {
       values: [70, 75, 60, 65],
-      xs:     [300.0, 0.0, 100.0, 200.0],
+      xs:     [301.1, 0.0, 100.0, 200.0],
       ys:     [0.0, 400.0, 100.0, 200.0]
     };
     const kriging = Kriging();
