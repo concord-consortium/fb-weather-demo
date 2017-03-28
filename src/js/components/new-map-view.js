@@ -1,5 +1,4 @@
 import React, { PropTypes } from "react";
-import { Kriging } from "../kriging";
 
 
 function normalize(minIn,maxIn,minOut,maxOut,input) {
@@ -19,6 +18,7 @@ export default class NewMapView extends React.Component {
     width: PropTypes.number,
     height: PropTypes.number,
     gridCount: PropTypes.number,
+    grid: PropTypes.array,
     showTempValues: PropTypes.bool,
     showTempColors: PropTypes.bool,
     showGridLines: PropTypes.bool,
@@ -47,7 +47,7 @@ export default class NewMapView extends React.Component {
   }
 
   drawRect(ctx, x, y, width, v) {
-    const alpha = normalize(50,90,0,0.5, v);
+    const alpha = normalize(0,90,0,0.5, v);
     const size = width;
     const color = `hsla(0, 50%, 50%, ${alpha})`;
     ctx.fillStyle = color;
@@ -72,16 +72,15 @@ export default class NewMapView extends React.Component {
     const ctx = this.refs.canvas.getContext("2d");
     const height = this.props.height;
     const width = this.props.width;
-    const gridCount = this.props.gridCount || 10;
-    const gridWidth = Math.floor(width / gridCount);
-    const numRows = Math.floor(width / gridWidth);
-    const data = {
-      values: [70, 75, 60, 65],
-      xs:     [301.1, 0.0, 100.0, 200.0],
-      ys:     [0.0, 400.0, 100.0, 200.0]
-    };
-    const kriging = Kriging();
-    const model = kriging.train(data.values, data.xs, data.ys, "gaussian", 0, 100);
+    const grid = this.props.grid || [];
+    const numCols = grid.length;
+    if(numCols <= 0) {
+      return;
+    }
+  
+    const numRows = grid[0].length;
+    const gridWidth = Math.floor(width / numCols);
+    const gridHeight = Math.floor(height / numRows);
 
     let x=0;
     let y=0;
@@ -89,8 +88,8 @@ export default class NewMapView extends React.Component {
 
     ctx.clearRect(0,0, width, height);
     for (y=0; y < numRows; y++) {
-      for (x=0; x < numRows; x++) {
-        predict = kriging.predict(x*gridWidth, y*gridWidth, model);
+      for (x=0; x < numCols; x++) {
+        predict = grid[y][x];
         this.drawRect(ctx, x, y, gridWidth, predict);
       }
     }

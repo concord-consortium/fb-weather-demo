@@ -13,12 +13,16 @@
   "license": "MIT",
   "dependencies": {
     "copy-webpack-plugin": "^4.0.1",
+    "csv-parse": "^1.2.0",
     "firebase": "^3.7.0",
+    "lodash": "^4.17.4",
     "material-ui": "^0.17.0",
     "query-string": "^4.3.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "react-tap-event-plugin": "^2.0.1"
+    "react-tap-event-plugin": "^2.0.1",
+    "semver": "^5.3.0",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.23.1",

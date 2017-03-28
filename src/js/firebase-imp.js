@@ -1,10 +1,18 @@
 import firebase from "firebase";
+import { v1 as uuid } from "uuid";
+
+const DEFAULT_SESSION = "default";
+const DEFAULT_VERSION_STRING = "1.0.0";
+const DEFAULT_ACTIVITY = "default";
 
 export default class FirebaseImp {
-  constructor(firebaseKey) {
+  constructor() {
     this.user = null;
     this.token = null;
-    this.refName = firebaseKey;
+    this.session  = DEFAULT_SESSION;
+    this.activity = DEFAULT_ACTIVITY;
+    this.version  = DEFAULT_VERSION_STRING;
+
     this.config = {
       apiKey: "AIzaSyAlgebbG2k820uai5qZT6T8yMONvuSl-wI",
       authDomain: "weather-dev-eae1d.firebaseapp.com",
@@ -40,30 +48,59 @@ export default class FirebaseImp {
   finishAuth(result) {
     this.user = result.user;
     this.setDataRef(this.refName);
-    this.setupPresence();
-    this.registerFirebaseHandlers();
+    this.rebindFirebaseHandlers();
     this.log("logged in");
   }
 
-  setDataRef(refString) {
-    this.refName = refString;
-    this.dataRef = firebase.database().ref(this.refName);
+  setDataRef() {
+    this.refName = `${this.session}`;
+    if(firebase.database()) {
+      this.dataRef = firebase.database().ref(this.refName);
+      this.rebindFirebaseHandlers();
+      this.setupPresence();
+    }
   }
 
+  set session(sessionName) {
+    this._session = sessionName;
+    // this.setDataRef();
+  }
+
+  get session() {
+    return this._session;
+  }
+
+  set activity(activityName) {
+    this._activity = activityName;
+    // this.setDataRef();
+  }
+
+  get activity() {
+    return this._activity;
+  }
+
+
   setupPresence() {
+    // Remove old user listening:
+    if(this.amOnline) { this.amOnline.off(); }
+    if(this.userRef)  {
+      this.userRef.off();
+      this.userRef.remove();
+    }
+
     this.amOnline = firebase.database().ref(".info/connected");
-    this.uuid = Math.floor(Math.random() * 10000);
+    this.uuid = uuid();
+
     this.userRef = firebase.database().ref(`${this.refName}/presence/${this.uuid}`);
 
     const userRef = this.userRef;
     const log = this.log.bind(this);
-    const uuid = this.uuid;
-    const updateUserData = this.updateUserData.bind(this);
+    const updateUserData = this.saveUserData.bind(this);
     this.amOnline.on("value", function(snapshot) {
       log("online -- ");
       updateUserData({
         oneline: true,
-        uuid: uuid,
+        start: new Date(),
         name: "(no name)"
       });
       if (snapshot.val()) {
@@ -72,14 +109,22 @@ export default class FirebaseImp {
     });
   }
 
-  updateUserData(data) {
-    this.userRef.update(data);
-  }
 
-  registerFirebaseHandlers () {
+
+  rebindFirebaseHandlers () {
     this.log("registering listeners");
     const ref = this.dataRef;
-    const setData = this.setData.bind(this);
+    // Unbind old listening:
+    if(ref) {
+      try {
+        ref.off();
+      }
+      catch(e) {
+        this.log("couldn't disable previous data handler");
+      }
+    }
+
+    const setData = this.loadDataFromFirebase.bind(this);
     const log = this.log.bind(this);
     ref.on("value", setData);
 
@@ -98,16 +143,19 @@ export default class FirebaseImp {
     this.listeners = oldListeners.filter((el) => el !== component);
   }
 
-  // TBD: For now we expect to set the entire state.
-  update(data) {
-    console.log(data);
+  saveToFirebase(data) {
     if(this.dataRef && this.dataRef.update){
       this.dataRef.update(data);
     }
   }
 
-  // tell our listening componets about the state of the world
-  setData(data) {
+  saveUserData(data) {
+    if(this.userRef && this.userRef.update){
+      this.userRef.update(data);
+    }
+  }
+
+  loadDataFromFirebase(data) {
     const dataV = data.val();
     console.log(dataV);
     for(let listener of this.listeners) {

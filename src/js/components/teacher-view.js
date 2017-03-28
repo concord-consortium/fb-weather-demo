@@ -4,7 +4,7 @@ import {Tab, Tabs} from "material-ui/Tabs";
 import Toggle from "material-ui/Toggle";
 import FloatingActionButton from "material-ui/FloatingActionButton";
 import Frames from "../initial-frames";
-import MapView from "./map-view";
+import MapView from "./new-map-view";
 
 const FRAMES = Frames();
 const NUM_FRAMES = FRAMES.length;
@@ -14,8 +14,9 @@ export default class TeacherView extends React.Component {
   static propTypes = {
     frame: PropTypes.number,
     frames: PropTypes.array,
+    grid:  PropTypes.array,
     prefs: PropTypes.object,
-    gridRoster: PropTypes.array,
+    gridRoster: PropTypes.object,
     setFrame: PropTypes.func,
     setFrames: PropTypes.func,
     setPrefs: PropTypes.func
@@ -93,8 +94,7 @@ export default class TeacherView extends React.Component {
     const pause  = this.pause.bind(this);
 
     const frame = this.props.frame;
-    const frames = this.props.frames;
-    const mapData = frames ?  frames[frame] : [ [0,0,0], [0,0,0], [0,0,0] ];
+    const grid = this.props.grid || [];
     const disablePlay = !! this.interval;
     const disablePause = ! disablePlay;
 
@@ -146,7 +146,13 @@ export default class TeacherView extends React.Component {
               Time: {frame}
             </CardTitle>
             <CardMedia>
-              <MapView data={mapData} gridRoster={this.props.gridRoster}/>
+              <MapView
+                grid={grid}
+                gridRoster={this.props.gridRoster}
+                width={400}
+                height={400}
+                showTempColors={true}
+                />
             </CardMedia>
             <CardActions>
               <FloatingActionButton

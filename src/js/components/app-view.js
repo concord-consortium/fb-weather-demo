@@ -3,15 +3,21 @@ import QueryString from "query-string";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 
 import FirebaseImp from "../firebase-imp";
-
+import FrameHelper from "../frame-helper";
 import TeacherView from "./teacher-view";
 import WeatherStation from "./weather-station-view";
 import ClassView from "./class-view";
 import ChooseView from "./choose-view";
+import NewMap from "./new-map-view";
 
 export default class AppView extends React.Component {
   constructor(props){
     super(props);
+    const loadCallback = function() {
+      this.setState({
+        frames: this.frameHelper.frames
+      });
+    }.bind(this);
     this.state = {
       frame: 0,
       frames: null,
@@ -22,6 +28,8 @@ export default class AppView extends React.Component {
       }
     };
     this.firebaseImp = new FirebaseImp(this.state.session);
+
+    this.frameHelper = new FrameHelper(loadCallback);
   }
 
   componentDidMount() {
@@ -34,7 +42,8 @@ export default class AppView extends React.Component {
     const qparams = QueryString.parse(location.hash);
     const nowShowing = qparams.show    || "choose";
     const session    = qparams.session || "default";
-    this.firebaseImp.setDataRef(session);
+    this.firebaseImp.session = session;
+    this.firebaseImp.setDataRef();
     this.setState(
       {
         session: session,
@@ -80,6 +89,7 @@ export default class AppView extends React.Component {
 
   renderNowShowing() {
     const frames = this.state.frames;
+
     const frame  =  ( this.state || {}).frame;
     const nowShowing = this.state.nowShowing;
     const chooseTeacher = this.chooseTeacher.bind(this);
@@ -87,6 +97,14 @@ export default class AppView extends React.Component {
     const chooseClassroom = this.chooseClassroom.bind(this);
     const gridRoster = {};
     const roster = [];
+
+    let grid = [];
+    if (frames && frames.length > 0 && frames[frame].grids) {
+      if(frames[frame].grids.default) {
+        grid = frames[frame].grids.default;
+      }
+    }
+
     let   stationRecord;
     for(let id in this.state.presence) {
       stationRecord = this.state.presence[id];
@@ -100,19 +118,19 @@ export default class AppView extends React.Component {
     }
 
     const setFrame = function(frame) {
-      this.firebaseImp.update({frame: frame});
+      this.firebaseImp.saveToFirebase({frame: frame});
     }.bind(this);
 
     const setFrames = function(frames) {
-      this.firebaseImp.update({frames: frames});
+      this.firebaseImp.saveToFirebase({frames: frames});
     }.bind(this);
 
     const setPrefs = function(prefs) {
-      this.firebaseImp.update({prefs: prefs});
+      this.firebaseImp.saveToFirebase({prefs: prefs});
     }.bind(this);
 
     const updateUserData = function(data) {
-      this.firebaseImp.updateUserData(data);
+      this.firebaseImp.saveUserData(data);
     }.bind(this);
 
     switch(nowShowing){
@@ -121,6 +139,7 @@ export default class AppView extends React.Component {
           <TeacherView
             frame={frame}
             frames={frames}
+            grid={grid}
             prefs={this.state.prefs}
             gridRoster={gridRoster}
             setFrame={setFrame}
@@ -149,11 +168,14 @@ export default class AppView extends React.Component {
           updateUserData={updateUserData}/>);
 
       default:
+        // return(
+        //   <NewMap grid={grid} width={500} height={500} showBaseMap={true} showTempColors={true}/>
+        // );
         return(<ChooseView
           chooseTeacher={chooseTeacher}
           chooseStudent={chooseStudent}
           chooseClassroom={chooseClassroom}
-          />);
+        />);
     }
   }
   render() {
