@@ -8,7 +8,6 @@ import TeacherView from "./teacher-view";
 import WeatherStation from "./weather-station-view";
 import ClassView from "./class-view";
 import ChooseView from "./choose-view";
-import NewMap from "./new-map-view";
 
 export default class AppView extends React.Component {
   constructor(props){

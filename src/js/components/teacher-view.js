@@ -3,17 +3,13 @@ import {Card, CardText, CardMedia, CardActions, CardTitle} from "material-ui/Car
 import {Tab, Tabs} from "material-ui/Tabs";
 import Toggle from "material-ui/Toggle";
 import FloatingActionButton from "material-ui/FloatingActionButton";
-import Frames from "../initial-frames";
 import MapView from "./new-map-view";
-
-const FRAMES = Frames();
-const NUM_FRAMES = FRAMES.length;
 
 export default class TeacherView extends React.Component {
 
   static propTypes = {
     frame: PropTypes.number,
-    frames: PropTypes.array,
+    frames:  PropTypes.array,
     grid:  PropTypes.array,
     prefs: PropTypes.object,
     gridRoster: PropTypes.object,
@@ -31,18 +27,10 @@ export default class TeacherView extends React.Component {
     };
   }
 
-  componentDidMount() {
-    const setFrames = this.props.setFrames;
-    const frameRate = this.state.frameRate;
-    if(setFrames) {
-      // TODO: hacky, set the frames after we are loaded avoid some race condition.
-      setTimeout(() => setFrames(FRAMES), frameRate);
-    }
-  }
-
   nextFrame(){
+    const frameLength = this.props.frames.length;
     let frameNumber = (this.props.frame || 0) + 1;
-    frameNumber = frameNumber % NUM_FRAMES;
+    frameNumber = frameNumber % frameLength;
     this.props.setFrame(frameNumber);
   }
 

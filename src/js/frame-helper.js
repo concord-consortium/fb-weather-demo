@@ -28,7 +28,8 @@ export default class FrameHelper {
         return({time: time, stations: stations});
       });
       this.frames = frames;
-      this.makeAllFames(10,10);
+      this.makeAllFames(16,16);
+      this.makeAllFames(5,5, 'class');
       this.onLoad();
       console.log(this.extents());
       console.log(this.geoJSON(0));
