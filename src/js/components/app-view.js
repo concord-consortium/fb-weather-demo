@@ -91,6 +91,7 @@ export default class AppView extends React.Component {
 
     const frame  =  ( this.state || {}).frame;
     const nowShowing = this.state.nowShowing;
+    const gridName = this.state.prefs.gridName;
     const chooseTeacher = this.chooseTeacher.bind(this);
     const chooseStudent = this.chooseStudent.bind(this);
     const chooseClassroom = this.chooseClassroom.bind(this);
@@ -99,8 +100,8 @@ export default class AppView extends React.Component {
 
     let grid = [];
     if (frames && frames.length > 0 && frames[frame].grids) {
-      if(frames[frame].grids.default) {
-        grid = frames[frame].grids.default;
+      if(frames[frame].grids[gridName]) {
+        grid = frames[frame].grids[gridName];
       }
     }
 
@@ -163,6 +164,7 @@ export default class AppView extends React.Component {
           height={600}
           frame={frame}
           frames={frames}
+          grid={grid}
           prefs={this.state.prefs}
           updateUserData={updateUserData}/>);
 

@@ -10,6 +10,7 @@ export default class ClassView extends React.Component {
   static propTypes = {
     frame: PropTypes.number,
     frames: PropTypes.array,
+    grid: PropTypes.array,
     prefs: PropTypes.object
   }
 
@@ -26,10 +27,8 @@ export default class ClassView extends React.Component {
               <NewMapView
                 width={600}
                 height={600}
-                showBaseMap={this.props.prefs.showBaseMap}
-                showGridLines={this.props.prefs.showGridLines}
-                showTempColors={this.props.prefs.showTempColors}
-                showTempValues={this.props.prefs.showTempValues}
+                grid={this.props.grid}
+                prefs={this.props.prefs}
               />
             </CardText>
           </Tab>

@@ -1,7 +1,7 @@
 import React, { PropTypes }  from "react";
 import {Card, CardText, CardMedia, CardTitle} from "material-ui/Card";
 import {Tab, Tabs} from "material-ui/Tabs";
-
+import dateFormat from "dateformat";
 import WeatherStationConfigView from "./weather-station-config-view";
 import GridView from "./grid-view";
 import PredictionView from "./prediction-view";
@@ -61,7 +61,18 @@ export default class WeatherStationView extends React.Component {
   render() {
     const frameNumber = this.props.frame;
     const frames = this.props.frames;
-    const mapData = frames ?  frames[frameNumber] : [ [0,0,0], [0,0,0], [0,0,0] ];
+    let mapData;
+    let time = frameNumber;
+    if (frames && frames.length > 0 && frames[frameNumber]) {
+      const frame = frames[frameNumber];
+      const grids = frame.grids;
+      time =  frame.time ? dateFormat(new Date(frame.time)) : time;
+      if (grids) {
+        const classGrid = grids.classGrid;
+        mapData = classGrid;
+      }
+    }
+    mapData = mapData || [ [0,0,0], [0,0,0], [0,0,0] ];
     const x = this.state.gridX;
     const y = this.state.gridY;
     const tempData = mapData[y][x];
@@ -72,6 +83,13 @@ export default class WeatherStationView extends React.Component {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "flex-start"
+    };
+    const tempStyle = {
+      fontSize: "4rem",
+      color: "hsla(0, 0%, 100%, 0.9)"
+    };
+    const timeStyle = {
+      color: "hsla(0, 0%, 80%, 0.9)"
     };
     const handleChangeTab = (value) => {
       this.setState({
@@ -96,7 +114,12 @@ export default class WeatherStationView extends React.Component {
             </CardText>
             <CardMedia
               overlay={
-                <CardTitle title={`Temperature ${tempData}°`} subtitle={`Time: ${frameNumber}`} />
+                <div>
+                  <CardTitle titleStyle={tempStyle} title={`Temp: ${tempData.toFixed(1)}°`} />
+                  <CardText style={timeStyle} >
+                    {`${time} | frame(${frameNumber})`}
+                  </CardText>
+                </div>
               }>
               <img src="img/farm.jpg"/>
             </CardMedia>

@@ -19,10 +19,7 @@ export default class NewMapView extends React.Component {
     height: PropTypes.number,
     gridCount: PropTypes.number,
     grid: PropTypes.array,
-    showTempValues: PropTypes.bool,
-    showTempColors: PropTypes.bool,
-    showGridLines: PropTypes.bool,
-    showBaseMap: PropTypes.bool
+    prefs: PropTypes.object
   }
 
   constructor(props){
@@ -51,20 +48,16 @@ export default class NewMapView extends React.Component {
     const size = width;
     const color = `hsla(0, 50%, 50%, ${alpha})`;
     ctx.fillStyle = color;
-    if(this.props.showTempColors) {
+    if(this.props.prefs.showTempColors) {
       ctx.fillRect(x*size, y*size, size, size);
     }
-    if(this.props.showTempValues) {
+    if(this.props.prefs.showTempValues) {
       this.drawLabel(ctx, x*size, y*size, width,  v.toFixed(1));
     }
-    if(this.props.showGridLines) {
+    if(this.props.prefs.showGridLines) {
       ctx.strokeRect(x*size, y*size, size, size);
-      if(x == 0) {
-        this.drawLabel(ctx, x*size, y*size, width, y);
-      }
-      if(y == 0) {
-        this.drawLabel(ctx, x*size, y*size, width, x);
-      }
+      let chr = String.fromCharCode(97 + y);
+      this.drawLabel(ctx, x*size, y*size, width, `${chr} ${x}`);
     }
   }
 
@@ -77,7 +70,7 @@ export default class NewMapView extends React.Component {
     if(numCols <= 0) {
       return;
     }
-  
+
     const numRows = grid[0].length;
     const gridWidth = Math.floor(width / numCols);
     const gridHeight = Math.floor(height / numRows);
@@ -96,7 +89,7 @@ export default class NewMapView extends React.Component {
   }
 
   renderBackground(stackedStyle) {
-    if(this.props.showBaseMap){
+    if(this.props.prefs.showBaseMap){
       return(<img src="img/azores.jpg" style={stackedStyle} />);
     }
     return("");
@@ -115,7 +108,7 @@ export default class NewMapView extends React.Component {
       height: height,
     };
     return (
-      <div className="TestView" style={containerStyle}>
+      <div className="NewMapView" style={containerStyle}>
         { this.renderBackground(stackedStyle) }
         <canvas ref="canvas" style={stackedStyle} width={width} height={height} className="test"/>
       </div>

@@ -1,5 +1,8 @@
 import React, { PropTypes } from "react";
+import _ from "lodash";
 import {Card, CardText, CardMedia, CardActions, CardTitle} from "material-ui/Card";
+import MenuItem from "material-ui/MenuItem";
+import SelectField from "material-ui/SelectField";
 import {Tab, Tabs} from "material-ui/Tabs";
 import Toggle from "material-ui/Toggle";
 import FloatingActionButton from "material-ui/FloatingActionButton";
@@ -11,6 +14,8 @@ export default class TeacherView extends React.Component {
     frame: PropTypes.number,
     frames:  PropTypes.array,
     grid:  PropTypes.array,
+    gridNames:  PropTypes.array,
+    gridName:  PropTypes.string,
     prefs: PropTypes.object,
     gridRoster: PropTypes.object,
     setFrame: PropTypes.func,
@@ -52,6 +57,13 @@ export default class TeacherView extends React.Component {
     this.props.setFrame(0);
   }
 
+
+  setGrid(e, index, value) {
+    const update = this.props.prefs;
+    update.gridName = value;
+    this.props.setPrefs(update);
+  }
+
   renderPrefButton(label, key) {
     const toggleStyle = {
       marginBottom: 16
@@ -80,8 +92,11 @@ export default class TeacherView extends React.Component {
     const rewind = this.rewind.bind(this);
     const play   = this.play.bind(this);
     const pause  = this.pause.bind(this);
+    const setGrid = this.setGrid.bind(this);
 
-    const frame = this.props.frame;
+    const { frame, frames }  = this.props;
+    const gridNames = ["default", "classGrid"];
+    const gridName = this.props.prefs.gridName || "default";
     const grid = this.props.grid || [];
     const disablePlay = !! this.interval;
     const disablePause = ! disablePlay;
@@ -119,12 +134,22 @@ export default class TeacherView extends React.Component {
          <Tabs value={this.state.tab} onChange={handleChangeTab}>
           <Tab label="Configure" value="configure">
             <CardText>
+              <SelectField
+                style={styles.textField}
+                floatingLabelText="Use this grid:"
+                value={gridName}
+                autoWidth={true}
+                onChange={setGrid}>
+                  { gridNames.map( (name) => <MenuItem value={name} primaryText={name} /> ) }
+              </SelectField>
               <div className="toggles" style={styles.block}>
                 { this.renderPrefButton("Base map","showBaseMap") }
                 { this.renderPrefButton("Grid lines","showGridLines") }
                 { this.renderPrefButton("Temp values","showTempValues") }
                 { this.renderPrefButton("Temp colors","showTempColors") }
                 { this.renderPrefButton("Group names","showGroupNames") }
+                { this.renderPrefButton("Show station temps","showStationTemps") }
+                { this.renderPrefButton("Show station predictions","showStationPredictions") }
                 { this.renderPrefButton("Enable prediction","enablePrediction") }
               </div>
             </CardText>
@@ -139,6 +164,7 @@ export default class TeacherView extends React.Component {
                 gridRoster={this.props.gridRoster}
                 width={400}
                 height={400}
+                prefs={this.props.prefs}
                 showTempColors={true}
                 />
             </CardMedia>

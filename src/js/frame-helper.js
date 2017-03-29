@@ -29,7 +29,7 @@ export default class FrameHelper {
       });
       this.frames = frames;
       this.makeAllFames(16,16);
-      this.makeAllFames(5,5, 'class');
+      this.makeAllFames(5,5, "classGrid");
       this.onLoad();
       console.log(this.extents());
       console.log(this.geoJSON(0));
