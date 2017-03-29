@@ -1,16 +1,14 @@
-import React, { PropTypes }  from "react";
+import * as React from "react";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
-import {CardText, CardActions} from "material-ui/Card";
+import { CardText, CardActions } from "material-ui/Card";
+import { ComponentStyleMap } from "../component-style-map";
 
-const div = React.DOM.div;
-
-const styles = {
+const styles:ComponentStyleMap = {
   prediction: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center",
     aligncontent: "center",
     width: "100%"
   },
@@ -27,21 +25,17 @@ const styles = {
   }
 };
 
-export default class PredictionView extends React.Component {
+export interface PredictionViewProps {
+  enabled: boolean,
+  updateUserData?(): void
+}
 
-  static propTypes = {
-    enabled: PropTypes.bool,
-    updateUserData: PropTypes.func
+export interface PredictionViewState {}
+
+export class PredictionView extends React.Component<PredictionViewProps, PredictionViewState> {
+  constructor(props:PredictionViewProps, ctx:any){
+    super(props, ctx);
   }
-
-  constructor(props){
-    super(props);
-  }
-
-  componentDidMount() {}
-
-  componentDidUpdate() {}
-
 
   predictionPrompt() {
     const { enabled } = this.props;
@@ -67,7 +61,7 @@ export default class PredictionView extends React.Component {
   render() {
     const disabled = ! this.props.enabled;
     return (
-      <CardText className="prediction" style={styles.prediction}>
+      <CardText style={styles.prediction}>
         {this.predictionPrompt()}
         <TextField
             style={styles.textField}

@@ -1,33 +1,68 @@
-import React from "react";
-import QueryString from "query-string";
+import * as React from "react";
+import * as QueryString from "query-string";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 
-import FirebaseImp from "../firebase-imp";
-import FrameHelper from "../frame-helper";
-import TeacherView from "./teacher-view";
-import WeatherStation from "./weather-station-view";
-import ClassView from "./class-view";
-import ChooseView from "./choose-view";
+import { FirebaseImp } from "../firebase-imp";
+import { FrameHelper } from "../frame-helper";
+import { Presence } from "../presence"
+import { TeacherView } from "./teacher-view";
+import { WeatherStationView } from "./weather-station-view";
+import { ClassView } from "./class-view";
+import { ChooseView } from "./choose-view";
 
-export default class AppView extends React.Component {
-  constructor(props){
+import { DataStore } from "../data-store";
+import { Frame } from "../frame";
+import { Grid } from "../grid";
+import { SimPrefs } from "../sim-prefs";
+
+export type ShowingType = "choose" | "teacher" | "classroom" | "student";
+
+export interface AppViewProps {}
+export interface AppViewState {
+  frame: number
+  frames: Frame[]
+  session: string
+  nowShowing: ShowingType
+  prefs: SimPrefs
+  presence?: Presence
+}
+
+export class AppView extends React.Component<AppViewProps, AppViewState> {
+  firebaseImp: FirebaseImp
+  frameHelper: FrameHelper
+  public state:AppViewState
+
+  constructor(props:AppViewProps){
     super(props);
-    const loadCallback = function() {
-      this.setState({
-        frames: this.frameHelper.frames
-      });
-    }.bind(this);
+    let prefs:SimPrefs = {
+      gridName: 'default',
+      gridNames: ['default'],
+      showBaseMap: true,
+      showTempColors: false,
+      showTempValues: false,
+      showGridLines: false,
+      enablePrediction: false
+    };
     this.state = {
       frame: 0,
-      frames: null,
+      frames: [],
       session: "default",
       nowShowing: "choose",
-      prefs: {
-        showBaseMap: false
-      }
+      prefs: prefs
     };
-    this.firebaseImp = new FirebaseImp(this.state.session);
+    const loadCallback = function() {
+      this.setState({
+        frame: 0,
+        frames: this.frameHelper.frames,
+        session: "default",
+        nowShowing: "choose",
+        prefs: {
+          showBaseMap: false
+        }
+      });
+    }.bind(this);
 
+    this.firebaseImp = new FirebaseImp();
     this.frameHelper = new FrameHelper(loadCallback);
   }
 
@@ -89,16 +124,17 @@ export default class AppView extends React.Component {
   renderNowShowing() {
     const frames = this.state.frames;
 
-    const frame  =  ( this.state || {}).frame;
+    const frame  =  this.state.frame;
     const nowShowing = this.state.nowShowing;
     const gridName = this.state.prefs.gridName;
+    const gridNames = this.state.prefs.gridNames;
     const chooseTeacher = this.chooseTeacher.bind(this);
     const chooseStudent = this.chooseStudent.bind(this);
     const chooseClassroom = this.chooseClassroom.bind(this);
     const gridRoster = {};
-    const roster = [];
+    const roster: string[] = [];
 
-    let grid = [];
+    let grid:Grid | undefined = undefined;
     if (frames && frames.length > 0 && frames[frame].grids) {
       if(frames[frame].grids[gridName]) {
         grid = frames[frame].grids[gridName];
@@ -140,6 +176,8 @@ export default class AppView extends React.Component {
             frame={frame}
             frames={frames}
             grid={grid}
+            gridName={gridName}
+            gridNames={gridNames}
             prefs={this.state.prefs}
             gridRoster={gridRoster}
             setFrame={setFrame}
@@ -150,7 +188,7 @@ export default class AppView extends React.Component {
 
       case "student":
         return(
-          <WeatherStation
+          <WeatherStationView
             frame={frame}
             frames={frames}
             prefs={this.state.prefs}
@@ -160,13 +198,10 @@ export default class AppView extends React.Component {
 
       case "classroom":
         return(<ClassView
-          width={600}
-          height={600}
           frame={frame}
           frames={frames}
           grid={grid}
-          prefs={this.state.prefs}
-          updateUserData={updateUserData}/>);
+          prefs={this.state.prefs}/>);
 
       default:
         // return(

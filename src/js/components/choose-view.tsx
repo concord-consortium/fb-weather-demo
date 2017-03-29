@@ -1,18 +1,18 @@
-import React, {PropTypes} from "react";
+import * as React from "react";
 import {Tabs, Tab} from "material-ui/Tabs";
 import RaisedButton from "material-ui/RaisedButton";
 import {Card, CardActions, CardText} from "material-ui/Card";
 
+export interface ChooseViewProps {
+  chooseTeacher(): void
+  chooseStudent(): void
+  chooseClassroom(): void
+}
 
-export default class ChooseView extends React.Component {
+export interface ChooseViewState {}
 
-  static propTypes = {
-    chooseTeacher: PropTypes.function,
-    chooseStudent: PropTypes.function,
-    chooseClassroom: PropTypes.function,
-  }
-
-  constructor(props){
+export class ChooseView extends React.Component<ChooseViewProps, ChooseViewState> {
+  constructor(props:ChooseViewProps,ctx:any){
     super(props);
   }
 

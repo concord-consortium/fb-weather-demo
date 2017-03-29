@@ -1,26 +1,18 @@
-import React, { PropTypes } from "react";
+import * as React from "react";
 
+import { SimPrefs } from "../sim-prefs";
+import { normalize} from "../normalize"
+import { Grid } from "../grid"
 
-function normalize(minIn,maxIn,minOut,maxOut,input) {
-  let d = maxIn  - minIn;
-  let r = maxOut - minOut;
-  return ((input - minIn) / d) * r + minOut;
+export interface MapViewProps {
+  width: number
+  height: number
+  grid?: Grid
+  prefs: SimPrefs
 }
 
-function normalArray(arrIn,minOut,maxOut) {
-  const minIn = Math.min.apply(null, arrIn);
-  const maxIn = Math.max.apply(null, arrIn);
-  return arrIn.map( (i) => normalize(minIn,maxIn,minOut,maxOut,i));
-}
-
-export default class NewMapView extends React.Component {
-  static propTypes = {
-    width: PropTypes.number,
-    height: PropTypes.number,
-    gridCount: PropTypes.number,
-    grid: PropTypes.array,
-    prefs: PropTypes.object
-  }
+export interface MapViewState { }
+export  class MapView extends React.Component<MapViewProps, MapViewState> {
 
   constructor(props){
     super(props);
@@ -44,9 +36,9 @@ export default class NewMapView extends React.Component {
   }
 
   drawRect(ctx, x, y, width, v) {
-    const alpha = normalize(0,90,0,0.5, v);
+    const value = normalize(0,90,1,100, v);
     const size = width;
-    const color = `hsla(0, 50%, 50%, ${alpha})`;
+    const color = `hsla(0, 50%, ${value}%, 0.5)`;
     ctx.fillStyle = color;
     if(this.props.prefs.showTempColors) {
       ctx.fillRect(x*size, y*size, size, size);
@@ -62,7 +54,7 @@ export default class NewMapView extends React.Component {
   }
 
   updateCanvas() {
-    const ctx = this.refs.canvas.getContext("2d");
+    const ctx = (this.refs.canvas as HTMLCanvasElement).getContext("2d");
     const height = this.props.height;
     const width = this.props.width;
     const grid = this.props.grid || [];
@@ -79,11 +71,13 @@ export default class NewMapView extends React.Component {
     let y=0;
     let predict = 0;
 
-    ctx.clearRect(0,0, width, height);
-    for (y=0; y < numRows; y++) {
-      for (x=0; x < numCols; x++) {
-        predict = grid[y][x];
-        this.drawRect(ctx, x, y, gridWidth, predict);
+    if(ctx) {
+      ctx.clearRect(0,0, width, height);
+      for (y=0; y < numRows; y++) {
+        for (x=0; x < numCols; x++) {
+          predict = grid[y][x];
+          this.drawRect(ctx, x, y, gridWidth, predict);
+        }
       }
     }
   }

@@ -4,7 +4,7 @@ import _ from "lodash";
 import DefaultCSV from "./default-weather-data";
 import { Kriging } from "./kriging";
 
-export default class FrameHelper {
+export class FrameHelper {
   constructor(_callback, datas, grids) {
     this.frames = [];
     this.parse(DefaultCSV);

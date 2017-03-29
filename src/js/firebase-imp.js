@@ -5,11 +5,11 @@ const DEFAULT_SESSION = "default";
 const DEFAULT_VERSION_STRING = "1.0.0";
 const DEFAULT_ACTIVITY = "default";
 
-export default class FirebaseImp {
-  constructor() {
+export class FirebaseImp {
+  constructor(session) {
     this.user = null;
     this.token = null;
-    this.session  = DEFAULT_SESSION;
+    this.session  = session || DEFAULT_SESSION;
     this.activity = DEFAULT_ACTIVITY;
     this.version  = DEFAULT_VERSION_STRING;
 

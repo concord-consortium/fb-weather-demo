@@ -1,23 +1,37 @@
-import React, { PropTypes }  from "react";
-import {Card, CardText, CardMedia, CardTitle} from "material-ui/Card";
-import {Tab, Tabs} from "material-ui/Tabs";
-import dateFormat from "dateformat";
-import WeatherStationConfigView from "./weather-station-config-view";
-import GridView from "./grid-view";
-import PredictionView from "./prediction-view";
+import * as React from "react";
+import { Card, CardText, CardMedia, CardTitle } from "material-ui/Card";
+import { Tab, Tabs } from "material-ui/Tabs";
+import * as dateFormat from "dateformat";
+import { WeatherStationConfigView }  from "./weather-station-config-view";
+import { GridView } from "./grid-view";
+import { PredictionView } from "./prediction-view";
+import { SimPrefs } from "../sim-prefs";
+import { Frame } from "../frame"
+import { ComponentStyleMap } from "../component-style-map";
 
 const div = React.DOM.div;
 
-export default class WeatherStationView extends React.Component {
+export type StationTab = "configure" | "weather";
 
-  static propTypes = {
-    frames: PropTypes.array,
-    frame: PropTypes.number,
-    prefs: PropTypes.object,
-    updateUserData: PropTypes.func
+export interface WeatherStationProps {
+  frames: Frame[]
+  frame: number
+  prefs: SimPrefs
+  updateUserData(UserData): void
   }
 
-  constructor(props){
+export interface WeatherStationState {
+  name: string
+  gridX: number
+  gridY: number
+  tab: StationTab
+  showConfig: boolean
+}
+
+export class WeatherStationView extends React.Component<WeatherStationProps, WeatherStationState> {
+  pending: any
+
+  constructor(props:WeatherStationProps, context:any){
     super(props);
     this.state = {
       name: "",
@@ -78,18 +92,20 @@ export default class WeatherStationView extends React.Component {
     const tempData = mapData[y][x];
     const name = this.state.name;
     const change = this.setConfig.bind(this);
-    const infoStyle = {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-start"
-    };
-    const tempStyle = {
-      fontSize: "4rem",
-      color: "hsla(0, 0%, 100%, 0.9)"
-    };
-    const timeStyle = {
-      color: "hsla(0, 0%, 80%, 0.9)"
+    const styles:ComponentStyleMap = {
+      info: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start"
+      },
+      temp: {
+        fontSize: "4rem",
+        color: "hsla(0, 0%, 100%, 0.9)"
+      },
+      time: {
+        color: "hsla(0, 0%, 80%, 0.9)"
+      }
     };
     const handleChangeTab = (value) => {
       this.setState({
@@ -101,11 +117,11 @@ export default class WeatherStationView extends React.Component {
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
           <Tab label="Configure" value="configure">
-            <WeatherStationConfigView x={x} y={y} name={name} change={change} />
+            <WeatherStationConfigView x={x} y={y} name={name} frames={frames} change={change} />
           </Tab>
           <Tab label="Weather" value="weather">
             <CardText>
-              <div style={infoStyle}>
+              <div style={styles.info}>
                 <div>
                   <div className="name">{name || "(no name provided)"}</div>
                 </div>
@@ -115,8 +131,8 @@ export default class WeatherStationView extends React.Component {
             <CardMedia
               overlay={
                 <div>
-                  <CardTitle titleStyle={tempStyle} title={`Temp: ${tempData.toFixed(1)}°`} />
-                  <CardText style={timeStyle} >
+                  <CardTitle titleStyle={styles.temp} title={`Temp: ${tempData.toFixed(1)}°`} />
+                  <CardText style={styles.time} >
                     {`${time} | frame(${frameNumber})`}
                   </CardText>
                 </div>

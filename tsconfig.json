@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "sourceMap": true,
+    // TODO:  Change this when things start to compile
+    "noImplicitAny": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "strictNullChecks": false,
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "allowJs": true
+  },
+  "include": [
+    "./src/js/main.tsx"
+  ]
+}

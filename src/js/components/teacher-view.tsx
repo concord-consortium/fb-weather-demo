@@ -1,30 +1,41 @@
-import React, { PropTypes } from "react";
-import _ from "lodash";
-import {Card, CardText, CardMedia, CardActions, CardTitle} from "material-ui/Card";
-import MenuItem from "material-ui/MenuItem";
-import SelectField from "material-ui/SelectField";
-import {Tab, Tabs} from "material-ui/Tabs";
+import * as React from "react";
+import { PropTypes } from "react";
+import * as _ from "lodash";
+import { Card, CardText, CardMedia, CardActions, CardTitle } from "material-ui/Card";
+import  MenuItem from "material-ui/MenuItem";
+import  SelectField from "material-ui/SelectField";
+import { Tab, Tabs } from "material-ui/Tabs";
 import Toggle from "material-ui/Toggle";
 import FloatingActionButton from "material-ui/FloatingActionButton";
-import MapView from "./new-map-view";
+import { MapView } from "./map-view";
+import { Frame } from "../frame";
 
-export default class TeacherView extends React.Component {
+export type TeacherViewTab =  "control" | "configure"
 
-  static propTypes = {
-    frame: PropTypes.number,
-    frames:  PropTypes.array,
-    grid:  PropTypes.array,
-    gridNames:  PropTypes.array,
-    gridName:  PropTypes.string,
-    prefs: PropTypes.object,
-    gridRoster: PropTypes.object,
-    setFrame: PropTypes.func,
-    setFrames: PropTypes.func,
-    setPrefs: PropTypes.func
-  }
+export interface TeacherViewProps {
+    frame: number
+    frames: Frame[]
+    grid?: any[]
+    gridNames: string[]
+    gridName: string
+    prefs: any,
+    gridRoster: any,
+    setFrame(frameNumber:number): void
+    setFrames(frames:Frame[]): void
+    setPrefs(prefs:any): void
+}
 
-  constructor(props){
-    super(props);
+export interface TeacherViewState {
+  playing: boolean
+  frameRate: number
+  tab: TeacherViewTab
+}
+
+export class TeacherView extends React.Component<TeacherViewProps, TeacherViewState> {
+  interval: any
+
+  constructor(props:TeacherViewProps, ctxt:any){
+    super(props, ctxt);
     this.state = {
       playing: false,
       frameRate: 2000,
@@ -106,8 +117,7 @@ export default class TeacherView extends React.Component {
         tab: value,
       });
     };
-
-
+    
     const styles = {
       block: {
         maxWidth: 250,
@@ -127,6 +137,7 @@ export default class TeacherView extends React.Component {
       labelStyle: {
         color: "red",
       },
+      textField: {},
       button: {}
     };
     return(
@@ -140,7 +151,7 @@ export default class TeacherView extends React.Component {
                 value={gridName}
                 autoWidth={true}
                 onChange={setGrid}>
-                  { gridNames.map( (name) => <MenuItem value={name} primaryText={name} /> ) }
+                  { gridNames.map( (name,index) => <MenuItem key={index} value={name} primaryText={name} /> ) }
               </SelectField>
               <div className="toggles" style={styles.block}>
                 { this.renderPrefButton("Base map","showBaseMap") }
@@ -161,11 +172,9 @@ export default class TeacherView extends React.Component {
             <CardMedia>
               <MapView
                 grid={grid}
-                gridRoster={this.props.gridRoster}
                 width={400}
                 height={400}
                 prefs={this.props.prefs}
-                showTempColors={true}
                 />
             </CardMedia>
             <CardActions>

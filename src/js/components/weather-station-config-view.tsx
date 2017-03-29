@@ -1,19 +1,24 @@
-import React, {PropTypes} from "react";
+import * as React from "react";
 import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
+import { Frame } from "../frame";
+import { ComponentStyleMap } from "../component-style-map";
 
 const div = React.DOM.div;
 
-
-export default class WeatherStationConfigView extends React.Component {
+export interface WeatherStationConfigState { }
+export interface WeatherStationConfigProps {
+    change(any): void
+    frames: Frame[]
+    x: number
+    y: number
+    name: string
+}
+export class WeatherStationConfigView extends React.Component<WeatherStationConfigProps, WeatherStationConfigState> {
 
   static propTypes = {
-    change: PropTypes.func,
-    frames: PropTypes.array,
-    x: PropTypes.number,
-    y: PropTypes.number,
-    name: PropTypes.string
+
   }
 
   constructor(props){
@@ -46,7 +51,7 @@ export default class WeatherStationConfigView extends React.Component {
   }
 
   renderOptions(max) {
-    let results = [];
+    let results:JSX.Element[] = [];
     for(let i = 0; i < max; i++){
       results.push(
         <MenuItem key={i} value={i} primaryText={`${i}`} />
@@ -65,7 +70,7 @@ export default class WeatherStationConfigView extends React.Component {
     const maxX = 3;
     const maxY = 3;
 
-    const styles = {
+    const styles:ComponentStyleMap= {
       config: {
         display: "flex",
         flexDirection: "column",
