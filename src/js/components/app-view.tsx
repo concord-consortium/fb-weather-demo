@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as QueryString from "query-string";
+import {observer} from 'mobx-react';
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 
-import { FirebaseImp } from "../firebase-imp";
 import { FrameHelper } from "../frame-helper";
 import { Presence } from "../presence"
 import { TeacherView } from "./teacher-view";
@@ -10,64 +10,42 @@ import { WeatherStationView } from "./weather-station-view";
 import { ClassView } from "./class-view";
 import { ChooseView } from "./choose-view";
 
-import { DataStore } from "../data-store";
-import { Frame } from "../frame";
+import { dataStore } from "../data-store";
 import { Grid } from "../grid";
-import { SimPrefs } from "../sim-prefs";
 
 export type ShowingType = "choose" | "teacher" | "classroom" | "student";
 
 export interface AppViewProps {}
 export interface AppViewState {
-  frame: number
-  frames: Frame[]
   session: string
-  nowShowing: ShowingType
-  prefs: SimPrefs
   presence?: Presence
 }
 
+@observer
 export class AppView extends React.Component<AppViewProps, AppViewState> {
-  firebaseImp: FirebaseImp
   frameHelper: FrameHelper
   public state:AppViewState
 
   constructor(props:AppViewProps){
     super(props);
-    let prefs:SimPrefs = {
-      gridName: 'default',
-      gridNames: ['default'],
-      showBaseMap: true,
-      showTempColors: false,
-      showTempValues: false,
-      showGridLines: false,
-      enablePrediction: false
-    };
     this.state = {
-      frame: 0,
-      frames: [],
-      session: "default",
-      nowShowing: "choose",
-      prefs: prefs
+      session: "default"
     };
     const loadCallback = function() {
+      dataStore.setFrame(0);
+      dataStore.setFrames(this.frameHelper.frames);
       this.setState({
-        frame: 0,
-        frames: this.frameHelper.frames,
         session: "default",
-        nowShowing: "choose",
         prefs: {
           showBaseMap: false
         }
       });
     }.bind(this);
 
-    this.firebaseImp = new FirebaseImp();
     this.frameHelper = new FrameHelper(loadCallback);
   }
 
   componentDidMount() {
-    this.registerFirebase();
     this.parseHash();
     window.addEventListener("hashchange", this.parseHash.bind(this));
   }
@@ -76,17 +54,16 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
     const qparams = QueryString.parse(location.hash);
     const nowShowing = qparams.show    || "choose";
     const session    = qparams.session || "default";
-    this.firebaseImp.session = session;
-    this.firebaseImp.setDataRef();
+    dataStore.setNowShowing(nowShowing)
+    dataStore.setSession(session)
     this.setState(
       {
-        session: session,
-        nowShowing: nowShowing
+        session: session
       }
     );
   }
 
-  updateHashParam(key,value) {
+  updateHashParam(key:string, value:string) {
     const qparams = QueryString.parse(location.hash);
     qparams[key]=value;
     const stringified = QueryString.stringify(qparams);
@@ -94,20 +71,9 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
   }
 
   componentWillUnmount(){
-    this.unregisterFirebase();
-    this.firebaseImp.removeListener(this);
+    dataStore.unregisterFirebase();
   }
 
-  registerFirebase() {
-    console.log("firebase registered");
-    this.firebaseImp.addListener(this);
-    return true;
-  }
-
-  unregisterFirebase() {
-    console.log("firebase unregistered");
-    return true;
-  }
 
   chooseStudent() {
     this.updateHashParam("show","student");
@@ -122,12 +88,11 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
   }
 
   renderNowShowing() {
-    const frames = this.state.frames;
-
-    const frame  =  this.state.frame;
-    const nowShowing = this.state.nowShowing;
-    const gridName = this.state.prefs.gridName;
-    const gridNames = this.state.prefs.gridNames;
+    const frames = dataStore.frames
+    const frame  = dataStore.frame
+    const nowShowing = dataStore.nowShowing;
+    const gridName = dataStore.prefs.gridName;
+    const gridNames = dataStore.prefs.gridNames;
     const chooseTeacher = this.chooseTeacher.bind(this);
     const chooseStudent = this.chooseStudent.bind(this);
     const chooseClassroom = this.chooseClassroom.bind(this);
@@ -153,17 +118,6 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
       }
     }
 
-    const setFrame = function(frame) {
-      this.firebaseImp.saveToFirebase({frame: frame});
-    }.bind(this);
-
-    const setFrames = function(frames) {
-      this.firebaseImp.saveToFirebase({frames: frames});
-    }.bind(this);
-
-    const setPrefs = function(prefs) {
-      this.firebaseImp.saveToFirebase({prefs: prefs});
-    }.bind(this);
 
     const updateUserData = function(data) {
       this.firebaseImp.saveUserData(data);
@@ -178,11 +132,11 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
             grid={grid}
             gridName={gridName}
             gridNames={gridNames}
-            prefs={this.state.prefs}
+            prefs={dataStore.prefs}
             gridRoster={gridRoster}
-            setFrame={setFrame}
-            setFrames={setFrames}
-            setPrefs={setPrefs}
+            setFrame={dataStore.setFrame.bind(this)}
+            setFrames={dataStore.setFrames.bind(this)}
+            setPrefs={dataStore.setPrefs.bind(this)}
           />
         );
 
@@ -191,7 +145,7 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
           <WeatherStationView
             frame={frame}
             frames={frames}
-            prefs={this.state.prefs}
+            prefs={dataStore.prefs}
             updateUserData={updateUserData}
             />
         );
@@ -201,12 +155,9 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
           frame={frame}
           frames={frames}
           grid={grid}
-          prefs={this.state.prefs}/>);
+          prefs={dataStore.prefs}/>);
 
       default:
-        // return(
-        //   <NewMap grid={grid} width={500} height={500} showBaseMap={true} showTempColors={true}/>
-        // );
         return(<ChooseView
           chooseTeacher={chooseTeacher}
           chooseStudent={chooseStudent}

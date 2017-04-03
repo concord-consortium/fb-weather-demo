@@ -1,4 +1,3 @@
 export interface Presence {
-  id: string
-  name: string
+  [key: string]: any
 }
