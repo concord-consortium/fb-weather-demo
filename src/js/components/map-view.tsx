@@ -88,10 +88,10 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
     }
     return("");
   }
+
   render() {
     const height = this.props.height;
     const width = this.props.width;
-
     const stackedStyle = {
       position: "absolute",
       top: "0px",

@@ -132,11 +132,11 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
             grid={grid}
             gridName={gridName}
             gridNames={gridNames}
-            prefs={dataStore.prefs}
             gridRoster={gridRoster}
-            setFrame={dataStore.setFrame.bind(this)}
-            setFrames={dataStore.setFrames.bind(this)}
-            setPrefs={dataStore.setPrefs.bind(this)}
+            prefs={dataStore.prefs}
+            setFrame={dataStore.setFrame}
+            setFrames={dataStore.setFrames}
+            setPrefs={dataStore.setPrefs.bind(dataStore)}
           />
         );
 

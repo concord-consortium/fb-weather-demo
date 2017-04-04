@@ -5,7 +5,7 @@ import DefaultCSV from "./default-weather-data";
 import { Kriging } from "./kriging";
 
 export class FrameHelper {
-  constructor(_callback, datas, grids) {
+  constructor(_callback) {
     this.frames = [];
     this.parse(DefaultCSV);
     this.onLoad = _callback;
@@ -64,7 +64,7 @@ export class FrameHelper {
     const getGridPos = (station) => {
       const x = Math.floor((station.LONGITUDE - ext.x) / cellWidth);
       const y = Math.floor((station.LATITUDE  - ext.y) / cellHeight);
-        return {x: x, y: y};
+      return {x: x, y: y};
     };
 
     // train data with weatherStation Data:
