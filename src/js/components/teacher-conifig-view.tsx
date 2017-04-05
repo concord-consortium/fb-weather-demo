@@ -77,7 +77,7 @@ export class TeacherConfigView extends React.Component<TeacherConfigViewProps, T
           { this.renderPrefButton("Temp colors","showTempColors") }
           { this.renderPrefButton("Group names","showGroupNames") }
           { this.renderPrefButton("Show station temps","showStationTemps") }
-          { this.renderPrefButton("Show station predictions","showStationPredictions") }
+          { this.renderPrefButton("Show station predictions","showPredictions") }
           { this.renderPrefButton("Enable prediction","enablePrediction") }
         </div>
       </CardText>

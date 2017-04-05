@@ -47,7 +47,8 @@ class DataStore {
       showTempColors: false,
       showTempValues: false,
       showGridLines: false,
-      enablePrediction: false
+      enablePrediction: false,
+      showPredictions: false
     }
     this.presence = observable({
       name: "noName",

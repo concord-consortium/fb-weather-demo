@@ -1,8 +1,10 @@
 import * as React from "react";
-
+import {observer} from 'mobx-react';
 import { SimPrefs } from "../sim-prefs";
 import { normalize} from "../normalize"
 import { Grid } from "../grid"
+import { dataStore } from "../data-store";
+import * as _  from "lodash";
 
 export interface MapViewProps {
   width: number
@@ -39,6 +41,8 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
     const value = normalize(0,90,1,100, v);
     const size = width;
     const color = `hsla(0, 50%, ${value}%, 0.5)`;
+    const predictions = dataStore.filteredPredictions;
+
     ctx.fillStyle = color;
     if(this.props.prefs.showTempColors) {
       ctx.fillRect(x*size, y*size, size, size);
@@ -50,6 +54,13 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
       ctx.strokeRect(x*size, y*size, size, size);
       let chr = String.fromCharCode(97 + y);
       this.drawLabel(ctx, x*size, y*size, width, `${chr} ${x}`);
+    }
+    if(this.props.prefs.showPredictions) {
+      _.map(dataStore.filteredPredictions, (p) => {
+        if(x === p.gridX && y == p.gridY) {
+          this.drawLabel(ctx, x*size, y*size, width,  parseInt(p.temp).toFixed(0));
+        }
+      });
     }
   }
 
