@@ -105,7 +105,7 @@ class DataStore {
       let key = presenceKeys[i];
       let basestation  = this.presence[key];
       if(basestation.gridX && basestation.gridY){
-        if(predictionKeys.includes(key)){
+        if(_.includes(predictionKeys, key)){
           let prediction = this.predictions[key];
           results.push({
             name: basestation.name,
