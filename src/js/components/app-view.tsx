@@ -146,7 +146,6 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
             frame={frame}
             frames={frames}
             prefs={dataStore.prefs}
-            updateUserData={updateUserData}
             />
         );
 

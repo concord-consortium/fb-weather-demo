@@ -1,4 +1,5 @@
 import * as React from "react";
+import {observer} from 'mobx-react';
 import { Card, CardText, CardMedia, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
 import * as dateFormat from "dateformat";
@@ -8,6 +9,7 @@ import { PredictionView } from "./prediction-view";
 import { SimPrefs } from "../sim-prefs";
 import { Frame } from "../frame"
 import { ComponentStyleMap } from "../component-style-map";
+import { dataStore } from "../data-store";
 
 const div = React.DOM.div;
 
@@ -17,47 +19,23 @@ export interface WeatherStationProps {
   frames: Frame[]
   frame: number
   prefs: SimPrefs
-  updateUserData(UserData): void
-  }
+}
 
 export interface WeatherStationState {
-  name: string
-  gridX: number
-  gridY: number
   tab: StationTab
   showConfig: boolean
 }
 
+@observer
 export class WeatherStationView extends React.Component<WeatherStationProps, WeatherStationState> {
   pending: any
 
   constructor(props:WeatherStationProps, context:any){
     super(props);
     this.state = {
-      name: "",
-      gridX: 0,
-      gridY: 0,
       tab: "weather",
       showConfig: false
     };
-  }
-
-  componentDidMount() {}
-
-  componentDidUpdate() {
-    const props = this.props;
-    const state = this.state;
-    // Send user updates to Firebase after state has updated.
-    const updateFunc = function() {
-      props.updateUserData({
-        name: state.name,
-        gridX: state.gridX,
-        gridY: state.gridY
-      });
-    };
-    // TODO: Better debouncing?
-    if(this.pending) { clearTimeout(this.pending); }
-    this.pending = setTimeout(updateFunc,1000);
   }
 
   showConfig() {
@@ -75,6 +53,9 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
   render() {
     const frameNumber = this.props.frame;
     const frames = this.props.frames;
+    const x = dataStore.basestation.gridX;
+    const y = dataStore.basestation.gridY;
+    const name =  dataStore.basestation.name;
     let mapData;
     let time = frameNumber;
     if (frames && frames.length > 0 && frames[frameNumber]) {
@@ -87,10 +68,7 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
       }
     }
     mapData = mapData || [ [0,0,0], [0,0,0], [0,0,0] ];
-    const x = this.state.gridX;
-    const y = this.state.gridY;
     const tempData = mapData[y][x];
-    const name = this.state.name;
     const change = this.setConfig.bind(this);
     const styles:ComponentStyleMap = {
       info: {

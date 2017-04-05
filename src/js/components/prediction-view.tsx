@@ -1,8 +1,11 @@
 import * as React from "react";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
+import {observer} from 'mobx-react';
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
+import { dataStore } from "../data-store";
+import * as _ from "lodash";
 
 const styles:ComponentStyleMap = {
   prediction: {
@@ -32,6 +35,7 @@ export interface PredictionViewProps {
 
 export interface PredictionViewState {}
 
+@observer
 export class PredictionView extends React.Component<PredictionViewProps, PredictionViewState> {
   constructor(props:PredictionViewProps, ctx:any){
     super(props, ctx);
@@ -58,8 +62,21 @@ export class PredictionView extends React.Component<PredictionViewProps, Predict
     );
   }
 
+  updatePrecition(eventPoxy,value:string) {
+    const prediction = dataStore.prediction;
+    prediction.precictedTemp = parseInt(value);
+    dataStore.setPrediction(prediction);
+  }
+
+  updateRationale(eventPoxy,value:string) {
+    dataStore.prediction.rationale = value;
+    dataStore.setPrediction(dataStore.prediction);
+  }
+
   render() {
     const disabled = ! this.props.enabled;
+    const changePrediction = _.debounce(this.updatePrecition.bind(this),500);
+    const cahngeRationale  = _.debounce(this.updateRationale.bind(this),500);
     return (
       <CardText style={styles.prediction}>
         {this.predictionPrompt()}
@@ -69,6 +86,7 @@ export class PredictionView extends React.Component<PredictionViewProps, Predict
             floatingLabelText="Prediction"
             multiLine={false}
             disabled={disabled}
+            onChange={changePrediction}
             type="number"
         />
         <TextField
@@ -76,6 +94,7 @@ export class PredictionView extends React.Component<PredictionViewProps, Predict
             hintText="Write your reasoning here"
             floatingLabelText="Rationale"
             multiLine={true}
+            onChange={cahngeRationale}
             disabled={disabled}
             rows={4}
         />

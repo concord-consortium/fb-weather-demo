@@ -89,7 +89,8 @@ export class FirebaseImp {
     }
 
     this.amOnline = firebase.database().ref(".info/connected");
-    this.uuid = uuid();
+    this.uuid = localStorage.getItem("CCweatherSession") || uuid();
+    localStorage.setItem("CCweatherSession", this.uuid);
 
     this.userRef = firebase.database().ref(`${this.refName}/presence/${this.uuid}`);
 
