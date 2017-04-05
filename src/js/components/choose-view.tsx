@@ -21,10 +21,12 @@ export class ChooseView extends React.Component<ChooseViewProps, ChooseViewState
   }
 
   render() {
-    const predictions = _.map(dataStore.predictions, (prediction) =>
-        <div style={{padding: "1em"}}>
-          <div>{prediction.precictedTemp}</div>
-          <div>{prediction.rationale}</div>
+    const predictions = _.map(dataStore.filteredPredictions, (p) =>
+        <div style={{padding: "1em", backgroundColor: "#eee"}}>
+          <div>name: {p.name}</div>
+          <div>temp: {p.temp}</div>
+          <div>X: {p.gridX}</div>
+          <div>Y: {p.gridY}</div>
         </div>
     );
     const baseStation = dataStore.presence

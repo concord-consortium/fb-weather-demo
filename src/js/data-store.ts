@@ -2,6 +2,7 @@ import { action, observable, computed } from "mobx";
 import { Frame} from "./frame";
 import { SimPrefs } from "./sim-prefs";
 import { FirebaseImp } from "./firebase-imp";
+import * as _ from "lodash";
 
 type NowShowingType = "choose" | "teacher" | "student" | "classroom"
 
@@ -13,7 +14,7 @@ export interface Prediction {
 
 export interface BaseStation {
   name: string
-  grdX: number
+  gridX: number
   gridY: number
 }
 
@@ -34,7 +35,6 @@ class DataStore {
   @observable predictions: {}
   @observable presence: {}
   firebaseImp : any
-  uuid: string
 
   constructor() {
     this.nowShowing = "choose"
@@ -58,8 +58,6 @@ class DataStore {
     });
     this.predictions = {};
     this.registerFirebase();
-    this.uuid = this.firebaseImp.uuid;
-
   }
 
   registerFirebase() {
@@ -79,22 +77,52 @@ class DataStore {
   }
 
   get prediction() {
+    const uuid = this.firebaseImp.uuid;
     const defaultPrediction  = {
       precictedTemp: null,
       rationale: null,
       imageUrl: null
     };
-    this.predictions[this.uuid] = this.predictions[this.uuid] || observable(defaultPrediction);
-    return this.predictions[this.uuid];
+    this.predictions[uuid] = this.predictions[uuid] || observable(defaultPrediction);
+    return this.predictions[uuid];
   }
 
-  @computed get  basestation() {
+  @computed get basestation() {
+    const uuid = this.firebaseImp.uuid;
     const defaultBasestation  = {
-      name: null,
+      name: "",
       gridX: 0,
       gridY: 0
     };
-    return this.presence[this.uuid] || observable(defaultBasestation);;
+    return this.presence[uuid] || observable(defaultBasestation);;
+  }
+
+  @computed get filteredPredictions() {
+    const predictionKeys = _.keys(this.predictions);
+    const presenceKeys   = _.keys(this.presence);
+    const results = [];
+    for(let i=0; i < presenceKeys.length; i++) {
+      let key = presenceKeys[i];
+      let basestation  = this.presence[key];
+      if(basestation.gridX && basestation.gridY){
+        if(predictionKeys.includes(key)){
+          let prediction = this.predictions[key];
+          results.push({
+            name: basestation.name,
+            gridX: basestation.gridX,
+            gridY: basestation.gridY,
+            temp: prediction.precictedTemp
+          });
+        }
+      }
+    }
+    return results;
+  }
+
+  set basestation(baseChange:BaseStation) {
+    const uuid = this.firebaseImp.uuid;
+    _.assignIn(this.presence[uuid],baseChange);
+    this.firebaseImp.saveUserData(this.presence[uuid]);
   }
 
   nextFrame(){
@@ -122,15 +150,12 @@ class DataStore {
   }
 
   setPrediction(prediction:Prediction) {
-    this.predictions[this.uuid] = prediction;
+    const uuid = this.firebaseImp.uuid;
+    this.predictions[uuid] = prediction;
     this.save({predictions: this.predictions})
   }
 
-  setBasestation(base:BaseStation) {
-    this.presence[this.uuid].update(base);
-    this.firebaseImp.saveUserData(base);
-    // this.save({presence: this.presence});
-  }
+
 
   save(obj:any){
     this.firebaseImp.saveToFirebase(obj);

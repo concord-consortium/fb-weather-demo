@@ -143,8 +143,6 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
       case "student":
         return(
           <WeatherStationView
-            frame={frame}
-            frames={frames}
             prefs={dataStore.prefs}
             />
         );

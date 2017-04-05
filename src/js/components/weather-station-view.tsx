@@ -16,14 +16,11 @@ const div = React.DOM.div;
 export type StationTab = "configure" | "weather";
 
 export interface WeatherStationProps {
-  frames: Frame[]
-  frame: number
   prefs: SimPrefs
 }
 
 export interface WeatherStationState {
   tab: StationTab
-  showConfig: boolean
 }
 
 @observer
@@ -33,28 +30,20 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
   constructor(props:WeatherStationProps, context:any){
     super(props);
     this.state = {
-      tab: "weather",
-      showConfig: false
+      tab: "weather"
     };
   }
 
-  showConfig() {
-    this.setState({showConfig:true});
-  }
-
-  hideConfig() {
-    this.setState({showConfig:false});
-  }
 
   setConfig(data) {
-    this.setState(data);
+    dataStore.basestation = data;
   }
 
   render() {
-    const frameNumber = this.props.frame;
-    const frames = this.props.frames;
-    const x = dataStore.basestation.gridX;
-    const y = dataStore.basestation.gridY;
+    const frameNumber = dataStore.frame;
+    const frames = dataStore.frames;
+    const x = dataStore.basestation.gridX || 0;
+    const y = dataStore.basestation.gridY || 0;
     const name =  dataStore.basestation.name;
     let mapData;
     let time = frameNumber;
@@ -68,6 +57,7 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
       }
     }
     mapData = mapData || [ [0,0,0], [0,0,0], [0,0,0] ];
+
     const tempData = mapData[y][x];
     const change = this.setConfig.bind(this);
     const styles:ComponentStyleMap = {
