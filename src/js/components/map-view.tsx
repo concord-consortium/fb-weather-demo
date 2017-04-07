@@ -10,10 +10,11 @@ export interface MapViewProps {
   width: number
   height: number
   grid?: Grid
-  prefs: SimPrefs
 }
 
 export interface MapViewState { }
+
+@observer
 export  class MapView extends React.Component<MapViewProps, MapViewState> {
 
   constructor(props){
@@ -44,18 +45,18 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
     const predictions = dataStore.filteredPredictions;
 
     ctx.fillStyle = color;
-    if(this.props.prefs.showTempColors) {
+    if(dataStore.prefs.showTempColors) {
       ctx.fillRect(x*size, y*size, size, size);
     }
-    if(this.props.prefs.showTempValues) {
+    if(dataStore.prefs.showTempValues) {
       this.drawLabel(ctx, x*size, y*size, width,  v.toFixed(1));
     }
-    if(this.props.prefs.showGridLines) {
+    if(dataStore.prefs.showGridLines) {
       ctx.strokeRect(x*size, y*size, size, size);
       let chr = String.fromCharCode(97 + y);
       this.drawLabel(ctx, x*size, y*size, width, `${chr} ${x}`);
     }
-    if(this.props.prefs.showPredictions) {
+    if(dataStore.prefs.showPredictions) {
       _.map(dataStore.filteredPredictions, (p) => {
         if(x === p.gridX && y == p.gridY) {
           this.drawLabel(ctx, x*size, y*size, width,  parseInt(p.temp).toFixed(0));
@@ -64,16 +65,17 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
     }
   }
 
-  updateCanvas() {
+ updateCanvas() {
     const ctx = (this.refs.canvas as HTMLCanvasElement).getContext("2d");
     const height = this.props.height;
     const width = this.props.width;
     const grid = this.props.grid || [];
     const numCols = grid.length;
+
     if(numCols <= 0) {
       return;
     }
-
+    
     const numRows = grid[0].length;
     const gridWidth = Math.floor(width / numCols);
     const gridHeight = Math.floor(height / numRows);
@@ -94,7 +96,7 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
   }
 
   renderBackground(stackedStyle) {
-    if(this.props.prefs.showBaseMap){
+    if(dataStore.prefs.showBaseMap){
       return(<img src="img/azores.jpg" style={stackedStyle} />);
     }
     return("");

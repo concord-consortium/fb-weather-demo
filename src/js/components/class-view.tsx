@@ -29,7 +29,6 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
                 width={600}
                 height={600}
                 grid={this.props.grid}
-                prefs={this.props.prefs}
               />
             </CardText>
           </Tab>

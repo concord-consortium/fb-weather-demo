@@ -1,31 +1,26 @@
 import * as React from "react";
+import {observer} from 'mobx-react';
 import { Card, CardText, CardTitle } from "material-ui/Card";
 import  MenuItem from "material-ui/MenuItem";
 import  SelectField from "material-ui/SelectField";
 import Toggle from "material-ui/Toggle";
 import { Frame } from "../frame";
+import { dataStore } from "../data-store";
 
 export type TeacherViewTab =  "control" | "configure"
 
-export interface TeacherConfigViewProps {
-    prefs: any,
-    setPrefs(prefs:any): void
-}
+export interface TeacherConfigViewProps { }
+export interface TeacherConfigViewState { }
 
-export interface TeacherConfigViewState {
-}
-
+@observer
 export class TeacherConfigView extends React.Component<TeacherConfigViewProps, TeacherConfigViewState> {
   interval: any
   constructor(props:TeacherConfigViewProps, ctxt:any){
     super(props, ctxt);
   }
 
-
   setGrid(e, index, value) {
-    const update = this.props.prefs;
-    update.gridName = value;
-    this.props.setPrefs(update);
+    dataStore.setPref('gridName', value);
   }
 
   renderPrefButton(label, key) {
@@ -35,9 +30,7 @@ export class TeacherConfigView extends React.Component<TeacherConfigViewProps, T
 
     const prefFactory = function(key) {
       const returnF = function(e,v) {
-        const update = this.props.prefs;
-        update[key] = v;
-        this.props.setPrefs(update);
+        dataStore.setPref(key, v);
       };
       return returnF.bind(this);
     }.bind(this);
@@ -47,7 +40,7 @@ export class TeacherConfigView extends React.Component<TeacherConfigViewProps, T
         label={label}
         style={toggleStyle}
         onToggle={prefFactory(key)}
-        defaultToggled={this.props.prefs[key]}
+        defaultToggled={dataStore.prefs[key]}
       />
     );
   }
@@ -55,7 +48,7 @@ export class TeacherConfigView extends React.Component<TeacherConfigViewProps, T
   render() {
     const setGrid = this.setGrid.bind(this);
     const gridNames = ["default", "classGrid"];
-    const gridName = this.props.prefs.gridName || "default";
+    const gridName = dataStore.prefs.gridName || "default";
     const styles = {
       block: {
         maxWidth: 250,

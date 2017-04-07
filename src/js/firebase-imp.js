@@ -31,7 +31,7 @@ export class FirebaseImp {
     console.error(err);
   }
 
-  initFirebase(callback) {
+  initFirebase() {
     firebase.initializeApp(this.config);
     const finishAuth = this.finishAuth.bind(this);
     const reqAuth    = this.reqAuth.bind(this);

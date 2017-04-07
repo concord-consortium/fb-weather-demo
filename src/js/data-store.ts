@@ -1,9 +1,11 @@
 import { action, observable, computed } from "mobx";
+import * as _ from "lodash";
+
 import { Frame} from "./frame";
+import { Grid } from "./grid";
 import { SimPrefs } from "./sim-prefs";
 import { FirebaseImp } from "./firebase-imp";
 import { FrameHelper } from "./frame-helper";
-import * as _ from "lodash";
 
 type NowShowingType = "loading" | "choose" | "teacher" | "student" | "classroom"
 
@@ -86,9 +88,10 @@ class DataStore {
   }
 
   }
-  @action setNowShowing(_new:NowShowingType) {  this.nowShowing = _new; }
 
-  @action setState(newState:FireBaseState) {
+  setNowShowing(_new:NowShowingType) {  this.nowShowing = _new; }
+
+  setState(newState:FireBaseState) {
     if(newState.frames)      { (this.frames as any).replace(newState.frames); }
     if(newState.frame)       { this.frame = newState.frame; }
     if(newState.prefs)       { this.prefs = observable(newState.prefs); }
@@ -96,7 +99,7 @@ class DataStore {
     if(newState.presence)    { this.presence = observable(newState.presence);}
   }
 
-  get prediction() {
+  @computed get prediction() {
     const uuid = this.firebaseImp.uuid;
     const defaultPrediction  = {
       precictedTemp: null,
@@ -139,6 +142,19 @@ class DataStore {
     return results;
   }
 
+  @computed get grid():Grid {
+    const frame = this.frame;
+    const gridName = this.prefs.gridName;
+    const frames = this.frames;
+    let grid:Grid | undefined = undefined;
+    if (frames && frames.length > 0 && frames[frame].grids) {
+      if(frames[frame].grids[gridName]) {
+        grid = frames[frame].grids[gridName];
+      }
+    }
+    return grid
+  }
+
   set basestation(baseChange:BaseStation) {
     const uuid = this.firebaseImp.uuid;
     _.assignIn(this.presence[uuid],baseChange);
@@ -149,15 +165,21 @@ class DataStore {
     const frameLength = this.frames.length;
     let frameNumber = (this.frame || 0) + 1;
     frameNumber = frameNumber % frameLength;
-    dataStore.setFrame(frameNumber);
+    this.setFrame(frameNumber);
   }
 
   setFrame(frame:number) {
+    this.frame = frame;
     this.save({frame: frame});
   }
 
   setFrames(frames:Frame[]) {
     this.save({frames: frames});
+  }
+
+  setPref(key:string, value:any) {
+    this.prefs[key] = value;
+    this.save({prefs: this.prefs});
   }
 
   setPrefs(prefs:SimPrefs) {
@@ -174,8 +196,6 @@ class DataStore {
     this.predictions[uuid] = prediction;
     this.save({predictions: this.predictions})
   }
-
-
 
   save(obj:any){
     this.firebaseImp.saveToFirebase(obj);

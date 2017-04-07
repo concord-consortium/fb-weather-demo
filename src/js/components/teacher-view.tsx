@@ -11,16 +11,6 @@ import { dataStore } from "../data-store";
 export type TeacherViewTab =  "control" | "configure"
 
 export interface TeacherViewProps {
-    frame: number
-    frames: Frame[]
-    grid?: any[]
-    gridNames: string[]
-    gridName: string
-    prefs: any,
-    gridRoster: any,
-    setFrame(frameNumber:number): void
-    setFrames(frames:Frame[]): void
-    setPrefs(prefs:any): void
 }
 
 export interface TeacherViewState {
@@ -66,7 +56,7 @@ export class TeacherView extends React.Component<TeacherViewProps, TeacherViewSt
     const pause  = this.pause.bind(this);
     const frame = dataStore.frame;
     const frames = dataStore.frames;
-    const grid = this.props.grid || [];
+    const grid = dataStore.grid || [];
     const disablePlay = !! this.interval;
     const disablePause = ! disablePlay;
     const handleChangeTab = (value) => {
@@ -78,7 +68,7 @@ export class TeacherView extends React.Component<TeacherViewProps, TeacherViewSt
       <Card>
          <Tabs value={this.state.tab} onChange={handleChangeTab}>
           <Tab label="Configure" value="configure">
-            <TeacherConfigView prefs={this.props.prefs} setPrefs={this.props.setPrefs} />
+            <TeacherConfigView  />
           </Tab>
           <Tab label="Control" value="control">
             <CardTitle>
@@ -89,7 +79,6 @@ export class TeacherView extends React.Component<TeacherViewProps, TeacherViewSt
                 grid={grid}
                 width={400}
                 height={400}
-                prefs={this.props.prefs}
                 />
             </CardMedia>
             <CardActions>
