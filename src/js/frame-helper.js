@@ -1,4 +1,5 @@
-import CsvParse from "csv-parse";
+// import CsvParse from "csv-parse";
+import CsvParse from "csv-parse/lib/sync";
 import _ from "lodash";
 
 import DefaultCSV from "./default-weather-data";
@@ -12,7 +13,8 @@ export class FrameHelper {
   }
 
   parse(data) {
-    CsvParse(data, {auto_parse:true, columns:true}, this.loadData.bind(this));
+    CsvParse(data, {auto_parse:true, columns:true});
+    this.loadData.bind(this);
   }
 
   loadData(err, output) {

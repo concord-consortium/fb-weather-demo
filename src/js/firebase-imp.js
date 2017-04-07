@@ -21,7 +21,6 @@ export class FirebaseImp {
       messagingSenderId: "857031925472"
     };
     this.listeners = [];
-    this.initFirebase();
   }
 
   log(msg){
@@ -30,6 +29,22 @@ export class FirebaseImp {
 
   error(err) {
     console.error(err);
+  }
+
+  initFirebase(callback) {
+    firebase.initializeApp(this.config);
+    const finishAuth = this.finishAuth.bind(this);
+    const reqAuth    = this.reqAuth.bind(this);
+    const log        = this.log.bind(this);
+    let auth = firebase.auth();
+    auth.onAuthStateChanged(function(user) {
+      if (user) {
+        log(user.displayName + " authenticated");
+        finishAuth({result: {user: user}});
+      } else {
+        reqAuth();
+      }
+    });
   }
 
   reqAuth() {
@@ -166,19 +181,6 @@ export class FirebaseImp {
     }
   }
 
-  initFirebase() {
-    firebase.initializeApp(this.config);
-    const finishAuth = this.finishAuth.bind(this);
-    const reqAuth    = this.reqAuth.bind(this);
-    const log        = this.log.bind(this);
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        log(user.displayName + " authenticated");
-        finishAuth({result: {user: user}});
-      } else {
-        reqAuth();
-      }
-    });
-  }
+
 
 }

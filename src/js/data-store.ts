@@ -2,9 +2,10 @@ import { action, observable, computed } from "mobx";
 import { Frame} from "./frame";
 import { SimPrefs } from "./sim-prefs";
 import { FirebaseImp } from "./firebase-imp";
+import { FrameHelper } from "./frame-helper";
 import * as _ from "lodash";
 
-type NowShowingType = "choose" | "teacher" | "student" | "classroom"
+type NowShowingType = "loading" | "choose" | "teacher" | "student" | "classroom"
 
 export interface Prediction {
   precictedTemp?: number
@@ -37,7 +38,7 @@ class DataStore {
   firebaseImp : any
 
   constructor() {
-    this.nowShowing = "choose"
+    this.nowShowing = "loading"
     this.frame = 0;
     this.frames = [];
     this.prefs = {
@@ -64,9 +65,27 @@ class DataStore {
   registerFirebase() {
     this.firebaseImp = new FirebaseImp();
     this.firebaseImp.addListener(this);
-    console.log("firebase registered");
+    this.setNowShowing("loading");
+    this.firebaseImp.initFirebase( ()=> {
+      const frameHelper = new FrameHelper(this.loadFrames);
+      console.log("firebase registered");
+      // this.setNowShowing("choose");
+    });
   }
 
+  loadFrames() {
+    const loadCallback = function() {
+    this.setFrame(0);
+    this.setFrames(this.frameHelper.frames);
+    this.setState({
+      session: "default",
+      prefs: {
+        showBaseMap: false
+      }
+    });
+  }
+
+  }
   @action setNowShowing(_new:NowShowingType) {  this.nowShowing = _new; }
 
   @action setState(newState:FireBaseState) {

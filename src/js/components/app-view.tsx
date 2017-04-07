@@ -2,8 +2,8 @@ import * as React from "react";
 import * as QueryString from "query-string";
 import {observer} from 'mobx-react';
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
+import DevTools from "mobx-react-devtools";
 
-import { FrameHelper } from "../frame-helper";
 import { Presence } from "../presence"
 import { TeacherView } from "./teacher-view";
 import { WeatherStationView } from "./weather-station-view";
@@ -23,7 +23,6 @@ export interface AppViewState {
 
 @observer
 export class AppView extends React.Component<AppViewProps, AppViewState> {
-  frameHelper: FrameHelper
   public state:AppViewState
 
   constructor(props:AppViewProps){
@@ -31,18 +30,6 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
     this.state = {
       session: "default"
     };
-    const loadCallback = function() {
-      dataStore.setFrame(0);
-      dataStore.setFrames(this.frameHelper.frames);
-      this.setState({
-        session: "default",
-        prefs: {
-          showBaseMap: false
-        }
-      });
-    }.bind(this);
-
-    this.frameHelper = new FrameHelper(loadCallback);
   }
 
   componentDidMount() {
@@ -73,7 +60,6 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
   componentWillUnmount(){
     dataStore.unregisterFirebase();
   }
-
 
   chooseStudent() {
     this.updateHashParam("show","student");
@@ -166,7 +152,10 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
     const showingComponent = this.renderNowShowing();
     return(
       <MuiThemeProvider>
-        {showingComponent}
+        <div>
+          {showingComponent}
+          {/*<DevTools />*/}
+        </div>
       </MuiThemeProvider>
     );
   }
