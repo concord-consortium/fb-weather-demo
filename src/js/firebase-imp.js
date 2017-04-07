@@ -9,7 +9,7 @@ export class FirebaseImp {
   constructor(session) {
     this.user = null;
     this.token = null;
-    this.session  = session || DEFAULT_SESSION;
+    this.session  = session || `${DEFAULT_SESSION}_${DEFAULT_VERSION_STRING}`;
     this.activity = DEFAULT_ACTIVITY;
     this.version  = DEFAULT_VERSION_STRING;
 
@@ -62,15 +62,13 @@ export class FirebaseImp {
 
   finishAuth(result) {
     this.user = result.user;
-    this.setDataRef(this.refName);
-    this.rebindFirebaseHandlers();
+    this.setDataRef();
     this.log("logged in");
   }
 
   setDataRef() {
-    this.refName = `${this.session}`;
     if(firebase.database()) {
-      this.dataRef = firebase.database().ref(this.refName);
+      this.dataRef = firebase.database().ref(this.session);
       this.rebindFirebaseHandlers();
       this.setupPresence();
     }
@@ -78,7 +76,7 @@ export class FirebaseImp {
 
   set session(sessionName) {
     this._session = sessionName;
-    // this.setDataRef();
+    this.setDataRef();
   }
 
   get session() {
@@ -109,7 +107,7 @@ export class FirebaseImp {
       this.uuid = uuid();
       localStorage.setItem("CCweatherSession", this.uuid);
     }
-    this.userRef = firebase.database().ref(`${this.refName}/presence/${this.uuid}`);
+    this.userRef = firebase.database().ref(`${this.session}/presence/${this.uuid}`);
 
     const userRef = this.userRef;
     const log = this.log.bind(this);
@@ -126,8 +124,6 @@ export class FirebaseImp {
       }
     });
   }
-
-
 
   rebindFirebaseHandlers () {
     this.log("registering listeners");

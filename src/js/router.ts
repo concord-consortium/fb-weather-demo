@@ -11,7 +11,7 @@ class Router {
   parseHash() {
     const qparams = QueryString.parse(location.hash);
     const nowShowing = qparams.show    || "choose";
-    const session    = qparams.session || "default";
+    const session    = qparams.session;
     dataStore.setNowShowing(nowShowing);
     dataStore.setSession(session);
   }

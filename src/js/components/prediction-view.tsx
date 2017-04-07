@@ -1,11 +1,11 @@
 import * as React from "react";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
-import {observer} from 'mobx-react';
+import { observer } from 'mobx-react';
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore } from "../data-store";
-import * as _ from "lodash";
+const _ = require("lodash");
 
 const styles:ComponentStyleMap = {
   prediction: {
@@ -62,13 +62,13 @@ export class PredictionView extends React.Component<PredictionViewProps, Predict
     );
   }
 
-  updatePrecition(eventPoxy,value:string) {
+  updatePrecition(eventPoxy:any, value:string) {
     const prediction = dataStore.prediction;
-    prediction.precictedTemp = parseInt(value);
+    prediction.temp = parseInt(value);
     dataStore.setPrediction(prediction);
   }
 
-  updateRationale(eventPoxy,value:string) {
+  updateRationale(eventPoxy:any, value:string) {
     dataStore.prediction.rationale = value;
     dataStore.setPrediction(dataStore.prediction);
   }

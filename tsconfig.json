@@ -3,16 +3,17 @@
     "outDir": "./dist",
     "sourceMap": true,
     // TODO:  Change this when things start to compile
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "jsx": "react",
     "experimentalDecorators": true,
     "allowJs": true
   },
   "include": [
+    "./src/js/missing-typings.d.ts",
     "./src/js/main.tsx"
   ]
 }

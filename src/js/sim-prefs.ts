@@ -7,4 +7,5 @@ export interface SimPrefs {
   showPredictions: boolean
   gridName: string
   gridNames: string[]
+  [key: string]: any
 }

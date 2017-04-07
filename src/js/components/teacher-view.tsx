@@ -59,7 +59,7 @@ export class TeacherView extends React.Component<TeacherViewProps, TeacherViewSt
     const grid = dataStore.grid || [];
     const disablePlay = !! this.interval;
     const disablePause = ! disablePlay;
-    const handleChangeTab = (value) => {
+    const handleChangeTab = (value:TeacherViewTab) => {
       this.setState({
         tab: value,
       });

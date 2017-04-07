@@ -4,7 +4,7 @@
   "description": "A Demo app (one to throw away) for simulating weather in a classroom",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint *.js src",
+    "lint": "eslint src",
     "start": "live-server .",
     "test": "jest",
     "watch": "webpack --watch"
@@ -28,11 +28,11 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "@types/query-string": "^4.3.0",
-    "@types/react-tap-event-plugin": "^0.0.30",
     "@types/material-ui": "^0.16.59",
+    "@types/query-string": "^4.3.0",
     "@types/react": "^15.0.20",
     "@types/react-dom": "^0.14.23",
+    "@types/react-tap-event-plugin": "^0.0.30",
     "@types/semver": "^5.3.31",
     "@types/uuid": "^2.0.29",
     "awesome-typescript-loader": "^3.1.2",
@@ -51,12 +51,12 @@
     "extract-text-webpack-plugin": "^2.1.0",
     "jest": "^19.0.2",
     "live-server": "^1.2.0",
+    "mobx-react-devtools": "^4.2.11",
     "style-loader": "^0.14.1",
     "typescript": "^2.2.2",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1",
-    "yarn": "^0.20.3",
-    "mobx-react-devtools": "^4.2.11"
+    "yarn": "^0.20.3"
   },
   "repository": {
     "type": "git",

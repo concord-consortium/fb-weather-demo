@@ -19,17 +19,17 @@ export class TeacherConfigView extends React.Component<TeacherConfigViewProps, T
     super(props, ctxt);
   }
 
-  setGrid(e, index, value) {
-    dataStore.setPref('gridName', value);
+  setGrid(e:any, index:number, name:string) {
+    dataStore.setPref('gridName', name);
   }
 
-  renderPrefButton(label, key) {
+  renderPrefButton(label:string, key:string) {
     const toggleStyle = {
       marginBottom: 16
     };
 
-    const prefFactory = function(key) {
-      const returnF = function(e,v) {
+    const prefFactory = function(key:string) {
+      const returnF = function(e:any, v:any) {
         dataStore.setPref(key, v);
       };
       return returnF.bind(this);
@@ -40,7 +40,7 @@ export class TeacherConfigView extends React.Component<TeacherConfigViewProps, T
         label={label}
         style={toggleStyle}
         onToggle={prefFactory(key)}
-        defaultToggled={dataStore.prefs[key]}
+        defaultToggled={(dataStore.prefs as any)[key]} // TODO?
       />
     );
   }

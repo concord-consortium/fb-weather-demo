@@ -9,31 +9,27 @@ const div = React.DOM.div;
 
 export interface WeatherStationConfigState { }
 export interface WeatherStationConfigProps {
-    change(any): void
+    change(any:any): void
     frames: Frame[]
     x: number
     y: number
     name: string
 }
+
 export class WeatherStationConfigView extends React.Component<WeatherStationConfigProps, WeatherStationConfigState> {
-
-  static propTypes = {
-
+  constructor(props:WeatherStationConfigProps, ctx:any){
+    super(props, ctx);
   }
 
-  constructor(props){
-    super(props);
-  }
-
-  change(data) {
+  change(data:any) {
     this.props.change(data);
   }
 
-  setX(evt, index, value) {
+  setX(evt:any, index:number, value:number) {
     this.change({gridX: value});
   }
 
-  setY(evt, index, value) {
+  setY(evt:any, index:number, value:number){
     this.change({gridY: value});
   }
 
@@ -46,11 +42,11 @@ export class WeatherStationConfigView extends React.Component<WeatherStationConf
     return  this.props.frames[0].data.length;
   }
 
-  setName(evt) {
+  setName(evt:any) {
     this.change({name: evt.target.value});
   }
 
-  renderOptions(max) {
+  renderOptions(max:number) {
     let results:JSX.Element[] = [];
     for(let i = 0; i < max; i++){
       results.push(

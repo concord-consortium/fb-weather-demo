@@ -31,7 +31,7 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
   }
 
   renderNowShowing() {
-    const frames = dataStore.frames
+    const frames = dataStore.frames;
     const frame  = dataStore.frame
     const nowShowing = dataStore.nowShowing;
     const roster: string[] = [];

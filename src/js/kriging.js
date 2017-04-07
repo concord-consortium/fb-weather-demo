@@ -51,12 +51,13 @@ const Kriging = function() {
     return Z;
   };
 
-  const kriging_matrix_scale = function (X, c, n, m) {
-    var i, j;
-    for (i = 0; i < n; i++)
-      for (j = 0; j < m; j++)
-        X[i * m + j] *= c;
-  };
+  // Not used
+  // const kriging_matrix_scale = function (X, c, n, m) {
+  //   var i, j;
+  //   for (i = 0; i < n; i++)
+  //     for (j = 0; j < m; j++)
+  //       X[i * m + j] *= c;
+  // };
 
   const kriging_matrix_add = function (X, Y, n, m) {
     var i, j, Z = Array(n * m);
@@ -81,7 +82,7 @@ const Kriging = function() {
 
   // Cholesky decomposition
   const kriging_matrix_chol = function (X, n) {
-    var i, j, k, sum, p = Array(n);
+    var i, j, k, p = Array(n);
     for (i = 0; i < n; i++) p[i] = X[i * n + i];
     for (i = 0; i < n; i++) {
       for (j = 0; j < i; j++)
@@ -212,7 +213,7 @@ const Kriging = function() {
     return nugget + ((sill - nugget) / range) *
       (1.0 - Math.exp(-(1.0 / A) * (h / range)));
   };
-  const kriging_variogram_spherical = function (h, nugget, range, sill, A) {
+  const kriging_variogram_spherical = function (h, nugget, range, sill) {
     if (h > range) return nugget + (sill - nugget) / range;
     return nugget + ((sill - nugget) / range) *
       (1.5 * (h / range) - 0.5 * Math.pow(h / range, 3));
@@ -240,7 +241,7 @@ const Kriging = function() {
       case "spherical":
         variogram.model = kriging_variogram_spherical;
         break;
-    };
+    }
 
     // Lag distance/semivariance
     var i, j, k, l, n = t.length;
@@ -302,7 +303,7 @@ const Kriging = function() {
           X[i * 2 + 1] = 1.5 * (lag[i] / variogram.range) -
             0.5 * Math.pow(lag[i] / variogram.range, 3);
           break;
-      };
+      }
       Y[i] = semi[i];
     }
 
@@ -354,9 +355,9 @@ const Kriging = function() {
     }
 
     // Copy unprojected inverted matrix as K
-    var K = C.slice(0);
+    var VK = C.slice(0);
     var M = kriging_matrix_multiply(C, t, n, n, 1);
-    variogram.K = K;
+    variogram.K = VK;
     variogram.M = M;
 
     return variogram;

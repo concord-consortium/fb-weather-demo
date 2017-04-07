@@ -1,18 +1,24 @@
 import { action, observable, computed } from "mobx";
-import * as _ from "lodash";
-
 import { Frame} from "./frame";
 import { Grid } from "./grid";
 import { SimPrefs } from "./sim-prefs";
 import { FirebaseImp } from "./firebase-imp";
 import { FrameHelper } from "./frame-helper";
+import { Presence, PresenceMap } from "./presence";
+const _ = require("lodash");
 
 type NowShowingType = "loading" | "choose" | "teacher" | "student" | "classroom"
 
 export interface Prediction {
-  precictedTemp?: number
+  name?: string
+  temp?: number
   rationale?: string
   imageUrl?: string
+  gridX?: number
+  gridY?: number
+}
+export interface PredictionMap {
+  [key:string]: Prediction
 }
 
 export interface BaseStation {
@@ -21,13 +27,12 @@ export interface BaseStation {
   gridY: number
 }
 
-
 export interface FireBaseState {
   frame?: number
   frames?: Frame[]
   prefs?: SimPrefs
-  predictions: {}
-  presence: {}
+  predictions?: PredictionMap
+  presence?: PresenceMap
 }
 
 class DataStore {
@@ -35,8 +40,8 @@ class DataStore {
   @observable frame: number
   @observable frames: Frame[]
   @observable prefs: SimPrefs
-  @observable predictions: {}
-  @observable presence: {}
+  @observable predictions: PredictionMap
+  @observable presenceMap: PresenceMap
   firebaseImp : any
 
   constructor() {
@@ -53,13 +58,7 @@ class DataStore {
       enablePrediction: false,
       showPredictions: false
     }
-    this.presence = observable({
-      name: "noName",
-      online: false,
-      start: "not started",
-      gridX: 0,
-      gridY: 0
-    });
+
     this.predictions = {};
     this.registerFirebase();
   }
@@ -77,16 +76,15 @@ class DataStore {
 
   loadFrames() {
     const loadCallback = function() {
-    this.setFrame(0);
-    this.setFrames(this.frameHelper.frames);
-    this.setState({
-      session: "default",
-      prefs: {
-        showBaseMap: false
-      }
-    });
-  }
-
+      this.setFrame(0);
+      this.setFrames(this.frameHelper.frames);
+      this.setState({
+        session: "default",
+        prefs: {
+          showBaseMap: false
+        }
+      });
+    }
   }
 
   setNowShowing(_new:NowShowingType) {  this.nowShowing = _new; }
@@ -96,7 +94,7 @@ class DataStore {
     if(newState.frame)       { this.frame = newState.frame; }
     if(newState.prefs)       { this.prefs = observable(newState.prefs); }
     if(newState.predictions) { this.predictions = observable(newState.predictions); }
-    if(newState.presence)    { this.presence = observable(newState.presence);}
+    if(newState.presence)    { this.presenceMap = observable(newState.presence);}
   }
 
   @computed get prediction() {
@@ -117,16 +115,16 @@ class DataStore {
       gridX: 0,
       gridY: 0
     };
-    return this.presence[uuid] || observable(defaultBasestation);;
+    return this.presenceMap[uuid] || observable(defaultBasestation);;
   }
 
   @computed get filteredPredictions() {
     const predictionKeys = _.keys(this.predictions);
-    const presenceKeys   = _.keys(this.presence);
-    const results = [];
+    const presenceKeys   = _.keys(this.presenceMap);
+    const results:Prediction[] = [];
     for(let i=0; i < presenceKeys.length; i++) {
       let key = presenceKeys[i];
-      let basestation  = this.presence[key];
+      let basestation  = this.presenceMap[key];
       if(basestation.gridX && basestation.gridY){
         if(_.includes(predictionKeys, key)){
           let prediction = this.predictions[key];
@@ -134,7 +132,7 @@ class DataStore {
             name: basestation.name,
             gridX: basestation.gridX,
             gridY: basestation.gridY,
-            temp: prediction.precictedTemp
+            temp: prediction.temp
           });
         }
       }
@@ -157,8 +155,8 @@ class DataStore {
 
   set basestation(baseChange:BaseStation) {
     const uuid = this.firebaseImp.uuid;
-    _.assignIn(this.presence[uuid],baseChange);
-    this.firebaseImp.saveUserData(this.presence[uuid]);
+    _.assignIn(this.presenceMap[uuid],baseChange);
+    this.firebaseImp.saveUserData(this.presenceMap[uuid]);
   }
 
   nextFrame(){
@@ -188,7 +186,6 @@ class DataStore {
 
   setSession(session:string) {
     this.firebaseImp.session = session;
-    this.firebaseImp.setDataRef();
   }
 
   setPrediction(prediction:Prediction) {
@@ -206,7 +203,6 @@ class DataStore {
     console.log("firebase unregistered");
     return true;
   }
-
 }
 
 export const dataStore = new DataStore();

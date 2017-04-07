@@ -1,1 +1,2 @@
-export type Grid = number[][];
+// TODO: Better type
+export type Grid = number[][] | undefined;

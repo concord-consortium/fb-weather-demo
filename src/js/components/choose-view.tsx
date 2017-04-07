@@ -5,8 +5,7 @@ import RaisedButton from "material-ui/RaisedButton";
 import {Card, CardActions, CardText} from "material-ui/Card";
 
 import { router } from "../router";
-
-import * as _ from "lodash";
+const _ = require("lodash");
 
 export interface ChooseViewProps {
 }

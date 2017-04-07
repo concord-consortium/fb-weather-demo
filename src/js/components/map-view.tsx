@@ -4,7 +4,8 @@ import { SimPrefs } from "../sim-prefs";
 import { normalize} from "../normalize"
 import { Grid } from "../grid"
 import { dataStore } from "../data-store";
-import * as _  from "lodash";
+import { Prediction } from "../data-store";
+const _ = require("lodash");
 
 export interface MapViewProps {
   width: number
@@ -17,7 +18,7 @@ export interface MapViewState { }
 @observer
 export  class MapView extends React.Component<MapViewProps, MapViewState> {
 
-  constructor(props){
+  constructor(props:MapViewProps){
     super(props);
   }
 
@@ -29,7 +30,7 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
     this.updateCanvas();
   }
 
-  drawLabel(ctx, x, y, width, text) {
+  drawLabel(ctx:any, x:number, y:number, width:number, text:string) {
     const halfSize = width/2;
     const color = "hsl(0,0%,100%)";
     ctx.fillStyle = color;
@@ -38,8 +39,8 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
     ctx.fillText(text, x + halfSize, y + halfSize);
   }
 
-  drawRect(ctx, x, y, width, v) {
-    const value = normalize(0,90,1,100, v);
+  drawRect(ctx:any, x:number, y:number, width:number, _value:number) {
+    const value = normalize(0,90,1,100, _value);
     const size = width;
     const color = `hsla(0, 50%, ${value}%, 0.5)`;
     const predictions = dataStore.filteredPredictions;
@@ -49,7 +50,7 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
       ctx.fillRect(x*size, y*size, size, size);
     }
     if(dataStore.prefs.showTempValues) {
-      this.drawLabel(ctx, x*size, y*size, width,  v.toFixed(1));
+      this.drawLabel(ctx, x*size, y*size, width,  value.toFixed(1));
     }
     if(dataStore.prefs.showGridLines) {
       ctx.strokeRect(x*size, y*size, size, size);
@@ -57,9 +58,9 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
       this.drawLabel(ctx, x*size, y*size, width, `${chr} ${x}`);
     }
     if(dataStore.prefs.showPredictions) {
-      _.map(dataStore.filteredPredictions, (p) => {
+      _.map(dataStore.filteredPredictions, (p:Prediction) => {
         if(x === p.gridX && y == p.gridY) {
-          this.drawLabel(ctx, x*size, y*size, width,  parseInt(p.temp).toFixed(0));
+          this.drawLabel(ctx, x*size, y*size, width,  (p.temp||0).toFixed(0));
         }
       });
     }
@@ -75,7 +76,7 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
     if(numCols <= 0) {
       return;
     }
-    
+
     const numRows = grid[0].length;
     const gridWidth = Math.floor(width / numCols);
     const gridHeight = Math.floor(height / numRows);
@@ -95,7 +96,7 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
     }
   }
 
-  renderBackground(stackedStyle) {
+  renderBackground(stackedStyle:React.CSSProperties) {
     if(dataStore.prefs.showBaseMap){
       return(<img src="img/azores.jpg" style={stackedStyle} />);
     }

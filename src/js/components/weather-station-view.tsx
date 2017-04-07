@@ -2,15 +2,15 @@ import * as React from "react";
 import {observer} from 'mobx-react';
 import { Card, CardText, CardMedia, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
-import * as dateFormat from "dateformat";
 import { WeatherStationConfigView }  from "./weather-station-config-view";
 import { GridView } from "./grid-view";
 import { PredictionView } from "./prediction-view";
 import { SimPrefs } from "../sim-prefs";
 import { Frame } from "../frame"
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore } from "../data-store";
+import { dataStore, BaseStation } from "../data-store";
 
+const dateFormat = require("dateformat");
 const div = React.DOM.div;
 
 export type StationTab = "configure" | "weather";
@@ -34,8 +34,7 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
     };
   }
 
-
-  setConfig(data) {
+  setConfig(data:BaseStation) {
     dataStore.basestation = data;
   }
 
@@ -75,9 +74,9 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
         color: "hsla(0, 0%, 80%, 0.9)"
       }
     };
-    const handleChangeTab = (value) => {
+    const handleChangeTab = (newTab:StationTab) => {
       this.setState({
-        tab: value,
+        tab: newTab,
       });
     };
 
