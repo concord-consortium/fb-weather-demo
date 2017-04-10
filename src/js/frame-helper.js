@@ -1,29 +1,24 @@
 // import CsvParse from "csv-parse";
-import CsvParse from "csv-parse/lib/sync";
-import _ from "lodash";
+const CsvParse = require("csv-parse/lib/sync");
+const _  = require("lodash");
 
 import DefaultCSV from "./default-weather-data";
 import { Kriging } from "./kriging";
 
 export class FrameHelper {
-  constructor(_callback) {
+  constructor() {
     this.frames = [];
-    this.parse(DefaultCSV);
-    this.onLoad = _callback;
   }
 
-  parse(data) {
-    CsvParse(data, {auto_parse:true, columns:true});
-    this.loadData.bind(this);
+  parse(data=DefaultCSV) {
+    const records = CsvParse(data, {auto_parse:true, columns:true});
+    this.loadData(records);
   }
 
-  loadData(err, output) {
-    if(err) {
-      console.log(err);
-    }
-    if(output) {
+  loadData(records) {
+    if(records) {
       const timeSlice = 1000 * 60 * 60;
-      const grouped = _.groupBy(output,(item) => { return Math.floor(Date.parse(item.DATE)/timeSlice); });
+      const grouped = _.groupBy(records,(item) => { return Math.floor(Date.parse(item.DATE)/timeSlice); });
       const frames = _.map(grouped, function(value, key) {
         const stations = _.uniqBy(value, "STATION");
         const time = parseInt(key) * timeSlice;
@@ -32,9 +27,11 @@ export class FrameHelper {
       this.frames = frames;
       this.makeAllFames(16,16);
       this.makeAllFames(5,5, "classGrid");
-      this.onLoad();
       console.log(this.extents());
       console.log(this.geoJSON(0));
+    }
+    else {
+      console.error("Could not load data in frame-helper");
     }
   }
   // return the bounding rectangle of the stations.

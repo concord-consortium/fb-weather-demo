@@ -1,15 +1,56 @@
-import firebase from "firebase";
+const firebase = require("firebase");
 import { v1 as uuid } from "uuid";
-
+import { Presence } from "./presence"
 const DEFAULT_SESSION = "default";
 const DEFAULT_VERSION_STRING = "1.0.0";
 const DEFAULT_ACTIVITY = "default";
 
+interface FirebaseUser {
+  displayName:string
+}
+interface FirebaseError {
+  message: string
+  email: string
+}
+
+interface FirebaseLinstener {
+  setState(state:any):void
+}
+
+interface FirebaseData {
+  val():any
+}
+interface FirebaseDisconnectSerivce {
+  remove():void
+}
+
+interface FirebaseRef {
+  off(event:string):void
+  off():void
+  on(event:string, callback:Function):void
+  onDisconnect():FirebaseDisconnectSerivce
+  remove():void
+  update(data:any):void
+}
+
+interface FireBaseConfig {
+  [key:string]: string
+}
+
 export class FirebaseImp {
-  constructor(session) {
-    this.user = null;
-    this.token = null;
-    this.session  = session || `${DEFAULT_SESSION}_${DEFAULT_VERSION_STRING}`;
+  _session:string
+  _activity:string
+  sessionID: string
+  user: FirebaseUser
+  version: string
+  listeners:FirebaseLinstener[]
+  config: FireBaseConfig
+  connectionStatus: FirebaseRef
+  dataRef: FirebaseRef
+  userRef: FirebaseRef
+
+  constructor() {
+    this._session = `${DEFAULT_SESSION}_${DEFAULT_VERSION_STRING.replace(/\./g, "_")}`;
     this.activity = DEFAULT_ACTIVITY;
     this.version  = DEFAULT_VERSION_STRING;
 
@@ -21,26 +62,29 @@ export class FirebaseImp {
       messagingSenderId: "857031925472"
     };
     this.listeners = [];
+    this.sessionID = localStorage.getItem("CCweatherSession") || uuid();
+    localStorage.setItem("CCweatherSession", this.sessionID);
   }
 
-  log(msg){
+  log(msg:string){
     console.log(msg);
   }
 
-  error(err) {
+  error(err:string) {
     console.error(err);
   }
 
-  initFirebase() {
+  initFirebase(callback:Function) {
     firebase.initializeApp(this.config);
     const finishAuth = this.finishAuth.bind(this);
     const reqAuth    = this.reqAuth.bind(this);
     const log        = this.log.bind(this);
     let auth = firebase.auth();
-    auth.onAuthStateChanged(function(user) {
+    auth.onAuthStateChanged(function(user:FirebaseUser) {
       if (user) {
         log(user.displayName + " authenticated");
         finishAuth({result: {user: user}});
+        callback();
       } else {
         reqAuth();
       }
@@ -54,13 +98,13 @@ export class FirebaseImp {
     .catch(this.failAuth.bind(this));
   }
 
-  failAuth(error) {
+  failAuth(error:FirebaseError) {
     var errorMessage = error.message;
     const email = error.email;
     this.error(["could not authenticate", errorMessage, email].join(" "));
   }
 
-  finishAuth(result) {
+  finishAuth(result:{user:FirebaseUser}) {
     this.user = result.user;
     this.setDataRef();
     this.log("logged in");
@@ -74,7 +118,7 @@ export class FirebaseImp {
     }
   }
 
-  set session(sessionName) {
+  set session(sessionName:string) {
     this._session = sessionName;
     this.setDataRef();
   }
@@ -83,36 +127,29 @@ export class FirebaseImp {
     return this._session;
   }
 
-  set activity(activityName) {
+  set activity(activityName:string) {
     this._activity = activityName;
-    // this.setDataRef();
   }
 
   get activity() {
     return this._activity;
   }
 
-
   setupPresence() {
     // Remove old user listening:
-    if(this.amOnline) { this.amOnline.off(); }
+    if(this.connectionStatus) { this.connectionStatus.off(); }
     if(this.userRef)  {
       this.userRef.off();
       this.userRef.remove();
     }
 
-    this.amOnline = firebase.database().ref(".info/connected");
-    this.uuid = localStorage.getItem("CCweatherSession");
-    if (! this.uuid) {
-      this.uuid = uuid();
-      localStorage.setItem("CCweatherSession", this.uuid);
-    }
-    this.userRef = firebase.database().ref(`${this.session}/presence/${this.uuid}`);
+    this.connectionStatus = firebase.database().ref(".info/connected");
+    this.userRef = firebase.database().ref(`${this.session}/presence/${this.sessionID}`);
 
     const userRef = this.userRef;
     const log = this.log.bind(this);
     const updateUserData = this.saveUserData.bind(this);
-    this.amOnline.on("value", function(snapshot) {
+    this.connectionStatus.on("value", function(snapshot:any) {
       log("online -- ");
       updateUserData({
         oneline: true,
@@ -143,33 +180,33 @@ export class FirebaseImp {
     ref.on("value", setData);
 
     // TBD: Best way to listen to events with better granularity.
-    ref.on("child_changed", function(data){ log("child_changed:" + data);});
-    ref.on("child_added", function(data)  { log("child added: " + data); });
-    ref.on("child_removed", function(data){ log("child removed: " + data);});
+    ref.on("child_changed", function(data:any){ log("child_changed:" + data);});
+    ref.on("child_added", function(data:any)  { log("child added: " + data); });
+    ref.on("child_removed", function(data:any){ log("child removed: " + data);});
   }
 
-  addListener(component) {
-    this.listeners.push(component);
+  addListener(listener:FirebaseLinstener) {
+    this.listeners.push(listener);
   }
 
-  removeListener(component) {
+  removeListener(listener:FirebaseLinstener) {
     const oldListeners = this.listeners;
-    this.listeners = oldListeners.filter((el) => el !== component);
+    this.listeners = oldListeners.filter((el) => el !== listener);
   }
 
-  saveToFirebase(data) {
+  saveToFirebase(data:any) {
     if(this.dataRef && this.dataRef.update){
       this.dataRef.update(data);
     }
   }
 
-  saveUserData(data) {
+  saveUserData(data:Presence) {
     if(this.userRef && this.userRef.update){
       this.userRef.update(data);
     }
   }
 
-  loadDataFromFirebase(data) {
+  loadDataFromFirebase(data:FirebaseData) {
     const dataV = data.val();
     console.log(dataV);
     for(let listener of this.listeners) {

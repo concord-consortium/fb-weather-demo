@@ -13,7 +13,7 @@ class Router {
     const nowShowing = qparams.show    || "choose";
     const session    = qparams.session;
     dataStore.setNowShowing(nowShowing);
-    dataStore.setSession(session);
+    // dataStore.setSession(session);
   }
 
   updateHashParam(key:string, value:string) {
