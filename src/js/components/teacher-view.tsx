@@ -5,11 +5,12 @@ import { Tab, Tabs } from "material-ui/Tabs";
 import FloatingActionButton from "material-ui/FloatingActionButton";
 import { MapView } from "./map-view";
 import { TeacherConfigView } from "./teacher-conifig-view";
-import { TeacherSetupView } from "./teacher-setup-view";
+import { TeacherSetupStationsView } from "./teacher-setup-stations-view";
+import { TeacherSetupGridView } from "./teacher-setup-grid-view";
 import { Frame } from "../frame";
 import { dataStore } from "../data-store";
 
-export type TeacherViewTab =  "control" | "configure"
+export type TeacherViewTab = "stations" | "grid" |  "control" | "configure"
 
 export interface TeacherViewProps {
 }
@@ -68,10 +69,13 @@ export class TeacherView extends React.Component<TeacherViewProps, TeacherViewSt
     return(
       <Card>
          <Tabs value={this.state.tab} onChange={handleChangeTab}>
-          <Tab label="Setup " value="setup">
-            <TeacherSetupView  />
+          <Tab label="Stations" value="stations">
+            <TeacherSetupStationsView  />
           </Tab>
-          <Tab label="Configure" value="configure">
+          <Tab label="Grid" value="grid">
+            <TeacherSetupGridView  />
+          </Tab>
+          <Tab label="Options" value="configure">
             <TeacherConfigView  />
           </Tab>
           <Tab label="Control" value="control">
