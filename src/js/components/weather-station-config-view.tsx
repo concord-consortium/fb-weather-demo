@@ -1,10 +1,13 @@
 import * as React from "react";
+import {observer} from 'mobx-react';
 import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import { Frame } from "../frame";
 import { ComponentStyleMap } from "../component-style-map";
+import { dataStore, Basestation } from "../data-store";
 
+const _ = require("lodash");
 const div = React.DOM.div;
 
 export interface WeatherStationConfigState { }
@@ -16,55 +19,31 @@ export interface WeatherStationConfigProps {
     name: string
 }
 
+@observer
 export class WeatherStationConfigView extends React.Component<WeatherStationConfigProps, WeatherStationConfigState> {
   constructor(props:WeatherStationConfigProps, ctx:any){
     super(props, ctx);
   }
 
-  change(data:any) {
-    this.props.change(data);
+  setBasestation(evt:any, index:number, id:string) {
+    dataStore.basestation = dataStore.basestationMap[id];
   }
 
-  setX(evt:any, index:number, value:number) {
-    this.change({gridX: value});
-  }
-
-  setY(evt:any, index:number, value:number){
-    this.change({gridY: value});
-  }
-
-  maxX(){
-    const firstRow = this.props.frames[0].data[0];
-    return firstRow.length;
-  }
-
-  maxY(){
-    return  this.props.frames[0].data.length;
-  }
-
-  setName(evt:any) {
-    this.change({name: evt.target.value});
-  }
-
-  renderOptions(max:number) {
-    let results:JSX.Element[] = [];
-    for(let i = 0; i < max; i++){
+  renderBaseOptions() {
+    const bases=dataStore.basestations;
+    const results = [];
+    let base = null;
+    for(let i = 0; i < bases.length; i++){
+      base = bases[i];
       results.push(
-        <MenuItem key={i} value={i} primaryText={`${i}`} />
+        <MenuItem key={base.id} value={base.id} primaryText={base.name} />
       );
     }
     return results;
   }
 
   render() {
-    const setName = this.setName.bind(this);
-    const setX    = this.setX.bind(this);
-    const setY    = this.setY.bind(this);
-    const y       = this.props.y;
-    const x       = this.props.x;
-
-    const maxX = 3;
-    const maxY = 3;
+    const baseId = dataStore.basestation ? dataStore.basestation.id : null;
 
     const styles:ComponentStyleMap= {
       config: {
@@ -83,29 +62,15 @@ export class WeatherStationConfigView extends React.Component<WeatherStationConf
 
     return (
       <div className="component" style={styles.config}>
-        <TextField
-          style={styles.textField}
-          value={this.props.name}
-          onChange={setName}
-          hintText="your group name"
-        />
-
         <SelectField
           style={styles.textField}
-          floatingLabelText="Station grid X:"
-          value={x}
+          floatingLabelText="Choose your location"
+          value={baseId}
           autoWidth={true}
-          onChange={setX}>
-            {this.renderOptions(maxX)}
-        </SelectField>
+          onChange={this.setBasestation.bind(this)}
+          >
+          {this.renderBaseOptions()}
 
-        <SelectField
-          style={styles.textField}
-          floatingLabelText="Station grid Y:"
-          value={y}
-          autoWidth={true}
-          onChange={setY}>
-          {this.renderOptions(maxY)}
         </SelectField>
 
       </div>

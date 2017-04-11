@@ -133,6 +133,10 @@ class DataStore {
     return this.presenceMap[uuid] || observable(defaultPresence);
   }
 
+  // in list form instead of Map
+  @computed get basestations () {
+     return _.map(this.basestationMap, (b:Basestation) => {return b});
+  }
   @computed get filteredPredictions() {
     const predictionKeys = _.keys(this.predictions);
     const presenceKeys   = _.keys(this.presenceMap);

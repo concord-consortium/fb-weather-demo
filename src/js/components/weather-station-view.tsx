@@ -41,13 +41,18 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
   render() {
     const frameNumber = dataStore.frame;
     const frames = dataStore.frames;
-    if (!dataStore.basestation) { return null; }
-
-    const x = dataStore.basestation.gridX;
-    const y = dataStore.basestation.gridY;
-    const name =  dataStore.basestation.name;
+    let x = 0;
+    let y = 0;
+    let name = "";
+    let imgUrl = "img/farm.jpg";
     let mapData;
     let time = frameNumber;
+    if (dataStore.basestation) {
+      x = dataStore.basestation.gridX;
+      y = dataStore.basestation.gridY;
+      name = dataStore.basestation.name;
+      imgUrl = dataStore.basestation.imageUrl;
+    }
     if (frames && frames.length > 0 && frames[frameNumber]) {
       const frame = frames[frameNumber];
       const grids = frame.grids;
@@ -106,7 +111,7 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
                   </CardText>
                 </div>
               }>
-              <img src="img/farm.jpg"/>
+              <img src={imgUrl}/>
             </CardMedia>
           </Tab>
           <Tab label="Predict" value="predict">

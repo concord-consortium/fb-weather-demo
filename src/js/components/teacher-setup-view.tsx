@@ -13,8 +13,8 @@ const _ = require('lodash');
 
 const div = React.DOM.div;
 
-export interface TeacherDataState { }
-export interface TeacherDataProps { }
+export interface TeacherSetupState { }
+export interface TeacherSetupProps { }
 
 
 const styles:ComponentStyleMap= {
@@ -33,24 +33,24 @@ const styles:ComponentStyleMap= {
   scrollContainer: {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'space-around',
+    justifyContent: 'space-around'
   },
   gridList: {
     display: 'flex',
     flexWrap: 'nowrap',
-    overflowX: 'auto',
+    overflowX: 'auto'
   },
   gridTile: {
     width: '200px'
   },
   titleStyle: {
-    color: 'rgb(0, 188, 212)',
+    color: 'rgb(0, 188, 212)'
   },
 };
 
 @observer
-export class TeacherDataView extends React.Component<TeacherDataProps, TeacherDataState> {
-  constructor(props:TeacherDataProps, ctx:any){
+export class TeacherSetupView extends React.Component<TeacherSetupProps, TeacherSetupState> {
+  constructor(props:TeacherSetupProps, ctx:any){
     super(props, ctx);
   }
 
@@ -102,13 +102,12 @@ export class TeacherDataView extends React.Component<TeacherDataProps, TeacherDa
   }
 
   render() {
-    const baseStations:Basestation[] = _.map(dataStore.basestationMap, (b:Basestation) => {return b});
+    const baseStations = dataStore.basestations;
     const setBasestation = (indicies:number[]) => {
       const selected = baseStations[indicies[0]]
       if(selected) { dataStore.basestation = selected }
     }
     return (
-
       <div className="configDataView">
         <div style={styles.scrollContainer}>
           <GridList style={styles.gridList}>
