@@ -54,6 +54,7 @@ export interface FireBaseState {
   prefs?: SimPrefs
   predictions?: PredictionMap
   presence?: PresenceMap
+  basestations?: BasestationMap
 }
 
 class DataStore {
@@ -107,6 +108,7 @@ class DataStore {
     if(newState.prefs)       { this.prefs = observable(newState.prefs); }
     if(newState.predictions) { this.predictions = observable(newState.predictions); }
     if(newState.presence)    { this.presenceMap = observable(newState.presence);}
+    if(newState.basestations){ this.basestationMap = observable(newState.basestations);}
   }
 
   @computed get prediction() {
@@ -212,11 +214,26 @@ class DataStore {
     const bs = new Basestation();
     this.basestationMap[bs.id] = bs;
     this.basestation = bs;
+    this.save({basestations: this.basestationMap});
+  }
+
+  saveBasestation() {
+    if (this.basestation) {
+      const key = `basestations/${this.basestation.id}`
+      this.saveToPath(key,this.basestation);
+    }
   }
 
   deleteBasestation(base:Basestation) {
     delete this.basestationMap[base.id];
     this.basestation = null;
+    this.save({basestations: this.basestationMap});
+  }
+
+  saveToPath(key:string, value:any) {
+    const obj:any = {};
+    obj[key] = value;
+    this.firebaseImp.saveToFirebase(obj);
   }
 
   save(obj:any){

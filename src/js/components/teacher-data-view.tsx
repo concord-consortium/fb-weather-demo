@@ -63,34 +63,34 @@ export class TeacherDataView extends React.Component<TeacherDataProps, TeacherDa
             value={basestation.callsign}
             style={styles.textField}
             hintText="weather station call sign"
-            onChange={(e,v) => { basestation.callsign = v }}
+            onChange={(e,v) => { basestation.callsign = v; dataStore.saveBasestation(); }}
           />
 
           <TextField
             value={basestation.name}
             style={styles.textField}
             hintText="weather station name"
-            onChange={(e,v) => { basestation.name = v }}
+            onChange={(e,v) => { basestation.name = v; dataStore.saveBasestation(); }}
           />
           <TextField
             value={basestation.imageUrl}
             style={styles.textField}
             hintText="weather station name"
-            onChange={(e,v) => { basestation.imageUrl = v}}
+            onChange={(e,v) => { basestation.imageUrl = v; dataStore.saveBasestation();}}
           />
           <TextField
             value={basestation.lat}
             style={styles.textField}
             type="number"
             hintText="weather station latitude"
-            onChange={(e,v) => { basestation.lat = parseFloat(v); }}
+            onChange={(e,v) => { basestation.lat = parseFloat(v); dataStore.saveBasestation();}}
           />
           <TextField
             value={basestation.long}
             style={styles.textField}
             type="number"
             hintText="weather station longitude"
-            onChange={(e,v) => { basestation.long = parseFloat(v); }}
+            onChange={(e,v) => { basestation.long = parseFloat(v);  dataStore.saveBasestation();}}
           />
           <RaisedButton
             label="done"
@@ -118,7 +118,6 @@ export class TeacherDataView extends React.Component<TeacherDataProps, TeacherDa
                 style={styles.gridTile}
                 cols={1}
                 key={base.id}
-                onClick={ () => dataStore.basestation=base }
                 title={
                   <div style={{width:"100%", height:"100%"}} >
                     <div>
@@ -131,7 +130,7 @@ export class TeacherDataView extends React.Component<TeacherDataProps, TeacherDa
                 }
                 titleBackground="linear-gradient(to top, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
               >
-                <img src={base.imageUrl} />
+                <img src={base.imageUrl} onClick={ () => dataStore.basestation=base } />
               </GridTile>
             )}
           </GridList>
