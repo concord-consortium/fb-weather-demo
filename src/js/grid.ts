@@ -36,7 +36,8 @@ export class Grid {
   }
 
   get(row:number, column:number) {
-    return this.data[this._index(row,column)];
+     // TODO: what if there is no data?
+    return this.data[this._index(row,column)] || 0;
   }
 
   set(row:number, column:number, value:number) {

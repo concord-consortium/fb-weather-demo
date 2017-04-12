@@ -62,7 +62,7 @@ export class WeatherStationConfigView extends React.Component<WeatherStationConf
     };
 
     return (
-      <div className="component" style={styles.config}>
+      <div style={styles.config}>
         <SelectField
           style={styles.textField}
           floatingLabelText="Choose your location"

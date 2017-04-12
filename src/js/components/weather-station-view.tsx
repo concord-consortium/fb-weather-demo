@@ -31,7 +31,7 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
   constructor(props:WeatherStationProps, context:any){
     super(props);
     this.state = {
-      tab: "weather"
+      tab: "configure"
     };
   }
 
@@ -42,27 +42,20 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
   render() {
     const frameNumber = dataStore.frameNumber;
     const frames = dataStore.frames;
+    const mapData = dataStore.grid
     let x = 0;
     let y = 0;
     let name = "";
     let imgUrl = "img/farm.jpg";
-    let mapData;
     let time = frameNumber;
+
     if (dataStore.basestation) {
       x = dataStore.basestation.gridX;
       y = dataStore.basestation.gridY;
       name = dataStore.basestation.name;
       imgUrl = dataStore.basestation.imageUrl;
     }
-    if (frames && frames.length > 0 && frames[frameNumber]) {
-      const frame = frames[frameNumber];
-      const grids = frame.grids;
-      time =  frame.time ? dateFormat(new Date(frame.time)) : time;
-      if (grids) {
-        const classGrid = grids.classGrid;
-        mapData = classGrid;
-      }
-    }
+
     const tempData = mapData ? mapData.get(x,y) : 0;
     const change = this.setConfig.bind(this);
     const styles:ComponentStyleMap = {
