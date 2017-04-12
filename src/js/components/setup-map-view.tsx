@@ -6,13 +6,13 @@ import TextField from "material-ui/TextField";
 import { ComponentStyleMap } from "../component-style-map";
 import { GridList } from "material-ui/GridList";
 import { Card } from "material-ui/Card";
-import { GridFormat } from "../grid";
+import { GeoMap } from "../geo-map";
 import { GridView } from "./grid-view";
 import { dataStore } from "../data-store";
 const _ = require('lodash');
 
-export interface SetupGridState { }
-export interface SetupGridProps { }
+export interface SetupMapState { }
+export interface SetupMapProps { }
 
 const styles:ComponentStyleMap= {
   config: {
@@ -54,46 +54,38 @@ const styles:ComponentStyleMap= {
 };
 
 @observer
-export class SetupGridView extends React.Component<SetupGridProps, SetupGridState> {
-  constructor(props:SetupGridProps, ctx:any){
+export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> {
+  constructor(props:SetupMapProps, ctx:any){
     super(props, ctx);
   }
 
   renderEditor() {
-    const gridFormat = dataStore.gridFormat;
-    if (gridFormat){
+    const geomap = dataStore.geoMap;
+    if (geomap){
       return(
         <div style={styles.config}>
           <TextField
-            value={gridFormat.name}
+            value={geomap.name}
             style={styles.textField}
             floatingLabelText="name"
-            onChange={(e,v) => { gridFormat.name = v; dataStore.saveGridFormat(); }}
+            onChange={(e,v) => { geomap.name = v; dataStore.saveGeoMap(); }}
           />
           <TextField
-            value={gridFormat.columns}
+            value={geomap.imageUrl}
             style={styles.textField}
-            type="number"
-            floatingLabelText="column count"
-            onChange={(e,v) => {gridFormat.columns = parseInt(v); dataStore.saveGridFormat(); }}
-          />
-          <TextField
-            value={gridFormat.rows}
-            style={styles.textField}
-            type="number"
-            floatingLabelText="row count"
-            onChange={(e,v) => {gridFormat.rows = parseInt(v); dataStore.saveGridFormat();}}
+            floatingLabelText="url"
+            onChange={(e,v) => {geomap.imageUrl = v; dataStore.saveGeoMap(); }}
           />
           <div style={styles.buttonRow}>
             <RaisedButton
               label="done"
               primary={true}
-              onTouchTap={ () => { dataStore.gridFormat = null }}
+              onTouchTap={ () => { dataStore.geoMap = null }}
             />
             <RaisedButton
               label="delete"
               secondary={true}
-              onTouchTap={ () => { dataStore.deleteGridFormat(gridFormat) }}>
+              onTouchTap={ () => { dataStore.deleteGeoMap(geomap) }}>
             </RaisedButton>
           </div>
         </div>
@@ -108,24 +100,24 @@ export class SetupGridView extends React.Component<SetupGridProps, SetupGridStat
     return(
       <div style={styles.buttonRow}>
         <FlatButton
-          label="add grid"
+          label="add Map"
           primary={true}
-          onTouchTap={ () => dataStore.addGridFormat() }
+          onTouchTap={ () => dataStore.addGeoMap() }
         />
       </div>
     );
   }
 
   render() {
-    const gridFormats = dataStore.gridFormats;
+    const maps = dataStore.geoMaps;
     return (
       <div className="configDataView">
         <div style={styles.scrollContainer}>
           <GridList style={styles.gridList}>
-            { _.map(gridFormats, (gridFormat:GridFormat) =>
-              <div style={styles.gridTile} key={gridFormat.id} onClick={(e) => dataStore.gridFormat=gridFormat}>
-                <div>{gridFormat.name}</div>
-                <GridView cols={gridFormat.columns} rows={gridFormat.rows} x={0} y={0}/>
+            { _.map(maps, (map:GeoMap) =>
+              <div style={styles.gridTile} key={map.id} onClick={(e) => dataStore.geoMap=map}>
+                <div>{map.name}</div>
+                <img src={map.imageUrl} width="200"/>
               </div>
             )}
           </GridList>

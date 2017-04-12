@@ -7,6 +7,7 @@ import { SimPrefs } from "./sim-prefs";
 import { FirebaseImp } from "./firebase-imp";
 import { FrameHelper } from "./frame-helper";
 import { Presence, PresenceMap } from "./presence";
+import { GeoMap, GeoMapMap } from "./geo-map";
 
 const _ = require("lodash");
 
@@ -33,6 +34,7 @@ export interface FireBaseState {
   presence?: PresenceMap
   basestations?: BasestationMap
   gridFormats?: GridFormatMap
+  geoMaps?: GeoMapMap
 }
 
 class DataStore {
@@ -46,6 +48,8 @@ class DataStore {
   @observable basestation: Basestation | null
   @observable gridFormatMap: GridFormatMap
   @observable gridFormat: GridFormat | null
+  @observable geoMap:GeoMap | null
+  @observable geoMapMap: GeoMapMap
   firebaseImp : FirebaseImp
 
   constructor() {
@@ -66,6 +70,7 @@ class DataStore {
     this.predictions = {};
     this.basestationMap = {};
     this.gridFormatMap = {}
+    this.geoMapMap = {};
     this.registerFirebase();
   }
 
@@ -91,6 +96,7 @@ class DataStore {
     if(newState.presence)    { this.presenceMap = observable(newState.presence);}
     if(newState.basestations){ this.basestationMap = observable(newState.basestations);}
     if(newState.gridFormats) { this.gridFormatMap = observable(newState.gridFormats);}
+    if(newState.geoMaps)     { this.geoMapMap = observable(newState.geoMaps);}
   }
 
   @computed get prediction() {
@@ -121,6 +127,10 @@ class DataStore {
 
   @computed get gridFormats() {
     return _.map(this.gridFormatMap, (g:GridFormat) => {return g});
+  }
+
+  @computed get geoMaps() {
+    return _.map(this.geoMapMap, (g:GeoMap) => { return g});
   }
 
   @computed get frame() {
@@ -239,6 +249,26 @@ class DataStore {
     delete this.gridFormatMap[grid.id];
     this.gridFormat = null;
     this.save({gridFormats: this.gridFormatMap});
+  }
+
+  addGeoMap() {
+    const map = new GeoMap();
+    this.geoMapMap[map.id] = map;
+    this.geoMap = map;
+    this.save({geoMaps: this.geoMapMap});
+  }
+
+  saveGeoMap() {
+    if (this.geoMap) {
+      const key = `geoMaps/${this.geoMap.id}`
+      this.saveToPath(key, this.geoMap);
+    }
+  }
+
+  deleteGeoMap(geomap:GeoMap) {
+    delete this.geoMapMap[geomap.id];
+    this.geoMap = null;
+    this.save({geoMaps: this.geoMapMap});
   }
 
   saveToPath(key:string, value:any) {

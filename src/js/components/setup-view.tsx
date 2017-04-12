@@ -3,6 +3,7 @@ import { Card  } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
 import { SetupStationsView } from "./setup-stations-view";
 import { SetupGridView } from "./setup-grid-view";
+import { SetupMapView } from "./setup-map-view";
 import { Frame } from "../frame";
 import { dataStore } from "../data-store";
 
@@ -39,7 +40,7 @@ export class SetupView extends React.Component<SetupViewProps, SetupViewState> {
             <SetupGridView  />
           </Tab>
           <Tab label="Map" value="configure">
-            Nothing here yet.
+            <SetupMapView />
           </Tab>
         </Tabs>
       </Card>
