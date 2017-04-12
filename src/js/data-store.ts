@@ -10,7 +10,7 @@ import { Presence, PresenceMap } from "./presence";
 
 const _ = require("lodash");
 
-type NowShowingType = "loading" | "choose" | "teacher" | "student" | "classroom"
+type NowShowingType = "loading" | "choose" | "teacher" | "student" | "classroom" | "setup";
 
 export interface Prediction {
   name?: string

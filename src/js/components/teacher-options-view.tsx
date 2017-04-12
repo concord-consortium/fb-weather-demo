@@ -9,13 +9,13 @@ import { dataStore } from "../data-store";
 
 export type TeacherViewTab =  "control" | "configure"
 
-export interface TeacherConfigViewProps { }
-export interface TeacherConfigViewState { }
+export interface TeacherOptionsViewProps { }
+export interface TeacherOptionsViewState { }
 
 @observer
-export class TeacherConfigView extends React.Component<TeacherConfigViewProps, TeacherConfigViewState> {
+export class TeacherOptionsView extends React.Component<TeacherOptionsViewProps, TeacherOptionsViewState> {
   interval: any
-  constructor(props:TeacherConfigViewProps, ctxt:any){
+  constructor(props:TeacherOptionsViewProps, ctxt:any){
     super(props, ctxt);
   }
 

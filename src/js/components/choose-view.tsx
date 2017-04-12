@@ -28,12 +28,14 @@ export class ChooseView extends React.Component<ChooseViewProps, ChooseViewState
               <RaisedButton primary={true} onTouchTap={router.showStudent.bind(router)}>
                 Student
               </RaisedButton>
-
               <RaisedButton onTouchTap={router.showTeacher.bind(router)}>
                 Teacher
               </RaisedButton>
               <RaisedButton onTouchTap={router.showClassroom.bind(router)}>
                 ClassRoom
+              </RaisedButton>
+              <RaisedButton onTouchTap={router.showSetup.bind(router)}>
+                Setup
               </RaisedButton>
             </CardActions>
           </Tab>

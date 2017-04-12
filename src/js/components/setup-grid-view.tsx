@@ -4,7 +4,6 @@ import RaisedButton from "material-ui/RaisedButton";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
 import { ComponentStyleMap } from "../component-style-map";
-import { TeacherSetupStationsView } from "./teacher-setup-stations-view";
 import { GridList } from "material-ui/GridList";
 import { Card } from "material-ui/Card";
 import { GridFormat } from "../grid";
@@ -12,8 +11,8 @@ import { GridView } from "./grid-view";
 import { dataStore } from "../data-store";
 const _ = require('lodash');
 
-export interface TeacherSetupGridState { }
-export interface TeacherSetupGridProps { }
+export interface SetupGridState { }
+export interface SetupGridProps { }
 
 const styles:ComponentStyleMap= {
   config: {
@@ -55,8 +54,8 @@ const styles:ComponentStyleMap= {
 };
 
 @observer
-export class TeacherSetupGridView extends React.Component<TeacherSetupGridProps, TeacherSetupGridState> {
-  constructor(props:TeacherSetupGridProps, ctx:any){
+export class SetupGridView extends React.Component<SetupGridProps, SetupGridState> {
+  constructor(props:SetupGridProps, ctx:any){
     super(props, ctx);
   }
 

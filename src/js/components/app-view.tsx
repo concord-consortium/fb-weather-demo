@@ -8,10 +8,8 @@ import { TeacherView } from "./teacher-view";
 import { WeatherStationView } from "./weather-station-view";
 import { ClassView } from "./class-view";
 import { ChooseView } from "./choose-view";
-
+import { SetupView } from "./setup-view";
 import { dataStore } from "../data-store";
-
-export type ShowingType = "choose" | "teacher" | "classroom" | "student";
 
 export interface AppViewProps {}
 export interface AppViewState {
@@ -54,6 +52,9 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
           frames={frames}
           grid={dataStore.grid}
           prefs={dataStore.prefs}/>);
+
+      case "setup":
+        return(<SetupView />);
 
       default:
         return(<ChooseView/>);

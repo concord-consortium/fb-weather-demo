@@ -15,8 +15,8 @@ const _ = require('lodash');
 
 const div = React.DOM.div;
 
-export interface TeacherSetupStationState { }
-export interface TeacherSetupStationProps { }
+export interface SetupStationState { }
+export interface SetupStationProps { }
 
 
 const styles:ComponentStyleMap= {
@@ -57,8 +57,8 @@ const styles:ComponentStyleMap= {
 };
 
 @observer
-export class TeacherSetupStationsView extends React.Component<TeacherSetupStationProps, TeacherSetupStationState> {
-  constructor(props:TeacherSetupStationProps, ctx:any){
+export class SetupStationsView extends React.Component<SetupStationProps, SetupStationState> {
+  constructor(props:SetupStationProps, ctx:any){
     super(props, ctx);
   }
 

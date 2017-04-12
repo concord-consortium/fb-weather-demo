@@ -38,5 +38,8 @@ class Router {
   showClassroom() {
     this.updateHashParam("show", "classroom");
   }
+  showSetup() {
+    this.updateHashParam("show", "setup");
+  }
 }
 export const router = new Router();
