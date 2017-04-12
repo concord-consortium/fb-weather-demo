@@ -8,7 +8,8 @@ import { PredictionView } from "./prediction-view";
 import { SimPrefs } from "../sim-prefs";
 import { Frame } from "../frame"
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore, Basestation } from "../data-store";
+import { dataStore } from "../data-store";
+import { Basestation } from "../basestation";
 
 const dateFormat = require("dateformat");
 const div = React.DOM.div;
@@ -39,7 +40,7 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
   }
 
   render() {
-    const frameNumber = dataStore.frame;
+    const frameNumber = dataStore.frameNumber;
     const frames = dataStore.frames;
     let x = 0;
     let y = 0;
@@ -62,9 +63,7 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
         mapData = classGrid;
       }
     }
-    mapData = mapData || [ [0,0,0], [0,0,0], [0,0,0] ];
-
-    const tempData = mapData[y][x];
+    const tempData = mapData ? mapData.get(x,y) : 0;
     const change = this.setConfig.bind(this);
     const styles:ComponentStyleMap = {
       info: {

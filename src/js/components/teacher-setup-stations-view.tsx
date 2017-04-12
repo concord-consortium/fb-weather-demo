@@ -4,11 +4,13 @@ import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import RaisedButton from "material-ui/RaisedButton";
 import FlatButton from "material-ui/FlatButton";
-import {GridList, GridTile} from 'material-ui/GridList';
+import { GridList, GridTile} from 'material-ui/GridList';
 import SelectField from "material-ui/SelectField";
 import { Frame } from "../frame";
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore, Basestation } from "../data-store";
+import { dataStore } from "../data-store";
+import { Basestation } from "../basestation";
+
 const _ = require('lodash');
 
 const div = React.DOM.div;
@@ -29,6 +31,12 @@ const styles:ComponentStyleMap= {
   textField: {
     display: "block",
     margin: "1em"
+  },
+  buttonRow: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%"
   },
   scrollContainer: {
     display: 'flex',
@@ -62,45 +70,65 @@ export class TeacherSetupStationsView extends React.Component<TeacherSetupStatio
           <TextField
             value={basestation.callsign}
             style={styles.textField}
-            hintText="weather station call sign"
+            floatingLabelText="station call sign"
             onChange={(e,v) => { basestation.callsign = v; dataStore.saveBasestation(); }}
           />
-
           <TextField
             value={basestation.name}
             style={styles.textField}
-            hintText="weather station name"
+            floatingLabelText="station name"
             onChange={(e,v) => { basestation.name = v; dataStore.saveBasestation(); }}
           />
           <TextField
             value={basestation.imageUrl}
             style={styles.textField}
-            hintText="weather station name"
+            floatingLabelText="station image url"
             onChange={(e,v) => { basestation.imageUrl = v; dataStore.saveBasestation();}}
           />
           <TextField
             value={basestation.lat}
             style={styles.textField}
             type="number"
-            hintText="weather station latitude"
+            floatingLabelText="station latitude "
             onChange={(e,v) => { basestation.lat = parseFloat(v); dataStore.saveBasestation();}}
           />
           <TextField
             value={basestation.long}
             style={styles.textField}
             type="number"
-            hintText="weather station longitude"
+            floatingLabelText="station longitude"
             onChange={(e,v) => { basestation.long = parseFloat(v);  dataStore.saveBasestation();}}
           />
-          <RaisedButton
-            label="done"
-            onTouchTap={ () => { dataStore.basestation = null }}
-          />
+          <div style={styles.buttonRow}>
+            <RaisedButton
+              label="done"
+              primary={true}
+              onTouchTap={ () => { dataStore.basestation = null }}
+            />
+            <RaisedButton
+              label="delete"
+              secondary={true}
+              onTouchTap={ () => dataStore.deleteBasestation(dataStore.basestation) }
+            />
+          </div>
         </div>
       )
     }
   }
 
+  renderAddButton() {
+    if(dataStore.basestation) {
+      return;
+    }
+    return(
+      <div style={styles.buttonRow}>
+        <FlatButton
+          label="Add weather station"
+          primary={true}
+          onTouchTap={ () => dataStore.addBasestation() } />
+      </div>
+    );
+  }
   render() {
     const baseStations = dataStore.basestations;
     const setBasestation = (indicies:number[]) => {
@@ -134,11 +162,8 @@ export class TeacherSetupStationsView extends React.Component<TeacherSetupStatio
             )}
           </GridList>
         </div>
-        <RaisedButton
-          label="add"
-          primary={true}
-          onTouchTap={ () => dataStore.addBasestation() } />
-        { this.renderEditor() }
+        { this.renderAddButton() }
+        { this.renderEditor()    }
       </div>
     );
   }

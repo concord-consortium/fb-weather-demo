@@ -70,27 +70,26 @@ export  class MapView extends React.Component<MapViewProps, MapViewState> {
     const ctx = (this.refs.canvas as HTMLCanvasElement).getContext("2d");
     const height = this.props.height;
     const width = this.props.width;
-    const grid = this.props.grid || [];
-    const numCols = grid.length;
-
-    if(numCols <= 0) {
+    const grid = this.props.grid;
+    if(!grid) {
       return;
     }
 
-    const numRows = grid[0].length;
+    const numCols = grid.columnCount;
+    const numRows = grid.rowCount;
     const gridWidth = Math.floor(width / numCols);
     const gridHeight = Math.floor(height / numRows);
 
     let x=0;
     let y=0;
-    let predict = 0;
+    let temp = 0;
 
     if(ctx) {
       ctx.clearRect(0,0, width, height);
       for (y=0; y < numRows; y++) {
         for (x=0; x < numCols; x++) {
-          predict = grid[y][x];
-          this.drawRect(ctx, x, y, gridWidth, predict);
+          temp = grid.get(x,y);
+          this.drawRect(ctx, x, y, gridWidth, temp);
         }
       }
     }

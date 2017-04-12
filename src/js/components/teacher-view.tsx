@@ -56,9 +56,9 @@ export class TeacherView extends React.Component<TeacherViewProps, TeacherViewSt
     const rewind = this.rewind.bind(this);
     const play   = this.play.bind(this);
     const pause  = this.pause.bind(this);
-    const frame = dataStore.frame;
+    const frame  = dataStore.frameNumber;
     const frames = dataStore.frames;
-    const grid = dataStore.grid || [];
+    const grid   = dataStore.grid;
     const disablePlay = !! this.interval;
     const disablePause = ! disablePlay;
     const handleChangeTab = (value:TeacherViewTab) => {

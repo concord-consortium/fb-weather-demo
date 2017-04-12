@@ -32,9 +32,8 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
 
   renderNowShowing() {
     const frames = dataStore.frames;
-    const frame  = dataStore.frame
+    const frame  = dataStore.frameNumber
     const nowShowing = dataStore.nowShowing;
-    const roster: string[] = [];
 
     switch(nowShowing){
       case "teacher":

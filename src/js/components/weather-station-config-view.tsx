@@ -5,7 +5,8 @@ import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import { Frame } from "../frame";
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore, Basestation } from "../data-store";
+import { dataStore } from "../data-store";
+import { Basestation } from "../basestation";
 
 const _ = require("lodash");
 const div = React.DOM.div;

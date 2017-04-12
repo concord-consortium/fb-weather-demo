@@ -4,11 +4,12 @@ import { Tabs, Tab } from "material-ui/Tabs";
 import { Card, CardText } from "material-ui/Card";
 import { SimPrefs } from "../sim-prefs";
 import { Frame } from "../frame";
+import { Grid } from "../grid";
 
 export interface ClassViewProps {
   frame: number
   frames: Frame[]
-  grid?: number[][]
+  grid?: Grid
   prefs: SimPrefs
 }
 
