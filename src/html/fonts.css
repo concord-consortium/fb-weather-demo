@@ -44,4 +44,8 @@
 .icon-skip_previous:before {
   content: "\e045";
 }
+.leaflet-container {
+    height: 400px;
+    width: 400px;
+}
 

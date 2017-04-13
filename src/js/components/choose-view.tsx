@@ -1,9 +1,8 @@
 import * as React from "react";
-import {observer} from 'mobx-react';
-import {Tabs, Tab} from "material-ui/Tabs";
+import { observer } from 'mobx-react';
+import { Tabs, Tab } from "material-ui/Tabs";
 import RaisedButton from "material-ui/RaisedButton";
-import {Card, CardActions, CardText} from "material-ui/Card";
-
+import { Card, CardActions, CardText } from "material-ui/Card";
 import { router } from "../router";
 const _ = require("lodash");
 

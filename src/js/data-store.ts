@@ -7,7 +7,7 @@ import { SimPrefs } from "./sim-prefs";
 import { FirebaseImp } from "./firebase-imp";
 import { FrameHelper } from "./frame-helper";
 import { Presence, PresenceMap } from "./presence";
-import { GeoMap, GeoMapMap } from "./geo-map";
+import { MapConfig, MapConfigMap } from "./map-config";
 
 const _ = require("lodash");
 
@@ -34,7 +34,7 @@ export interface FireBaseState {
   presence?: PresenceMap
   basestations?: BasestationMap
   gridFormats?: GridFormatMap
-  geoMaps?: GeoMapMap
+  mapConfigs?: MapConfigMap
 }
 
 class DataStore {
@@ -48,8 +48,8 @@ class DataStore {
   @observable basestation: Basestation | null
   @observable gridFormatMap: GridFormatMap
   @observable gridFormat: GridFormat | null
-  @observable geoMap:GeoMap | null
-  @observable geoMapMap: GeoMapMap
+  @observable mapConfig:MapConfig | null
+  @observable mapConfigMap: MapConfigMap
   firebaseImp : FirebaseImp
 
   constructor() {
@@ -70,7 +70,7 @@ class DataStore {
     this.predictions = {};
     this.basestationMap = {};
     this.gridFormatMap = {}
-    this.geoMapMap = {};
+    this.mapConfigMap = {};
     this.registerFirebase();
   }
 
@@ -96,7 +96,7 @@ class DataStore {
     if(newState.presence)    { this.presenceMap = observable(newState.presence);}
     if(newState.basestations){ this.basestationMap = observable(newState.basestations);}
     if(newState.gridFormats) { this.gridFormatMap = observable(newState.gridFormats);}
-    if(newState.geoMaps)     { this.geoMapMap = observable(newState.geoMaps);}
+    if(newState.mapConfigs)  { this.mapConfigMap = observable(newState.mapConfigs);}
   }
 
   @computed get prediction() {
@@ -129,8 +129,8 @@ class DataStore {
     return _.map(this.gridFormatMap, (g:GridFormat) => {return g});
   }
 
-  @computed get geoMaps() {
-    return _.map(this.geoMapMap, (g:GeoMap) => { return g});
+  @computed get mapCondfigs() {
+    return _.map(this.mapConfigMap, (g:MapConfig) => { return g});
   }
 
   @computed get frame() {
@@ -251,24 +251,24 @@ class DataStore {
     this.save({gridFormats: this.gridFormatMap});
   }
 
-  addGeoMap() {
-    const map = new GeoMap();
-    this.geoMapMap[map.id] = map;
-    this.geoMap = map;
-    this.save({geoMaps: this.geoMapMap});
+  addMapConfig() {
+    const map = new MapConfig();
+    this.mapConfigMap[map.id] = map;
+    this.mapConfig = map;
+    this.save({mapConfigs: this.mapConfigMap});
   }
 
-  saveGeoMap() {
-    if (this.geoMap) {
-      const key = `geoMaps/${this.geoMap.id}`
-      this.saveToPath(key, this.geoMap);
+  saveMapConfig() {
+    if (this.mapConfig) {
+      const key = `mapConfigs/${this.mapConfig.id}`
+      this.saveToPath(key, this.mapConfig);
     }
   }
 
-  deleteGeoMap(geomap:GeoMap) {
-    delete this.geoMapMap[geomap.id];
-    this.geoMap = null;
-    this.save({geoMaps: this.geoMapMap});
+  deleteMapConfig(mapconfig:MapConfig) {
+    delete this.mapConfigMap[mapconfig.id];
+    this.mapConfig = null;
+    this.save({mapConfigs: this.mapConfigMap});
   }
 
   saveToPath(key:string, value:any) {

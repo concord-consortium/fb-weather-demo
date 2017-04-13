@@ -12,10 +12,12 @@
   "author": "npaessel@concord.org",
   "license": "MIT",
   "dependencies": {
+    "@types/react-leaflet": "^1.0.6",
     "copy-webpack-plugin": "^4.0.1",
     "csv-parse": "^1.2.0",
     "dateformat": "^2.0.0",
     "firebase": "^3.7.0",
+    "leaflet": "^1.0.3",
     "lodash": "^4.17.4",
     "material-ui": "^0.17.0",
     "mobx": "^3.1.7",
@@ -23,6 +25,7 @@
     "query-string": "^4.3.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "react-leaflet": "^1.1.6",
     "react-tap-event-plugin": "^2.0.1",
     "semver": "^5.3.0",
     "uuid": "^3.0.1"

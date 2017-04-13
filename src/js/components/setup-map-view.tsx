@@ -6,9 +6,10 @@ import TextField from "material-ui/TextField";
 import { ComponentStyleMap } from "../component-style-map";
 import { GridList } from "material-ui/GridList";
 import { Card } from "material-ui/Card";
-import { GeoMap } from "../geo-map";
-import { GridView } from "./grid-view";
+import { LeafletMapView } from "./leaflet-map-view";
+import { MapConfig } from "../map-config";
 import { dataStore } from "../data-store";
+
 const _ = require('lodash');
 
 export interface SetupMapState { }
@@ -46,6 +47,8 @@ const styles:ComponentStyleMap= {
   gridTile: {
     width: '200px',
     height: '125px',
+    margin: '4px',
+    overflow: "hidden",
     boxShadow: '0px 0px 3px hsla(0, 0%, 50%, 0.5)'
   },
   titleStyle: {
@@ -60,32 +63,27 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
   }
 
   renderEditor() {
-    const geomap = dataStore.geoMap;
-    if (geomap){
+    const mapConfig = dataStore.mapConfig;
+    if (mapConfig){
       return(
         <div style={styles.config}>
           <TextField
-            value={geomap.name}
+            value={mapConfig.name}
             style={styles.textField}
             floatingLabelText="name"
-            onChange={(e,v) => { geomap.name = v; dataStore.saveGeoMap(); }}
+            onChange={(e,v) => { mapConfig.name = v; dataStore.saveMapConfig(); }}
           />
-          <TextField
-            value={geomap.imageUrl}
-            style={styles.textField}
-            floatingLabelText="url"
-            onChange={(e,v) => {geomap.imageUrl = v; dataStore.saveGeoMap(); }}
-          />
+          <LeafletMapView mapConfig={dataStore.mapConfig} width={400} height={400}/>
           <div style={styles.buttonRow}>
             <RaisedButton
               label="done"
               primary={true}
-              onTouchTap={ () => { dataStore.geoMap = null }}
+              onTouchTap={ () => { dataStore.mapConfig = null }}
             />
             <RaisedButton
               label="delete"
               secondary={true}
-              onTouchTap={ () => { dataStore.deleteGeoMap(geomap) }}>
+              onTouchTap={ () => { dataStore.deleteMapConfig(mapConfig) }}>
             </RaisedButton>
           </div>
         </div>
@@ -102,22 +100,22 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
         <FlatButton
           label="add Map"
           primary={true}
-          onTouchTap={ () => dataStore.addGeoMap() }
+          onTouchTap={ () => dataStore.addMapConfig() }
         />
       </div>
     );
   }
 
   render() {
-    const maps = dataStore.geoMaps;
+    const maps = dataStore.mapCondfigs;
     return (
       <div className="configDataView">
         <div style={styles.scrollContainer}>
           <GridList style={styles.gridList}>
-            { _.map(maps, (map:GeoMap) =>
-              <div style={styles.gridTile} key={map.id} onClick={(e) => dataStore.geoMap=map}>
+            { _.map(maps, (map:MapConfig) =>
+              <div style={styles.gridTile} key={map.id} onClick={(e) => dataStore.mapConfig=map}>
                 <div>{map.name}</div>
-                <img src={map.imageUrl} width="200"/>
+                <LeafletMapView mapConfig={map} width={200} height={100}/>
               </div>
             )}
           </GridList>
