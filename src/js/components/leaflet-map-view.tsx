@@ -22,8 +22,12 @@ export class LeafletMapView extends React.Component<LeafletMapProps, LeafletMapS
 
 
 renderMarker(basestation:Basestation) {
-  const predictedTemp = dataStore.frameNumber;
-  const actualTemp = predictedTemp + 4;
+  let  predictedTemp = 0;
+  let  actualTemp = 0;
+  if (basestation && basestation.data && basestation.data.length > dataStore.frameNumber) {
+    actualTemp = basestation.data[dataStore.frameNumber].value;
+    predictedTemp = basestation.data[0].value; // TODO: again fake for now.
+  }
   const difTemp = Math.abs(actualTemp - predictedTemp);
   const center = {lat:basestation.lat, lng:basestation.long};
   const key = basestation.id;
