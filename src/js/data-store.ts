@@ -10,8 +10,16 @@ import { Presence, PresenceMap } from "./presence";
 import { MapConfig, MapConfigMap } from "./map-config";
 
 const _ = require("lodash");
+const CsvParse = require("csv-parse/lib/sync");
 
 type NowShowingType = "loading" | "choose" | "teacher" | "student" | "classroom" | "setup";
+
+type CsvRecord = {
+  [key:string]: string | number | null
+}
+
+type CsvRecords = CsvRecord[]
+
 
 export interface Prediction {
   name?: string
@@ -168,6 +176,14 @@ class DataStore {
     return results;
   }
 
+  @computed get temp(){
+    if(this.basestation && this.basestation.data) {
+      if(this.basestation.data[this.frameNumber]) {
+        return this.basestation.data[this.frameNumber].value;
+      }
+    }
+    return 0;
+  }
   set sessionInfo(baseChange:Presence) {
     const uuid = this.firebaseImp.sessionID;
     _.assignIn(this.presenceMap[uuid], baseChange);
@@ -214,6 +230,26 @@ class DataStore {
     this.basestationMap[bs.id] = bs;
     this.basestation = bs;
     this.save({basestations: this.basestationMap});
+  }
+
+  addBasestationData(data:string) {
+    const records = CsvParse(data, {auto_parse:true, columns:true});
+    if(records && this.basestation) {
+      const timeSlice = 1000 * 60 * 60;
+      const grouped = _.groupBy(records,(item:CsvRecord) => {
+        return Math.floor(Date.parse(item.DATE as string)/timeSlice);
+      });
+      const frames = _.map(records, (item:CsvRecord) => {
+        const time = Math.floor(Date.parse(item.time as string)/timeSlice) * timeSlice;
+        return({time: time,  value: item.air_temperature });
+      });
+      this.basestation.data = frames;
+      const key = `basestations/${this.basestation.id}/data`
+      this.saveToPath(key, this.basestation.data);
+    }
+    else {
+      console.error("Could not load data in frame-helper");
+    }
   }
 
   saveBasestation() {

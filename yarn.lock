@@ -39,6 +39,12 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-dropzone@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@types/react-dropzone/-/react-dropzone-0.0.32.tgz#0035029a938db8f80d575db280e6b241a71247ce"
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-leaflet@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@types/react-leaflet/-/react-leaflet-1.0.6.tgz#1c2c18ee9ae8b43fbc7cc94cb7c372f58d348241"
@@ -292,6 +298,10 @@ async@^2.1.2, async@^2.1.4:
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
+
+attr-accept@^1.0.3:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/attr-accept/-/attr-accept-1.1.0.tgz#b5cd35227f163935a8f1de10ed3eba16941f6be6"
 
 autoprefixer@^6.3.1:
   version "6.7.7"
@@ -4437,7 +4447,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.0:
+prop-types@^15.5.0, prop-types@^15.5.7:
   version "15.5.8"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.8.tgz#6b7b2e141083be38c8595aa51fc55775c7199394"
   dependencies:
@@ -4566,6 +4576,13 @@ react-dom@^15.4.2:
     fbjs "^0.8.1"
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
+
+react-dropzone@^3.12.4:
+  version "3.12.4"
+  resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-3.12.4.tgz#66c45f12d1711d303a17c09ab195306a15ee4374"
+  dependencies:
+    attr-accept "^1.0.3"
+    prop-types "^15.5.7"
 
 react-event-listener@^0.4.0:
   version "0.4.2"

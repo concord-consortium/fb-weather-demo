@@ -12,6 +12,7 @@
   "author": "npaessel@concord.org",
   "license": "MIT",
   "dependencies": {
+    "@types/react-dropzone": "^0.0.32",
     "@types/react-leaflet": "^1.0.6",
     "copy-webpack-plugin": "^4.0.1",
     "csv-parse": "^1.2.0",
@@ -25,6 +26,7 @@
     "query-string": "^4.3.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "react-dropzone": "^3.12.4",
     "react-leaflet": "^1.1.6",
     "react-tap-event-plugin": "^2.0.1",
     "semver": "^5.3.0",

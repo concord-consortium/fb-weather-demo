@@ -4,6 +4,7 @@ import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import RaisedButton from "material-ui/RaisedButton";
 import FlatButton from "material-ui/FlatButton";
+import * as Dropzone from "react-dropzone";
 import { GridList, GridTile} from 'material-ui/GridList';
 import SelectField from "material-ui/SelectField";
 import { Frame } from "../frame";
@@ -48,6 +49,12 @@ const styles:ComponentStyleMap= {
     flexWrap: 'nowrap',
     overflowX: 'auto'
   },
+  dropzone: {
+    backgroundColor: "hsla(0, 10%, 90%, 0.5)",
+    padding: "2em",
+    borderRadious: "0.5em",
+    border: "2px dashed hsla(0, 10%, 85%, 0.5)"
+  },
   gridTile: {
     width: '200px'
   },
@@ -60,6 +67,19 @@ const styles:ComponentStyleMap= {
 export class SetupStationsView extends React.Component<SetupStationProps, SetupStationState> {
   constructor(props:SetupStationProps, ctx:any){
     super(props, ctx);
+  }
+
+  readData() {
+
+  }
+  onDrop(acceptedFiles:File[], rejectedFiles:File[]) {
+    console.log('Accepted files: ', acceptedFiles);
+    console.log('Rejected files: ', rejectedFiles);
+    var reader = new FileReader();
+    reader.addEventListener("loadend", function(event:any) {
+      dataStore.addBasestationData(event.target.result);
+    }.bind(this));
+    reader.readAsText(acceptedFiles[0]);
   }
 
   renderEditor() {
@@ -99,6 +119,9 @@ export class SetupStationsView extends React.Component<SetupStationProps, SetupS
             floatingLabelText="station longitude"
             onChange={(e,v) => { basestation.long = parseFloat(v);  dataStore.saveBasestation();}}
           />
+          <Dropzone onDrop={this.onDrop} style={styles.dropzone}>
+            <div>Add Data Files</div>
+          </Dropzone>
           <div style={styles.buttonRow}>
             <RaisedButton
               label="done"

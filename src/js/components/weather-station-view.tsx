@@ -97,7 +97,7 @@ export class WeatherStationView extends React.Component<WeatherStationProps, Wea
             <CardMedia
               overlay={
                 <div>
-                  <CardTitle titleStyle={styles.temp} title={`Temp: ${tempData.toFixed(1)}°`} />
+                  <CardTitle titleStyle={styles.temp} title={`Temp: ${dataStore.temp}°`} />
                   <CardText style={styles.time} >
                     {`${time} | frame(${frameNumber})`}
                   </CardText>
