@@ -44,12 +44,18 @@ const styles:ComponentStyleMap= {
     flexWrap: 'nowrap',
     overflowX: 'auto'
   },
-  gridTile: {
+  mapGridTile: {
     width: '200px',
     height: '125px',
     margin: '4px',
     overflow: "hidden",
     boxShadow: '0px 0px 3px hsla(0, 0%, 50%, 0.5)'
+  },
+  centeringMapWrapper: {
+    display: "flex",
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center"
   },
   titleStyle: {
     color: 'rgb(0, 188, 212)'
@@ -73,7 +79,12 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
             floatingLabelText="name"
             onChange={(e,v) => { mapConfig.name = v; dataStore.saveMapConfig(); }}
           />
-          <LeafletMapView mapConfig={dataStore.mapConfig} width={400} height={400}/>
+          <LeafletMapView
+            mapConfig={dataStore.mapConfig}
+            interaction={true}
+            baseStations={dataStore.basestations}
+            width={600}
+            height={400}/>
           <div style={styles.buttonRow}>
             <RaisedButton
               label="done"
@@ -107,15 +118,23 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
   }
 
   render() {
-    const maps = dataStore.mapCondfigs;
+    const maps = dataStore.mapConfigs;
     return (
       <div className="configDataView">
         <div style={styles.scrollContainer}>
           <GridList style={styles.gridList}>
             { _.map(maps, (map:MapConfig) =>
-              <div style={styles.gridTile} key={map.id} onClick={(e) => dataStore.mapConfig=map}>
+              <div style={styles.mapGridTile} key={map.id} onClick={(e) => dataStore.mapConfig=map}>
                 <div>{map.name}</div>
-                <LeafletMapView mapConfig={map} width={200} height={100}/>
+                <div style={styles.centeringMapWrapper}>
+                  <LeafletMapView
+                    mapConfig={map}
+                    interaction={false}
+                    baseStations={dataStore.basestations}
+                    width={600}
+                    height={400}
+                  />
+                </div>
               </div>
             )}
           </GridList>

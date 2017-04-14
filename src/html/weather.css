@@ -36,7 +36,37 @@ table.GridView td.set {
   align-items: center;
   flex-direction: column;
 }
+
 .MapView canvas {
   width: 300px;
   height: 300px;
+}
+
+.divIcon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.25em;
+  box-shadow: 1px 1px 4px;
+  background-color: hsla(0,0%,100%,0.8);
+}
+.predictTemp {
+  color: hsla(100,30%,40%,1);
+}
+.actualTemp {
+  color: hsla(100,0%,20%,1);
+}
+.difTemp {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: hsla(0,30%,40%,1);
+  color: white;
+  font-size: 0.8em;
+  border-radius: 0.25em;
+}
+.divIconContent {
+  font-size: 8pt;
 }

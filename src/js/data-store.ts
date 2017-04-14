@@ -129,7 +129,7 @@ class DataStore {
     return _.map(this.gridFormatMap, (g:GridFormat) => {return g});
   }
 
-  @computed get mapCondfigs() {
+  @computed get mapConfigs() {
     return _.map(this.mapConfigMap, (g:MapConfig) => { return g});
   }
 
