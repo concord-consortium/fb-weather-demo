@@ -36,9 +36,11 @@ export class SetupView extends React.Component<SetupViewProps, SetupViewState> {
           <Tab label="Stations" value="stations">
             <SetupStationsView  />
           </Tab>
+          {/* TODO: We might want to re-enable grids later.
           <Tab label="Grids" value="grid">
             <SetupGridView  />
           </Tab>
+          */}
           <Tab label="Map" value="configure">
             <SetupMapView />
           </Tab>

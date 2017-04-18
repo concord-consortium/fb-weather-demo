@@ -3,7 +3,7 @@ import {observer} from 'mobx-react';
 import { Card, CardMedia, CardActions, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
 import FloatingActionButton from "material-ui/FloatingActionButton";
-import { MapView } from "./map-view";
+import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
 import { Frame } from "../frame";
 import { dataStore } from "../data-store";
@@ -74,26 +74,27 @@ export class TeacherView extends React.Component<TeacherViewProps, TeacherViewSt
             <CardTitle>
               Time: {frame}
             </CardTitle>
-            <CardMedia>
-              <MapView
-                grid={grid}
-                width={400}
-                height={400}
-                />
+            <CardMedia style={{display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <LeafletMapView
+                mapConfig={dataStore.mapConfig}
+                interaction={false}
+                baseStations={dataStore.basestations}
+                width={600}
+                height={400} />
+              <CardActions>
+                <FloatingActionButton
+                  iconClassName="icon-skip_previous"
+                  onTouchTap={rewind}/>
+                <FloatingActionButton
+                  iconClassName="icon-play_circle_filled"
+                  disabled={disablePlay}
+                  onTouchTap={play}/>
+                <FloatingActionButton
+                  iconClassName="icon-pause_circle_filled"
+                  disabled={disablePause}
+                  onTouchTap={pause}/>
+              </CardActions>
             </CardMedia>
-            <CardActions>
-              <FloatingActionButton
-                iconClassName="icon-skip_previous"
-                onTouchTap={rewind}/>
-              <FloatingActionButton
-                iconClassName="icon-play_circle_filled"
-                disabled={disablePlay}
-                onTouchTap={play}/>
-              <FloatingActionButton
-                iconClassName="icon-pause_circle_filled"
-                disabled={disablePause}
-                onTouchTap={pause}/>
-            </CardActions>
           </Tab>
         </Tabs>
       </Card>

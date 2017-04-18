@@ -24,10 +24,9 @@ export class MapConfig {
   @observable zoom: number
   constructor() {
     this.id = uuid();
-    this.name = "XX Map";
+    this.name = "New Map";
     this.zoom = 7;
     this.lat = 42;
     this.long = -70;
-    debugger
   }
 }

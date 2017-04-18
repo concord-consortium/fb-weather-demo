@@ -1,10 +1,12 @@
 import * as React from "react";
-import { MapView } from "./map-view";
 import { Tabs, Tab } from "material-ui/Tabs";
-import { Card, CardText } from "material-ui/Card";
+import { Card, CardMedia } from "material-ui/Card";
 import { SimPrefs } from "../sim-prefs";
 import { Frame } from "../frame";
-import { Grid } from "../grid";
+import { Grid } from "../grid";   // TODO: Needed?
+import { LeafletMapView } from "./leaflet-map-view"
+import { dataStore } from "../data-store";
+
 
 export interface ClassViewProps {
   frame: number
@@ -25,13 +27,14 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
       <Card className="ClassView">
         <Tabs>
           <Tab label="Class View" >
-            <CardText>
-              <MapView
-                width={600}
-                height={600}
-                grid={this.props.grid}
-              />
-            </CardText>
+            <CardMedia style={{display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <LeafletMapView
+                mapConfig={dataStore.mapConfig}
+                interaction={false}
+                baseStations={dataStore.basestations}
+                width={800}
+                height={600} />
+            </CardMedia>
           </Tab>
         </Tabs>
       </Card>

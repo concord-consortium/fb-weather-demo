@@ -5,6 +5,7 @@ import  MenuItem from "material-ui/MenuItem";
 import  SelectField from "material-ui/SelectField";
 import Toggle from "material-ui/Toggle";
 import { Frame } from "../frame";
+import { MapConfig } from "../map-config";
 import { dataStore } from "../data-store";
 
 export type TeacherViewTab =  "control" | "configure"
@@ -21,6 +22,10 @@ export class TeacherOptionsView extends React.Component<TeacherOptionsViewProps,
 
   setGrid(e:any, index:number, name:string) {
     dataStore.setPref('gridName', name);
+  }
+
+  setMap(e:any, indexs:number, id:string) {
+    dataStore.mapConfig = dataStore.mapConfigMap[id];
   }
 
   renderPrefButton(label:string, key:string) {
@@ -47,8 +52,10 @@ export class TeacherOptionsView extends React.Component<TeacherOptionsViewProps,
 
   render() {
     const setGrid = this.setGrid.bind(this);
+    const setMap  = this.setMap.bind(this);
     const gridNames = ["default", "classGrid"];
     const gridName = dataStore.prefs.gridName || "default";
+    const mapId = dataStore.mapConfig? dataStore.mapConfig.id : 0;
     const styles = {
       block: {
         maxWidth: 250,
@@ -56,6 +63,8 @@ export class TeacherOptionsView extends React.Component<TeacherOptionsViewProps,
     };
     return(
       <CardText>
+        {/*
+        TODO:  We might want to re-enable grids later. TBD
         <SelectField
           floatingLabelText="Use this grid:"
           value={gridName}
@@ -63,12 +72,20 @@ export class TeacherOptionsView extends React.Component<TeacherOptionsViewProps,
           onChange={setGrid}>
             { gridNames.map( (name,index) => <MenuItem key={index} value={name} primaryText={name} /> ) }
         </SelectField>
+        */}
+        <SelectField
+          floatingLabelText="Use this map:"
+          value={mapId}
+          autoWidth={true}
+          onChange={setMap}>
+            { dataStore.mapConfigs.map( (map:MapConfig) => <MenuItem key={map.id} value={map.id} primaryText={map.name} /> ) }
+        </SelectField>
         <div className="toggles" style={styles.block}>
-          { this.renderPrefButton("Base map","showBaseMap") }
-          { this.renderPrefButton("Grid lines","showGridLines") }
+          {/*{ this.renderPrefButton("Base map","showBaseMap") }*/}
+          {/*{ this.renderPrefButton("Grid lines","showGridLines") }*/}
           { this.renderPrefButton("Temp values","showTempValues") }
-          { this.renderPrefButton("Temp colors","showTempColors") }
-          { this.renderPrefButton("Group names","showGroupNames") }
+          {/*{ this.renderPrefButton("Temp colors","showTempColors") }*/}
+          { this.renderPrefButton("Show station names","showGroupNames") }
           { this.renderPrefButton("Show station temps","showStationTemps") }
           { this.renderPrefButton("Show station predictions","showPredictions") }
           { this.renderPrefButton("Enable prediction","enablePrediction") }

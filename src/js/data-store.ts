@@ -56,8 +56,8 @@ class DataStore {
   @observable basestation: Basestation | null
   @observable gridFormatMap: GridFormatMap
   @observable gridFormat: GridFormat | null
-  @observable mapConfig:MapConfig | null
   @observable mapConfigMap: MapConfigMap
+  @observable editingMap: MapConfig | null
   firebaseImp : FirebaseImp
 
   constructor() {
@@ -184,6 +184,18 @@ class DataStore {
     }
     return 0;
   }
+
+  @computed get mapConfig(){
+    if(this.prefs.mapConfig) {
+      return this.mapConfigMap[this.prefs.mapConfig]
+    }
+    return null;
+  }
+
+  set mapConfig(config:any){
+    this.setPref('mapConfig', config.id);
+  }
+
   set sessionInfo(baseChange:Presence) {
     const uuid = this.firebaseImp.sessionID;
     _.assignIn(this.presenceMap[uuid], baseChange);
@@ -290,21 +302,24 @@ class DataStore {
   addMapConfig() {
     const map = new MapConfig();
     this.mapConfigMap[map.id] = map;
-    this.mapConfig = map;
+    this.editingMap = map;
     this.save({mapConfigs: this.mapConfigMap});
   }
 
   saveMapConfig() {
-    if (this.mapConfig) {
-      const key = `mapConfigs/${this.mapConfig.id}`
-      this.saveToPath(key, this.mapConfig);
+    if (this.editingMap) {
+      const key = `mapConfigs/${this.editingMap.id}`
+      this.saveToPath(key, this.editingMap);
     }
   }
 
-  deleteMapConfig(mapconfig:MapConfig) {
-    delete this.mapConfigMap[mapconfig.id];
-    this.mapConfig = null;
-    this.save({mapConfigs: this.mapConfigMap});
+  deleteMapConfig() {
+    const mapConfig = this.editingMap;
+    if (mapConfig) {
+      delete this.mapConfigMap[mapConfig.id];
+      this.editingMap = null;
+      this.save({mapConfigs: this.mapConfigMap});
+    }
   }
 
   saveToPath(key:string, value:any) {

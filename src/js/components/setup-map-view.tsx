@@ -69,7 +69,7 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
   }
 
   renderEditor() {
-    const mapConfig = dataStore.mapConfig;
+    const mapConfig = dataStore.editingMap;
     if (mapConfig){
       return(
         <div style={styles.config}>
@@ -80,21 +80,27 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
             onChange={(e,v) => { mapConfig.name = v; dataStore.saveMapConfig(); }}
           />
           <LeafletMapView
-            mapConfig={dataStore.mapConfig}
+            mapConfig={dataStore.editingMap}
             interaction={true}
             baseStations={dataStore.basestations}
             width={600}
-            height={400}/>
+            height={400}
+            update={ (lat,long,zoom) => {
+              mapConfig.lat = lat;
+              mapConfig.long = long;
+              mapConfig.zoom = zoom;
+              dataStore.saveMapConfig();
+            }}/>
           <div style={styles.buttonRow}>
             <RaisedButton
               label="done"
               primary={true}
-              onTouchTap={ () => { dataStore.mapConfig = null }}
+              onTouchTap={ () => { dataStore.editingMap = null }}
             />
             <RaisedButton
               label="delete"
               secondary={true}
-              onTouchTap={ () => { dataStore.deleteMapConfig(mapConfig) }}>
+              onTouchTap={ () => { dataStore.deleteMapConfig() }}>
             </RaisedButton>
           </div>
         </div>
@@ -124,7 +130,7 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
         <div style={styles.scrollContainer}>
           <GridList style={styles.gridList}>
             { _.map(maps, (map:MapConfig) =>
-              <div style={styles.mapGridTile} key={map.id} onClick={(e) => dataStore.mapConfig=map}>
+              <div style={styles.mapGridTile} key={map.id} onClick={(e) => dataStore.editingMap=map}>
                 <div>{map.name}</div>
                 <div style={styles.centeringMapWrapper}>
                   <LeafletMapView
