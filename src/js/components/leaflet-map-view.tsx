@@ -5,6 +5,7 @@ import { DivIcon } from "leaflet";
 import { dataStore } from "../data-store";
 import { MapConfig } from "../map-config";
 import { Basestation } from "../basestation";
+import { LeafletMapMarker } from "./leaflet-map-marker";
 interface LeafletMapProps {
   mapConfig: MapConfig | null
   width:number
@@ -23,39 +24,7 @@ export class LeafletMapView extends React.Component<LeafletMapProps, LeafletMapS
   }
 
 
-renderMarker(basestation:Basestation) {
-  let predictedTemp= 0;
-  let actualTemp = 0;
-  if (basestation && basestation.data && basestation.data.length > dataStore.frameNumber) {
-    actualTemp = basestation.data[dataStore.frameNumber].value;
-    predictedTemp = basestation.data[0].value; // TODO: again fake for now.
-  }
-  const precision=0;
-  const difTemp = Math.abs(actualTemp - predictedTemp);
-  const predictedTempString = predictedTemp.toFixed(precision);
-  const actualTempString = actualTemp.toFixed(precision);
-  const difTempString  = difTemp.toFixed(precision);
-  const center = {lat:basestation.lat, lng:basestation.long};
-  const key = basestation.id;
-  const icon = new DivIcon({
-    html: `
-      <div class "divIconContent" >
-        <div>
-          <span class="predictTemp">${predictedTempString}°</span>
-            /
-          <span class="actualTemp">${actualTempString}°</span>
-        </div>
-        <div class="difTemp">Δ${difTempString}&#8457</span>
-      </div>`,
-    iconSize: [50,30],
-    className: "divIcon"
-  });
 
-  return (
-    <Marker position={center} icon={icon} key={key}>
-    </Marker>
-  );
-}
 render() {
     const mapConfig = this.props.mapConfig;
 
@@ -96,7 +65,7 @@ render() {
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
           />
-          { this.props.baseStations.map( (b) => this.renderMarker(b) ) }
+          { this.props.baseStations.map( (b) => <LeafletMapMarker basestation={b} key={b.id}/>) }
         </Map>
       </div>
     );

@@ -27,7 +27,7 @@ export class WeatherStationConfigView extends React.Component<WeatherStationConf
   }
 
   setBasestation(evt:any, index:number, id:string) {
-    dataStore.basestation = dataStore.basestationMap[id];
+    dataStore.setUserBaseStation(id);
   }
 
   renderBaseOptions() {

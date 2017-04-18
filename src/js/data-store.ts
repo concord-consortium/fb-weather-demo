@@ -202,6 +202,18 @@ class DataStore {
     this.firebaseImp.saveUserData(this.presenceMap[uuid]);
   }
 
+  updateUserPref(key:any, value:any) {
+    const uuid = this.firebaseImp.sessionID;
+    const prefs = this.presenceMap[uuid] as any;
+    prefs[key] = value;
+    this.firebaseImp.saveUserData(prefs);
+  }
+
+  setUserBaseStation(id:string) {
+    this.updateUserPref("basestationId",id);
+    this.basestation = this.basestationMap[id];
+  }
+
   nextFrame(){
     const frameLength = this.frames.length;
     let frameNumber = (this.frameNumber || 0) + 1;

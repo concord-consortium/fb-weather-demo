@@ -47,7 +47,7 @@ table.GridView td.set {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 0.25em;
+  border-radius: 0.5em;
   box-shadow: 1px 1px 4px;
   background-color: hsla(0,0%,100%,0.8);
 }
