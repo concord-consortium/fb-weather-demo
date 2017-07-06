@@ -4,13 +4,13 @@ Map: Equirectangular Projection (x  = lon y = lat)
 # Proposed data structure in firebase:
 
 * `sesssions`/
-  * <sessionName1>…
-  * <sessionNameN>
+  * sessionName1…
+  * sessionNameN
     * `dataFormat` (semver string)
     * `activity`
     * `activities`
-      * <activityName1> …
-      * <activityNameN>
+      * activityName1 …
+      * activityNameN
         * `frameNumber`
         * `settings`
           * `baseMap` (pulldown includes none &baseMapRef)
@@ -27,16 +27,16 @@ Map: Equirectangular Projection (x  = lon y = lat)
             * `columns`
             * `rows`
           * `baseMaps`
-            * <imageName1> …
-            * <imageNameN>
+            * imageName1 …
+            * imageNameN
               * `url`
         * `frames`
-          * <frameNumber1> …
-          * <frameNumberN>
+          * frameNumber1 …
+          * frameNumberN
             * `geoJson` (includes all station locations + station data & timestamp) -- can be serialized string...
       * `presence`
-        * <uuId1>...
-        * <uuIdN>
+        * uuId1...
+        * uuIdN
           * `name`
           * `location`
             * `row`
