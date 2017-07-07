@@ -97,14 +97,29 @@ class DataStore {
   setNowShowing(_new:NowShowingType) {  this.nowShowing = _new; }
 
   setState(newState:FireBaseState) {
-    if(newState.frames)      { (this.frames as any).replace(newState.frames); }
-    if(newState.frame)       { this.frameNumber = newState.frame; }
-    if(newState.prefs)       { this.prefs = observable(newState.prefs); }
+    if(newState.frames)      { (this.frames as any).replace(newState.frames) }
+    else {this.frames = observable([]) }
+
+    if(newState.frame)       { this.frameNumber = newState.frame }
+    else {this.frameNumber = 0 }
+
+    if(newState.prefs)       { this.prefs = observable(newState.prefs) }
+    else {this.prefs = observable(new SimPrefs()) }
+
     if(newState.predictions) { this.predictions = observable(newState.predictions); }
+    else {this.predictions = observable({}); }
+
     if(newState.presence)    { this.presenceMap = observable(newState.presence);}
+    else {this.presenceMap = observable({}); }
+
     if(newState.basestations){ this.basestationMap = observable(newState.basestations);}
+    else {this.basestationMap = observable({}); }
+
     if(newState.gridFormats) { this.gridFormatMap = observable(newState.gridFormats);}
+    else {this.gridFormatMap = observable({}); }
+
     if(newState.mapConfigs)  { this.mapConfigMap = observable(newState.mapConfigs);}
+    else {this.mapConfigMap = observable({}); }
   }
 
   @computed get prediction() {

@@ -2,7 +2,7 @@ const firebase = require("firebase");
 import { v1 as uuid } from "uuid";
 import { Presence } from "./presence"
 const DEFAULT_SESSION = "default";
-const DEFAULT_VERSION_STRING = "1.0.0";
+const DEFAULT_VERSION_STRING = "1.1.0";
 const DEFAULT_ACTIVITY = "default";
 
 interface FirebaseUser {
@@ -27,6 +27,7 @@ interface FirebaseDisconnectSerivce {
 interface FirebaseRef {
   off(event:string):void
   off():void
+  once(value:string):Promise<any>
   on(event:string, callback:Function):void
   onDisconnect():FirebaseDisconnectSerivce
   remove():void
@@ -46,21 +47,34 @@ export class FirebaseImp {
   listeners:FirebaseLinstener[]
   config: FireBaseConfig
   connectionStatus: FirebaseRef
+  baseRef: FirebaseRef
+  sessionsRef: FirebaseRef
   dataRef: FirebaseRef
   userRef: FirebaseRef
 
   constructor() {
-    this._session = `${DEFAULT_SESSION}_${DEFAULT_VERSION_STRING.replace(/\./g, "_")}`;
+    this._session = `${DEFAULT_SESSION}`;
     this.activity = DEFAULT_ACTIVITY;
     this.version  = DEFAULT_VERSION_STRING;
 
-    this.config = {
-      apiKey: "AIzaSyAlgebbG2k820uai5qZT6T8yMONvuSl-wI",
-      authDomain: "weather-dev-eae1d.firebaseapp.com",
-      databaseURL: "https://weather-dev-eae1d.firebaseio.com",
-      storageBucket: "weather-dev-eae1d.appspot.com",
-      messagingSenderId: "857031925472"
-    };
+    const configs = {
+      old: {
+        apiKey: "AIzaSyAlgebbG2k820uai5qZT6T8yMONvuSl-wI",
+        authDomain: "weather-dev-eae1d.firebaseapp.com",
+        databaseURL: "https://weather-dev-eae1d.firebaseio.com",
+        storageBucket: "weather-dev-eae1d.appspot.com",
+        messagingSenderId: "857031925472"
+      },
+      new: {
+        apiKey: "AIzaSyAglPFMReyiX9r33RDLkWkBNAMGUKdY9os",
+        authDomain: "weather-1892e.firebaseapp.com",
+        databaseURL: "https://weather-1892e.firebaseio.com",
+        projectId: "weather-1892e",
+        storageBucket: "weather-1892e.appspot.com",
+        messagingSenderId: "74648732809"
+      }
+    }
+    this.config = configs.new;
     this.listeners = [];
     this.sessionID = localStorage.getItem("CCweatherSession") || uuid();
     localStorage.setItem("CCweatherSession", this.sessionID);
@@ -110,9 +124,14 @@ export class FirebaseImp {
     this.log("logged in");
   }
 
+  get sessionPath() {
+    const basePath = DEFAULT_VERSION_STRING.replace(/\./g, "_");
+    return `/${basePath}/sessions/${this.session}`;
+  }
+
   setDataRef() {
     if(firebase.database()) {
-      this.dataRef = firebase.database().ref(this.session);
+      this.dataRef = firebase.database().ref(this.sessionPath);
       this.rebindFirebaseHandlers();
       this.setupPresence();
     }
@@ -121,10 +140,15 @@ export class FirebaseImp {
   set session(sessionName:string) {
     this._session = sessionName;
     this.setDataRef();
+    debugger
   }
 
   get session() {
     return this._session;
+  }
+
+  get database() {
+    return firebase.database()
   }
 
   set activity(activityName:string) {
@@ -162,6 +186,9 @@ export class FirebaseImp {
     });
   }
 
+  load() {
+    this.dataRef.once("value").then(this.loadDataFromFirebase.bind(this))
+  }
   rebindFirebaseHandlers () {
     this.log("registering listeners");
     const ref = this.dataRef;

@@ -1,4 +1,4 @@
-export interface SimPrefs {
+export class SimPrefs {
   showBaseMap: boolean
   showTempColors: boolean
   showTempValues: boolean

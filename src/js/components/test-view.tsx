@@ -23,7 +23,6 @@ export class TestView extends React.Component<TestViewProps, TestViewState> {
 
   render() {
     const blarg = this.props.params.blarg
-    console.log(blarg)
     return(
       <MuiThemeProvider>
         <Card>
