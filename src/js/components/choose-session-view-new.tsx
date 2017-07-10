@@ -13,30 +13,33 @@ interface routeParams {
   sessionName: string;
 }
 
-export interface ChooseSessionViewProps {
+export interface ChooseViewProps {
   params: routeParams;
 }
 
-export interface ChooseSessionViewState {}
+export interface ChooseViewState {}
 
 @observer
-export class ChooseSessionView extends React.Component<
-  ChooseSessionViewProps,
-  ChooseSessionViewState
+export class ChooseView extends React.Component<
+  ChooseViewProps,
+  ChooseViewState
 > {
-  constructor(props: ChooseSessionViewProps, ctx: any) {
+  constructor(props: ChooseViewProps, ctx: any) {
     super(props);
+  }
+
+  linkTo(relativePath: string) {
+    const session = this.props.params.sessionName;
+    // const path = "x"
+    const pathString: string = `/sessions/${session}/${relativePath}`;
+    return <Link to={pathString} />;
   }
 
   render() {
     // firebase?
-    const linkTo = function(relativePath: String) {
-      const pathString: string = `/sessions/${relativePath}`;
-      return <Link key={pathString} to={pathString} />;
-    };
     const names = dataStore.sessionList;
     const visList = _.map(names, (name: String) => {
-      return <ListItem primaryText={name} containerElement={linkTo(name)} />;
+      return <ListItem primaryText={name} />;
     });
 
     return (

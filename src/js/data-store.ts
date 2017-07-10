@@ -1,6 +1,6 @@
 import { observable, computed } from "mobx";
 import { v1 as uuid } from "uuid";
-import { Frame} from "./frame";
+import { Frame } from "./frame";
 import { GridFormat, GridFormatMap, Grid } from "./grid";
 import { Basestation, BasestationMap } from "./basestation";
 import { SimPrefs } from "./sim-prefs";
@@ -12,73 +12,80 @@ import { MapConfig, MapConfigMap } from "./map-config";
 const _ = require("lodash");
 const CsvParse = require("csv-parse/lib/sync");
 
-type NowShowingType = "loading" | "choose" | "teacher" | "student" | "classroom" | "setup";
+type NowShowingType =
+  | "loading"
+  | "choose"
+  | "teacher"
+  | "student"
+  | "classroom"
+  | "setup";
 
 type CsvRecord = {
-  [key:string]: string | number | null
-}
+  [key: string]: string | number | null;
+};
 
-type CsvRecords = CsvRecord[]
-
+type CsvRecords = CsvRecord[];
 
 export interface Prediction {
-  name?: string
-  temp?: number
-  rationale?: string
-  imageUrl?: string
-  gridX?: number
-  gridY?: number
+  name?: string;
+  temp?: number;
+  rationale?: string;
+  imageUrl?: string;
+  gridX?: number;
+  gridY?: number;
 }
 
 export interface PredictionMap {
-  [key:string]: Prediction
+  [key: string]: Prediction;
 }
 
 export interface FireBaseState {
-  frame?: number
-  frames?: Frame[]
-  prefs?: SimPrefs
-  predictions?: PredictionMap
-  presence?: PresenceMap
-  basestations?: BasestationMap
-  gridFormats?: GridFormatMap
-  mapConfigs?: MapConfigMap
+  frame?: number;
+  frames?: Frame[];
+  prefs?: SimPrefs;
+  predictions?: PredictionMap;
+  presence?: PresenceMap;
+  basestations?: BasestationMap;
+  gridFormats?: GridFormatMap;
+  mapConfigs?: MapConfigMap;
 }
 
 class DataStore {
-  @observable nowShowing:NowShowingType
-  @observable frameNumber: number
-  @observable frames: Frame[]
-  @observable prefs: SimPrefs
-  @observable predictions: PredictionMap
-  @observable presenceMap: PresenceMap
-  @observable basestationMap: BasestationMap
-  @observable basestation: Basestation | null
-  @observable gridFormatMap: GridFormatMap
-  @observable gridFormat: GridFormat | null
-  @observable mapConfigMap: MapConfigMap
-  @observable editingMap: MapConfig | null
-  firebaseImp : FirebaseImp
+  @observable nowShowing: NowShowingType;
+  @observable frameNumber: number;
+  @observable frames: Frame[];
+  @observable prefs: SimPrefs;
+  @observable predictions: PredictionMap;
+  @observable presenceMap: PresenceMap;
+  @observable basestationMap: BasestationMap;
+  @observable basestation: Basestation | null;
+  @observable gridFormatMap: GridFormatMap;
+  @observable gridFormat: GridFormat | null;
+  @observable mapConfigMap: MapConfigMap;
+  @observable editingMap: MapConfig | null;
+  @observable sessionList: String[];
+  firebaseImp: FirebaseImp;
 
   constructor() {
-    this.nowShowing = "loading"
+    this.nowShowing = "loading";
     this.frameNumber = 0;
     this.frames = [];
     this.prefs = {
-      gridName: 'default',
-      gridNames: ['default'],
+      gridName: "default",
+      gridNames: ["default"],
       showBaseMap: true,
       showTempColors: false,
       showTempValues: false,
       showGridLines: false,
       enablePrediction: false,
       showPredictions: false
-    }
+    };
     this.presenceMap = {};
     this.predictions = {};
     this.basestationMap = {};
-    this.gridFormatMap = {}
+    this.gridFormatMap = {};
     this.mapConfigMap = {};
+    this.sessionList = [];
     this.registerFirebase();
   }
 
@@ -86,56 +93,86 @@ class DataStore {
     this.firebaseImp = new FirebaseImp();
     this.firebaseImp.addListener(this);
     this.setNowShowing("loading");
-    this.firebaseImp.initFirebase( ()=> {
-      const frameHelper = new FrameHelper();
-      frameHelper.parse();
-      this.setFrame(0);
-      this.setFrames(frameHelper.frames);
+    this.firebaseImp.initFirebase(() => {
+      // TBD: Initialize an empty instance
     });
   }
 
-  setNowShowing(_new:NowShowingType) {  this.nowShowing = _new; }
-
-  setState(newState:FireBaseState) {
-    if(newState.frames)      { (this.frames as any).replace(newState.frames) }
-    else {this.frames = observable([]) }
-
-    if(newState.frame)       { this.frameNumber = newState.frame }
-    else {this.frameNumber = 0 }
-
-    if(newState.prefs)       { this.prefs = observable(newState.prefs) }
-    else {this.prefs = observable(new SimPrefs()) }
-
-    if(newState.predictions) { this.predictions = observable(newState.predictions); }
-    else {this.predictions = observable({}); }
-
-    if(newState.presence)    { this.presenceMap = observable(newState.presence);}
-    else {this.presenceMap = observable({}); }
-
-    if(newState.basestations){ this.basestationMap = observable(newState.basestations);}
-    else {this.basestationMap = observable({}); }
-
-    if(newState.gridFormats) { this.gridFormatMap = observable(newState.gridFormats);}
-    else {this.gridFormatMap = observable({}); }
-
-    if(newState.mapConfigs)  { this.mapConfigMap = observable(newState.mapConfigs);}
-    else {this.mapConfigMap = observable({}); }
+  setNowShowing(_new: NowShowingType) {
+    this.nowShowing = _new;
   }
 
-  @computed get prediction() {
+  setSessionList(newSessions: String[]) {
+    this.sessionList = observable(newSessions);
+  }
+
+  setState(newState: FireBaseState) {
+    if (newState.frames) {
+      (this.frames as any).replace(newState.frames);
+    } else {
+      this.frames = observable([]);
+    }
+
+    if (newState.frame) {
+      this.frameNumber = newState.frame;
+    } else {
+      this.setFrame(0);
+    }
+
+    if (newState.prefs) {
+      this.prefs = observable(newState.prefs);
+    } else {
+      this.setPrefs(new SimPrefs());
+    }
+
+    if (newState.predictions) {
+      this.predictions = observable(newState.predictions);
+    } else {
+      this.predictions = observable({});
+    }
+
+    if (newState.presence) {
+      this.presenceMap = observable(newState.presence);
+    } else {
+      this.presenceMap = observable({});
+    }
+
+    if (newState.basestations) {
+      this.basestationMap = observable(newState.basestations);
+    } else {
+      this.basestationMap = observable({});
+    }
+
+    if (newState.gridFormats) {
+      this.gridFormatMap = observable(newState.gridFormats);
+    } else {
+      this.gridFormatMap = observable({});
+    }
+
+    if (newState.mapConfigs) {
+      this.mapConfigMap = observable(newState.mapConfigs);
+    } else {
+      this.mapConfigMap = observable({});
+    }
+  }
+
+  @computed
+  get prediction() {
     const uuid = this.firebaseImp.sessionID;
-    const defaultPrediction  = {
+    const defaultPrediction = {
       precictedTemp: null,
       rationale: null,
       imageUrl: null
     };
-    this.predictions[uuid] = this.predictions[uuid] || observable(defaultPrediction);
+    this.predictions[uuid] =
+      this.predictions[uuid] || observable(defaultPrediction);
     return this.predictions[uuid];
   }
 
-  @computed get sessionInfo() {
+  @computed
+  get sessionInfo() {
     const uuid = this.firebaseImp.sessionID;
-    const defaultPresence  = {
+    const defaultPresence = {
       name: "",
       id: "",
       baseStationId: "none"
@@ -144,40 +181,52 @@ class DataStore {
   }
 
   // in list form instead of Map
-  @computed get basestations () {
-     return _.map(this.basestationMap, (b:Basestation) => {return b});
+  @computed
+  get basestations() {
+    return _.map(this.basestationMap, (b: Basestation) => {
+      return b;
+    });
   }
 
-  @computed get gridFormats() {
-    return _.map(this.gridFormatMap, (g:GridFormat) => {return g});
+  @computed
+  get gridFormats() {
+    return _.map(this.gridFormatMap, (g: GridFormat) => {
+      return g;
+    });
   }
 
-  @computed get mapConfigs() {
-    return _.map(this.mapConfigMap, (g:MapConfig) => { return g});
+  @computed
+  get mapConfigs() {
+    return _.map(this.mapConfigMap, (g: MapConfig) => {
+      return g;
+    });
   }
 
-  @computed get frame() {
+  @computed
+  get frame() {
     return this.frames[this.frameNumber];
   }
 
-  @computed get grid() {
-    const formatName = this.gridFormat ? this.gridFormat.name : ""
-    if(this.frame && this.frame.grids) {
-      return this.frame.grids[formatName]
+  @computed
+  get grid() {
+    const formatName = this.gridFormat ? this.gridFormat.name : "";
+    if (this.frame && this.frame.grids) {
+      return this.frame.grids[formatName];
     }
-    return new Grid()
+    return new Grid();
   }
 
-  @computed get filteredPredictions() {
+  @computed
+  get filteredPredictions() {
     const predictionKeys = _.keys(this.predictions);
-    const presenceKeys   = _.keys(this.presenceMap);
-    const results:Prediction[] = [];
-    for(let i=0; i < presenceKeys.length; i++) {
+    const presenceKeys = _.keys(this.presenceMap);
+    const results: Prediction[] = [];
+    for (let i = 0; i < presenceKeys.length; i++) {
       let key = presenceKeys[i];
-      let presence  = this.presenceMap[key];
-      let basestation = this.basestationMap[presence.baseStationId]
-      if(basestation && basestation.gridX && basestation.gridY){
-        if(_.includes(predictionKeys, key)){
+      let presence = this.presenceMap[key];
+      let basestation = this.basestationMap[presence.baseStationId];
+      if (basestation && basestation.gridX && basestation.gridY) {
+        if (_.includes(predictionKeys, key)) {
           let prediction = this.predictions[key];
           results.push({
             name: basestation.name,
@@ -191,118 +240,120 @@ class DataStore {
     return results;
   }
 
-  @computed get temp(){
-    if(this.basestation && this.basestation.data) {
-      if(this.basestation.data[this.frameNumber]) {
+  @computed
+  get temp() {
+    if (this.basestation && this.basestation.data) {
+      if (this.basestation.data[this.frameNumber]) {
         return this.basestation.data[this.frameNumber].value;
       }
     }
     return 0;
   }
 
-  @computed get mapConfig(){
-    if(this.prefs.mapConfig) {
-      return this.mapConfigMap[this.prefs.mapConfig]
+  @computed
+  get mapConfig() {
+    if (this.prefs.mapConfig) {
+      return this.mapConfigMap[this.prefs.mapConfig];
     }
     return null;
   }
 
-  set mapConfig(config:any){
-    this.setPref('mapConfig', config.id);
+  set mapConfig(config: any) {
+    this.setPref("mapConfig", config.id);
   }
 
-  set sessionInfo(baseChange:Presence) {
+  set sessionInfo(baseChange: Presence) {
     const uuid = this.firebaseImp.sessionID;
     _.assignIn(this.presenceMap[uuid], baseChange);
     this.firebaseImp.saveUserData(this.presenceMap[uuid]);
   }
 
-  updateUserPref(key:any, value:any) {
+  updateUserPref(key: any, value: any) {
     const uuid = this.firebaseImp.sessionID;
     const prefs = this.presenceMap[uuid] as any;
     prefs[key] = value;
     this.firebaseImp.saveUserData(prefs);
   }
 
-  setUserBaseStation(id:string) {
-    this.updateUserPref("basestationId",id);
+  setUserBaseStation(id: string) {
+    this.updateUserPref("basestationId", id);
     this.basestation = this.basestationMap[id];
   }
 
-  nextFrame(){
+  nextFrame() {
     const frameLength = this.frames.length;
     let frameNumber = (this.frameNumber || 0) + 1;
     frameNumber = frameNumber % frameLength;
     this.setFrame(frameNumber);
   }
 
-  setFrame(frame:number) {
+  setFrame(frame: number) {
     this.frameNumber = frame;
-    this.save({frame: frame});
+    this.save({ frame: frame });
   }
 
-  setFrames(frames:Frame[]) {
-    this.save({frames: frames});
+  setFrames(frames: Frame[]) {
+    this.save({ frames: frames });
   }
 
-  setPref(key:string, value:any) {
+  setPref(key: string, value: any) {
     this.prefs[key] = value;
-    this.save({prefs: this.prefs});
+    this.save({ prefs: this.prefs });
   }
 
-  setPrefs(prefs:SimPrefs) {
-    this.save({prefs: prefs});
+  setPrefs(prefs: SimPrefs) {
+    this.save({ prefs: prefs });
   }
 
-  setSession(session:string) {
+  setSession(session: string) {
     this.firebaseImp.session = session;
   }
 
-  setPrediction(prediction:Prediction) {
+  setPrediction(prediction: Prediction) {
     const uuid = this.firebaseImp.sessionID;
     this.predictions[uuid] = prediction;
-    this.save({predictions: this.predictions})
+    this.save({ predictions: this.predictions });
   }
 
   addBasestation() {
     const bs = new Basestation();
     this.basestationMap[bs.id] = bs;
     this.basestation = bs;
-    this.save({basestations: this.basestationMap});
+    this.save({ basestations: this.basestationMap });
   }
 
-  addBasestationData(data:string) {
-    const records = CsvParse(data, {auto_parse:true, columns:true});
-    if(records && this.basestation) {
+  addBasestationData(data: string) {
+    const records = CsvParse(data, { auto_parse: true, columns: true });
+    if (records && this.basestation) {
       const timeSlice = 1000 * 60 * 60;
-      const grouped = _.groupBy(records,(item:CsvRecord) => {
-        return Math.floor(Date.parse(item.DATE as string)/timeSlice);
+      const grouped = _.groupBy(records, (item: CsvRecord) => {
+        return Math.floor(Date.parse(item.DATE as string) / timeSlice);
       });
-      const frames = _.map(records, (item:CsvRecord) => {
-        const time = Math.floor(Date.parse(item.time as string)/timeSlice) * timeSlice;
-        return({time: time,  value: item.air_temperature });
+      const frames = _.map(records, (item: CsvRecord) => {
+        const time =
+          Math.floor(Date.parse(item.time as string) / timeSlice) * timeSlice;
+        return { time: time, value: item.air_temperature };
       });
       this.basestation.data = frames;
-      const key = `basestations/${this.basestation.id}/data`
+      const key = `basestations/${this.basestation.id}/data`;
       this.saveToPath(key, this.basestation.data);
-    }
-    else {
+    } else {
       console.error("Could not load data in frame-helper");
     }
   }
 
   saveBasestation() {
     if (this.basestation) {
-      const key = `basestations/${this.basestation.id}`
-      this.saveToPath(key,this.basestation);
+      const key = `basestations/${this.basestation.id}`;
+      this.saveToPath(key, this.basestation);
     }
   }
 
-  deleteBasestation(base:Basestation|null){
-    if(base) {
+  deleteBasestation(base: Basestation | null) {
+    if (base) {
       delete this.basestationMap[base.id];
       this.basestation = null;
-      this.save({basestations: this.basestationMap});
+      this.save({ basestations: this.basestationMap });
     }
   }
 
@@ -310,32 +361,32 @@ class DataStore {
     const grid = new GridFormat();
     this.gridFormatMap[grid.id] = grid;
     this.gridFormat = grid;
-    this.save({gridFormats: this.gridFormatMap});
+    this.save({ gridFormats: this.gridFormatMap });
   }
 
   saveGridFormat() {
     if (this.gridFormat) {
-      const key = `gridFormats/${this.gridFormat.id}`
-      this.saveToPath(key,this.gridFormat);
+      const key = `gridFormats/${this.gridFormat.id}`;
+      this.saveToPath(key, this.gridFormat);
     }
   }
 
-  deleteGridFormat(grid:GridFormat) {
+  deleteGridFormat(grid: GridFormat) {
     delete this.gridFormatMap[grid.id];
     this.gridFormat = null;
-    this.save({gridFormats: this.gridFormatMap});
+    this.save({ gridFormats: this.gridFormatMap });
   }
 
   addMapConfig() {
     const map = new MapConfig();
     this.mapConfigMap[map.id] = map;
     this.editingMap = map;
-    this.save({mapConfigs: this.mapConfigMap});
+    this.save({ mapConfigs: this.mapConfigMap });
   }
 
   saveMapConfig() {
     if (this.editingMap) {
-      const key = `mapConfigs/${this.editingMap.id}`
+      const key = `mapConfigs/${this.editingMap.id}`;
       this.saveToPath(key, this.editingMap);
     }
   }
@@ -345,17 +396,17 @@ class DataStore {
     if (mapConfig) {
       delete this.mapConfigMap[mapConfig.id];
       this.editingMap = null;
-      this.save({mapConfigs: this.mapConfigMap});
+      this.save({ mapConfigs: this.mapConfigMap });
     }
   }
 
-  saveToPath(key:string, value:any) {
-    const obj:any = {};
+  saveToPath(key: string, value: any) {
+    const obj: any = {};
     obj[key] = value;
     this.firebaseImp.saveToFirebase(obj);
   }
 
-  save(obj:any){
+  save(obj: any) {
     this.firebaseImp.saveToFirebase(obj);
   }
 
