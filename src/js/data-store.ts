@@ -269,6 +269,16 @@ class DataStore {
     this.firebaseImp.session = session;
   }
 
+  renameSession(sessionName: string) {}
+  copySession(oldName: string, newName: string) {
+    this.firebaseImp.copySession(oldName, newName);
+  }
+
+  deleteSession(sessionName: string) {
+    this.firebaseImp.removeSession(sessionName);
+    console.log(`Removed session ${sessionName}`);
+  }
+
   setPrediction(prediction: Prediction) {
     const uuid = this.firebaseImp.sessionID;
     this.predictions[uuid] = prediction;

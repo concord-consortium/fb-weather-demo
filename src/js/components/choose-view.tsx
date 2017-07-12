@@ -27,7 +27,6 @@ export class ChooseView extends React.Component<
 
   linkTo(relativePath: string) {
     const session = this.props.params.sessionName;
-    // const path = "x"
     const pathString: string = `/sessions/${session}/${relativePath}`;
     return <Link to={pathString} />;
   }

@@ -24,6 +24,8 @@ interface FirebaseLinstener {
 
 interface FirebaseData {
   val(): any;
+  key: any;
+  forEach: Function;
 }
 interface FirebaseDisconnectSerivce {
   remove(): void;
@@ -38,6 +40,8 @@ interface FirebaseRef {
   onDisconnect(): FirebaseDisconnectSerivce;
   remove(): void;
   update(data: any): void;
+  remove(key: string): void;
+  child(path: string): FirebaseRef;
 }
 
 interface FireBaseConfig {
@@ -148,9 +152,12 @@ export class FirebaseImp {
     return `${this.basePath}/session_list`;
   }
 
-  get sessionPath(): string {
+  getNamedSessionPath(name: string): string {
     const basePath = DEFAULT_VERSION_STRING.replace(/\./g, "_");
-    return `/${this.basePath}/sessions/${this.session}`;
+    return `/${this.basePath}/sessions/${name}`;
+  }
+  get sessionPath(): string {
+    return this.getNamedSessionPath(this.session);
   }
 
   setSessionsListRef() {
@@ -310,9 +317,36 @@ export class FirebaseImp {
 
   loadDataFromFirebase(data: FirebaseData) {
     const dataV = data.val();
-    console.log(dataV);
+    this.log(dataV);
     for (let listener of this.listeners) {
       listener.setState(dataV);
     }
+  }
+
+  copySession(oldName: string, newName: string) {
+    const oldRef = firebase.database().ref(this.getNamedSessionPath(oldName));
+    const newRef = firebase.database().ref(this.getNamedSessionPath(newName));
+    oldRef.once("value").then(function(snap: FirebaseData) {
+      const value = snap.val();
+      value.presence = {}; // ugly but we need to remove presense data...
+      newRef.set(value);
+    });
+    this.sessionsListRef.push({ name: newName });
+  }
+
+  removeSession(oldName: string) {
+    const oldRef = firebase.database().ref(oldName);
+    const sessionsListRef = this.sessionsListRef;
+    sessionsListRef.once("value").then(function(snap: FirebaseData) {
+      const sessionNames = snap.val();
+      snap.forEach(function(childSnap: FirebaseData) {
+        const key = childSnap.key;
+        const name = childSnap.val().name;
+        if (name == oldName) {
+          sessionsListRef.child(key).remove();
+          oldRef.remove();
+        }
+      });
+    });
   }
 }

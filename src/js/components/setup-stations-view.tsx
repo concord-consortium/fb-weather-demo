@@ -72,8 +72,6 @@ export class SetupStationsView extends React.Component<
 
   readData() {}
   onDrop(acceptedFiles: File[], rejectedFiles: File[]) {
-    console.log("Accepted files: ", acceptedFiles);
-    console.log("Rejected files: ", rejectedFiles);
     var reader = new FileReader();
     reader.addEventListener(
       "loadend",
