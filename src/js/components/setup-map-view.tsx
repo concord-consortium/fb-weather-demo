@@ -1,5 +1,5 @@
 import * as React from "react";
-import { observer } from 'mobx-react';
+import { observer } from "mobx-react";
 import RaisedButton from "material-ui/RaisedButton";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
@@ -10,12 +10,12 @@ import { LeafletMapView } from "./leaflet-map-view";
 import { MapConfig } from "../map-config";
 import { dataStore } from "../data-store";
 
-const _ = require('lodash');
+const _ = require("lodash");
 
-export interface SetupMapState { }
-export interface SetupMapProps { }
+export interface SetupMapState {}
+export interface SetupMapProps {}
 
-const styles:ComponentStyleMap= {
+const styles: ComponentStyleMap = {
   config: {
     display: "flex",
     flexDirection: "column",
@@ -35,21 +35,21 @@ const styles:ComponentStyleMap= {
     margin: "1em"
   },
   scrollContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around'
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-around"
   },
   gridList: {
-    display: 'flex',
-    flexWrap: 'nowrap',
-    overflowX: 'auto'
+    display: "flex",
+    flexWrap: "nowrap",
+    overflowX: "auto"
   },
   mapGridTile: {
-    width: '200px',
-    height: '125px',
-    margin: '4px',
+    width: "200px",
+    height: "125px",
+    margin: "4px",
     overflow: "hidden",
-    boxShadow: '0px 0px 3px hsla(0, 0%, 50%, 0.5)'
+    boxShadow: "0px 0px 3px hsla(0, 0%, 50%, 0.5)"
   },
   centeringMapWrapper: {
     display: "flex",
@@ -58,26 +58,32 @@ const styles:ComponentStyleMap= {
     justifyContent: "center"
   },
   titleStyle: {
-    color: 'rgb(0, 188, 212)'
-  },
+    color: "rgb(0, 188, 212)"
+  }
 };
 
 @observer
-export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> {
-  constructor(props:SetupMapProps, ctx:any){
+export class SetupMapView extends React.Component<
+  SetupMapProps,
+  SetupMapState
+> {
+  constructor(props: SetupMapProps, ctx: any) {
     super(props, ctx);
   }
 
   renderEditor() {
     const mapConfig = dataStore.editingMap;
-    if (mapConfig){
-      return(
+    if (mapConfig) {
+      return (
         <div style={styles.config}>
           <TextField
             value={mapConfig.name}
             style={styles.textField}
             floatingLabelText="name"
-            onChange={(e,v) => { mapConfig.name = v; dataStore.saveMapConfig(); }}
+            onChange={(e, v) => {
+              mapConfig.name = v;
+              dataStore.saveMapConfig();
+            }}
           />
           <LeafletMapView
             mapConfig={dataStore.editingMap}
@@ -85,39 +91,41 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
             baseStations={dataStore.basestations}
             width={600}
             height={400}
-            update={ (lat,long,zoom) => {
+            update={(lat, long, zoom) => {
               mapConfig.lat = lat;
               mapConfig.long = long;
               mapConfig.zoom = zoom;
               dataStore.saveMapConfig();
-            }}/>
+            }}
+          />
           <div style={styles.buttonRow}>
             <RaisedButton
               label="done"
               primary={true}
-              onTouchTap={ () => { dataStore.editingMap = null }}
+              onTouchTap={() => {
+                dataStore.editingMap = null;
+              }}
             />
             <RaisedButton
               label="delete"
               secondary={true}
-              onTouchTap={ () => { dataStore.deleteMapConfig() }}>
-            </RaisedButton>
+              onTouchTap={() => {
+                dataStore.deleteMapConfig();
+              }}
+            />
           </div>
         </div>
-      )
+      );
     }
   }
 
   renderAddButton() {
-    if(dataStore.gridFormat) {
-      return;
-    }
-    return(
+    return (
       <div style={styles.buttonRow}>
         <FlatButton
           label="add Map"
           primary={true}
-          onTouchTap={ () => dataStore.addMapConfig() }
+          onTouchTap={() => dataStore.addMapConfig()}
         />
       </div>
     );
@@ -129,9 +137,15 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
       <div className="configDataView">
         <div style={styles.scrollContainer}>
           <GridList style={styles.gridList}>
-            { _.map(maps, (map:MapConfig) =>
-              <div style={styles.mapGridTile} key={map.id} onClick={(e) => dataStore.editingMap=map}>
-                <div>{map.name}</div>
+            {_.map(maps, (map: MapConfig) =>
+              <div
+                style={styles.mapGridTile}
+                key={map.id}
+                onClick={e => (dataStore.editingMap = map)}
+              >
+                <div>
+                  {map.name}
+                </div>
                 <div style={styles.centeringMapWrapper}>
                   <LeafletMapView
                     mapConfig={map}
@@ -145,8 +159,8 @@ export class SetupMapView extends React.Component<SetupMapProps, SetupMapState> 
             )}
           </GridList>
         </div>
-        { this.renderAddButton() }
-        { this.renderEditor()    }
+        {this.renderAddButton()}
+        {this.renderEditor()}
       </div>
     );
   }

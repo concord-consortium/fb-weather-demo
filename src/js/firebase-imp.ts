@@ -18,6 +18,7 @@ interface FirebaseError {
 
 interface FirebaseLinstener {
   setState(state: any): void;
+  setSessionPath(name: string): void;
   setSessionList(sessions: string[]): void;
 }
 
@@ -147,7 +148,7 @@ export class FirebaseImp {
     return `${this.basePath}/session_list`;
   }
 
-  get sessionPath() {
+  get sessionPath(): string {
     const basePath = DEFAULT_VERSION_STRING.replace(/\./g, "_");
     return `/${this.basePath}/sessions/${this.session}`;
   }
@@ -185,16 +186,23 @@ export class FirebaseImp {
 
   set session(sessionName: string) {
     const fn = function() {
-      this._session = sessionName;
-      this.setDataRef();
-      if (!_.includes(this.sessionNames, sessionName)) {
-        this.sessionsListRef.push({ name: sessionName });
-      }
-      this.log(`
-        =========================================
-        CHANGED SESSION TO :  ${sessionName}
-        =========================================
-      `);
+      const self: FirebaseImp = this;
+      this.sessionsListRef.once("value").then(function(data: FirebaseData) {
+        const sessionNames = _.map(data.val(), "name");
+        if (!_.includes(sessionNames, sessionName)) {
+          self.sessionsListRef.push({ name: sessionName });
+        }
+        self._session = sessionName;
+        self.setDataRef();
+        for (let listener of self.listeners) {
+          listener.setSessionPath(self._session);
+        }
+        self.log(`
+          =========================================
+          CHANGED SESSION TO :  ${sessionName}
+          =========================================
+        `);
+      });
     };
     fn.bind(this);
     this.try(fn);

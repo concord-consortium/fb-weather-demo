@@ -1,23 +1,20 @@
 import * as React from "react";
-import { Card  } from "material-ui/Card";
+import { Card } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
 import { SetupStationsView } from "./setup-stations-view";
-import { SetupGridView } from "./setup-grid-view";
 import { SetupMapView } from "./setup-map-view";
-import { Frame } from "../frame";
 import { dataStore } from "../data-store";
 
-export type SetupViewTab = "stations" | "grids" |  "maps"
+export type SetupViewTab = "stations" | "grids" | "maps";
 
 export interface SetupViewProps {}
 export interface SetupViewState {
-  tab: SetupViewTab
+  tab: SetupViewTab;
 }
 
-
 export class SetupView extends React.Component<SetupViewProps, SetupViewState> {
-  interval: any
-  constructor(props:SetupViewProps, ctxt:any){
+  interval: any;
+  constructor(props: SetupViewProps, ctxt: any) {
     super(props, ctxt);
     this.state = {
       tab: "stations"
@@ -25,16 +22,16 @@ export class SetupView extends React.Component<SetupViewProps, SetupViewState> {
   }
 
   render() {
-    const handleChangeTab = (value:SetupViewTab) => {
+    const handleChangeTab = (value: SetupViewTab) => {
       this.setState({
-        tab: value,
+        tab: value
       });
     };
-    return(
+    return (
       <Card>
-         <Tabs value={this.state.tab} onChange={handleChangeTab}>
+        <Tabs value={this.state.tab} onChange={handleChangeTab}>
           <Tab label="Stations" value="stations">
-            <SetupStationsView  />
+            <SetupStationsView />
           </Tab>
           {/* TODO: We might want to re-enable grids later.
           <Tab label="Grids" value="grid">
@@ -46,7 +43,6 @@ export class SetupView extends React.Component<SetupViewProps, SetupViewState> {
           </Tab>
         </Tabs>
       </Card>
-
     );
   }
 }

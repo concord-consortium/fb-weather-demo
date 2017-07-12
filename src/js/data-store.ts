@@ -1,7 +1,5 @@
 import { observable, computed } from "mobx";
 import { v1 as uuid } from "uuid";
-import { Frame } from "./frame";
-import { GridFormat, GridFormatMap, Grid } from "./grid";
 import { Basestation, BasestationMap } from "./basestation";
 import { SimPrefs } from "./sim-prefs";
 import { FirebaseImp } from "./firebase-imp";
@@ -31,8 +29,6 @@ export interface Prediction {
   temp?: number;
   rationale?: string;
   imageUrl?: string;
-  gridX?: number;
-  gridY?: number;
 }
 
 export interface PredictionMap {
@@ -41,38 +37,33 @@ export interface PredictionMap {
 
 export interface FireBaseState {
   frame?: number;
-  frames?: Frame[];
+  maxFrame: number;
   prefs?: SimPrefs;
   predictions?: PredictionMap;
   presence?: PresenceMap;
   basestations?: BasestationMap;
-  gridFormats?: GridFormatMap;
   mapConfigs?: MapConfigMap;
 }
 
 class DataStore {
   @observable nowShowing: NowShowingType;
   @observable frameNumber: number;
-  @observable frames: Frame[];
+  @observable maxFrame: number;
   @observable prefs: SimPrefs;
   @observable predictions: PredictionMap;
   @observable presenceMap: PresenceMap;
   @observable basestationMap: BasestationMap;
   @observable basestation: Basestation | null;
-  @observable gridFormatMap: GridFormatMap;
-  @observable gridFormat: GridFormat | null;
   @observable mapConfigMap: MapConfigMap;
   @observable editingMap: MapConfig | null;
   @observable sessionList: String[];
+  @observable sessionPath: string;
   firebaseImp: FirebaseImp;
 
   constructor() {
     this.nowShowing = "loading";
     this.frameNumber = 0;
-    this.frames = [];
     this.prefs = {
-      gridName: "default",
-      gridNames: ["default"],
       showBaseMap: true,
       showTempColors: false,
       showTempValues: false,
@@ -83,7 +74,6 @@ class DataStore {
     this.presenceMap = {};
     this.predictions = {};
     this.basestationMap = {};
-    this.gridFormatMap = {};
     this.mapConfigMap = {};
     this.sessionList = [];
     this.registerFirebase();
@@ -107,14 +97,13 @@ class DataStore {
   }
 
   setState(newState: FireBaseState) {
-    if (newState.frames) {
-      (this.frames as any).replace(newState.frames);
-    } else {
-      this.frames = observable([]);
-    }
-
     if (newState.frame) {
       this.frameNumber = newState.frame;
+    } else {
+      this.setFrame(0);
+    }
+    if (newState.maxFrame) {
+      this.maxFrame = newState.maxFrame;
     } else {
       this.setFrame(0);
     }
@@ -141,12 +130,6 @@ class DataStore {
       this.basestationMap = observable(newState.basestations);
     } else {
       this.basestationMap = observable({});
-    }
-
-    if (newState.gridFormats) {
-      this.gridFormatMap = observable(newState.gridFormats);
-    } else {
-      this.gridFormatMap = observable({});
     }
 
     if (newState.mapConfigs) {
@@ -189,31 +172,10 @@ class DataStore {
   }
 
   @computed
-  get gridFormats() {
-    return _.map(this.gridFormatMap, (g: GridFormat) => {
-      return g;
-    });
-  }
-
-  @computed
   get mapConfigs() {
     return _.map(this.mapConfigMap, (g: MapConfig) => {
       return g;
     });
-  }
-
-  @computed
-  get frame() {
-    return this.frames[this.frameNumber];
-  }
-
-  @computed
-  get grid() {
-    const formatName = this.gridFormat ? this.gridFormat.name : "";
-    if (this.frame && this.frame.grids) {
-      return this.frame.grids[formatName];
-    }
-    return new Grid();
   }
 
   @computed
@@ -230,8 +192,6 @@ class DataStore {
           let prediction = this.predictions[key];
           results.push({
             name: basestation.name,
-            gridX: basestation.gridX,
-            gridY: basestation.gridY,
             temp: prediction.temp
           });
         }
@@ -281,19 +241,15 @@ class DataStore {
   }
 
   nextFrame() {
-    const frameLength = this.frames.length;
+    const frameLength = this.maxFrame;
     let frameNumber = (this.frameNumber || 0) + 1;
     frameNumber = frameNumber % frameLength;
-    this.setFrame(frameNumber);
+    this.setFrame(frameNumber || 0);
   }
 
   setFrame(frame: number) {
     this.frameNumber = frame;
     this.save({ frame: frame });
-  }
-
-  setFrames(frames: Frame[]) {
-    this.save({ frames: frames });
   }
 
   setPref(key: string, value: any) {
@@ -303,6 +259,10 @@ class DataStore {
 
   setPrefs(prefs: SimPrefs) {
     this.save({ prefs: prefs });
+  }
+
+  setSessionPath(sessionPath: string) {
+    this.sessionPath = sessionPath;
   }
 
   setSession(session: string) {
@@ -355,26 +315,6 @@ class DataStore {
       this.basestation = null;
       this.save({ basestations: this.basestationMap });
     }
-  }
-
-  addGridFormat() {
-    const grid = new GridFormat();
-    this.gridFormatMap[grid.id] = grid;
-    this.gridFormat = grid;
-    this.save({ gridFormats: this.gridFormatMap });
-  }
-
-  saveGridFormat() {
-    if (this.gridFormat) {
-      const key = `gridFormats/${this.gridFormat.id}`;
-      this.saveToPath(key, this.gridFormat);
-    }
-  }
-
-  deleteGridFormat(grid: GridFormat) {
-    delete this.gridFormatMap[grid.id];
-    this.gridFormat = null;
-    this.save({ gridFormats: this.gridFormatMap });
   }
 
   addMapConfig() {
