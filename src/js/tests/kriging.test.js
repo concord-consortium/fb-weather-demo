@@ -1,9 +1,9 @@
-import {Kriging} from "../kriging";
+import { Kriging } from "../kriging";
 
 const data = {
   values: [0, 10, 0],
-  xs:     [0, 1, 2],
-  ys:     [0, 1, 2]
+  xs: [0, 1, 2],
+  ys: [0, 1, 2]
 };
 
 const kriging = Kriging();
@@ -26,4 +26,3 @@ describe("Testing Kriging interpolation", () => {
     expect(predict11).toBeCloseTo(3.3, 0.1);
   });
 });
-
