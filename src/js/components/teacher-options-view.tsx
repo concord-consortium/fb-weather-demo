@@ -65,16 +65,6 @@ export class TeacherOptionsView extends React.Component<
     };
     return (
       <CardText>
-        {/*
-        TODO:  We might want to re-enable grids later. TBD
-        <SelectField
-          floatingLabelText="Use this grid:"
-          value={gridName}
-          autoWidth={true}
-          onChange={setGrid}>
-            { gridNames.map( (name,index) => <MenuItem key={index} value={name} primaryText={name} /> ) }
-        </SelectField>
-        */}
         <SelectField
           floatingLabelText="Use this map:"
           value={mapId}
@@ -86,13 +76,11 @@ export class TeacherOptionsView extends React.Component<
           )}
         </SelectField>
         <div className="toggles" style={styles.block}>
-          {/*{ this.renderPrefButton("Base map","showBaseMap") }*/}
-          {/*{ this.renderPrefButton("Grid lines","showGridLines") }*/}
-          {this.renderPrefButton("Temp values", "showTempValues")}
-          {/*{ this.renderPrefButton("Temp colors","showTempColors") }*/}
-          {this.renderPrefButton("Show station names", "showGroupNames")}
-          {this.renderPrefButton("Show station temps", "showStationTemps")}
-          {this.renderPrefButton("Show station predictions", "showPredictions")}
+          {this.renderPrefButton("Show Map", "showBaseMap")}
+          {this.renderPrefButton("Show Names", "showStationNames")}
+          {this.renderPrefButton("Show Temperature", "showTempValues")}
+          {this.renderPrefButton("Show Predictions", "showPredictions")}
+          {this.renderPrefButton("Show Prediction Diff", "showDeltaTemp")}
           {this.renderPrefButton("Enable prediction", "enablePrediction")}
         </div>
       </CardText>
