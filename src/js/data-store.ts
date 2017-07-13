@@ -36,7 +36,7 @@ export interface PredictionMap {
 }
 
 export interface FireBaseState {
-  frame?: number;
+  frameNumber?: number;
   maxFrame: number;
   prefs?: SimPrefs;
   predictions?: PredictionMap;
@@ -96,15 +96,12 @@ class DataStore {
   }
 
   setState(newState: FireBaseState) {
-    if (newState.frame) {
-      this.frameNumber = newState.frame;
-    } else {
-      this.setFrame(0);
+    if (newState.frameNumber) {
+      this.frameNumber = newState.frameNumber;
     }
+
     if (newState.maxFrame) {
       this.maxFrame = newState.maxFrame;
-    } else {
-      this.setFrame(0);
     }
 
     if (newState.prefs) {
@@ -248,7 +245,7 @@ class DataStore {
     const frameLength = this.maxFrame;
     let frameNumber = (this.frameNumber || 0) + 1;
     frameNumber = frameNumber % frameLength;
-    this.setFrame(frameNumber || 0);
+    this.setFrame(frameNumber);
   }
 
   setFrame(frame: number) {
