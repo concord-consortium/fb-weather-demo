@@ -147,7 +147,7 @@ class DataStore {
     };
     if (this.basestation) {
       const uuid = this.basestation.id;
-      return this.predictions[uuid];
+      return this.predictions[uuid] || defaultPrediction;
     }
     return defaultPrediction;
   }
