@@ -142,7 +142,9 @@ export class SetupStationsView extends React.Component<
               label="done"
               primary={true}
               onTouchTap={() => {
-                dataStore.basestation = null;
+                {
+                  /* dataStore.basestation = null; */
+                }
               }}
             />
             <RaisedButton
@@ -176,7 +178,7 @@ export class SetupStationsView extends React.Component<
     const setBasestation = (indicies: number[]) => {
       const selected = baseStations[indicies[0]];
       if (selected) {
-        dataStore.basestation = selected;
+        dataStore.setUserBaseStation(selected.id);
       }
     };
     return (
@@ -202,7 +204,7 @@ export class SetupStationsView extends React.Component<
               >
                 <img
                   src={base.imageUrl}
-                  onClick={() => (dataStore.basestation = base)}
+                  onClick={() => dataStore.setUserBaseStation(base.id)}
                 />
               </GridTile>
             )}

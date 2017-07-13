@@ -316,6 +316,16 @@ export class FirebaseImp {
     }
   }
 
+  loadUserData(key: string): string | null {
+    if (this.userRef) {
+      this.userRef.once("value").then(function(snap) {
+        const value = snap.val();
+        return value[key];
+      });
+    }
+    return null;
+  }
+
   loadDataFromFirebase(data: FirebaseData) {
     const dataV = data.val();
     this.log(dataV);

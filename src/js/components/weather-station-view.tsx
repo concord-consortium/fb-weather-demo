@@ -38,7 +38,7 @@ export class WeatherStationView extends React.Component<
   }
 
   setConfig(data: Basestation) {
-    dataStore.basestation = data;
+    dataStore.updateBasestation(data);
   }
 
   render() {
@@ -50,8 +50,6 @@ export class WeatherStationView extends React.Component<
     let time = frameNumber;
 
     if (dataStore.basestation) {
-      x = dataStore.basestation.gridX;
-      y = dataStore.basestation.gridY;
       name = dataStore.basestation.name;
       imgUrl = dataStore.basestation.imageUrl;
     }

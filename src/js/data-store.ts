@@ -53,7 +53,6 @@ class DataStore {
   @observable predictions: PredictionMap;
   @observable presenceMap: PresenceMap;
   @observable basestationMap: BasestationMap;
-  @observable basestation: Basestation | null;
   @observable mapConfigMap: MapConfigMap;
   @observable editingMap: MapConfig | null;
   @observable sessionList: String[];
@@ -140,20 +139,21 @@ class DataStore {
   }
 
   @computed
-  get prediction() {
-    const uuid = this.firebaseImp.sessionID;
+  get prediction(): Prediction {
     const defaultPrediction = {
-      precictedTemp: null,
-      rationale: null,
-      imageUrl: null
+      temp: 32,
+      rationale: "(no rationale)",
+      imageUrl: ""
     };
-    this.predictions[uuid] =
-      this.predictions[uuid] || observable(defaultPrediction);
-    return this.predictions[uuid];
+    if (this.basestation) {
+      const uuid = this.basestation.id;
+      return this.predictions[uuid];
+    }
+    return defaultPrediction;
   }
 
   @computed
-  get sessionInfo() {
+  get userInfo() {
     const uuid = this.firebaseImp.sessionID;
     const defaultPresence = {
       name: "",
@@ -179,6 +179,11 @@ class DataStore {
   }
 
   @computed
+  get basestation() {
+    return this.basestationMap[this.userInfo.basestationId];
+  }
+
+  @computed
   get filteredPredictions() {
     const predictionKeys = _.keys(this.predictions);
     const presenceKeys = _.keys(this.presenceMap);
@@ -186,8 +191,8 @@ class DataStore {
     for (let i = 0; i < presenceKeys.length; i++) {
       let key = presenceKeys[i];
       let presence = this.presenceMap[key];
-      let basestation = this.basestationMap[presence.baseStationId];
-      if (basestation && basestation.gridX && basestation.gridY) {
+      let basestation = this.basestationMap[presence.basestationId];
+      if (basestation) {
         if (_.includes(predictionKeys, key)) {
           let prediction = this.predictions[key];
           results.push({
@@ -222,7 +227,7 @@ class DataStore {
     this.setPref("mapConfig", config.id);
   }
 
-  set sessionInfo(baseChange: Presence) {
+  set userInfo(baseChange: Presence) {
     const uuid = this.firebaseImp.sessionID;
     _.assignIn(this.presenceMap[uuid], baseChange);
     this.firebaseImp.saveUserData(this.presenceMap[uuid]);
@@ -237,7 +242,6 @@ class DataStore {
 
   setUserBaseStation(id: string) {
     this.updateUserPref("basestationId", id);
-    this.basestation = this.basestationMap[id];
   }
 
   nextFrame() {
@@ -276,19 +280,19 @@ class DataStore {
 
   deleteSession(sessionName: string) {
     this.firebaseImp.removeSession(sessionName);
-    console.log(`Removed session ${sessionName}`);
   }
 
   setPrediction(prediction: Prediction) {
-    const uuid = this.firebaseImp.sessionID;
-    this.predictions[uuid] = prediction;
-    this.save({ predictions: this.predictions });
+    if (this.basestation) {
+      const uuid = this.basestation.id;
+      this.predictions[uuid] = prediction;
+      this.save({ predictions: this.predictions });
+    }
   }
 
   addBasestation() {
     const bs = new Basestation();
     this.basestationMap[bs.id] = bs;
-    this.basestation = bs;
     this.save({ basestations: this.basestationMap });
   }
 
@@ -312,6 +316,12 @@ class DataStore {
     }
   }
 
+  updateBasestation(data: Basestation) {
+    const key = `basestations/${this.basestation.id}`;
+    this.basestationMap[this.basestation.id] = data;
+    this.saveToPath(key, data);
+  }
+
   saveBasestation() {
     if (this.basestation) {
       const key = `basestations/${this.basestation.id}`;
@@ -322,7 +332,6 @@ class DataStore {
   deleteBasestation(base: Basestation | null) {
     if (base) {
       delete this.basestationMap[base.id];
-      this.basestation = null;
       this.save({ basestations: this.basestationMap });
     }
   }
