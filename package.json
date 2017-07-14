@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "tslint --project . && eslint src",
+    "lint:fix": "tslint --project . --fix && eslint --fix src",
     "start": "webpack-dev-server",
     "test": "jest",
     "watch": "webpack --watch"

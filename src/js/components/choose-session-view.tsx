@@ -103,16 +103,16 @@ export class ChooseSessionView extends React.Component<
   }
 
   handleClose() {
-    if (this.state.nowShowing == DialogType.Copy) {
+    if (this.state.nowShowing === DialogType.Copy) {
       dataStore.copySession(
         this.state.oldSessionName,
         this.state.newSessionName
       );
     }
-    if (this.state.nowShowing == DialogType.Rename) {
+    if (this.state.nowShowing === DialogType.Rename) {
       dataStore.renameSession(this.state.newSessionName);
     }
-    if (this.state.nowShowing == DialogType.Delete) {
+    if (this.state.nowShowing === DialogType.Delete) {
       dataStore.deleteSession(this.state.newSessionName);
     }
     this.setState({ nowShowing: DialogType.None });
@@ -149,9 +149,9 @@ export class ChooseSessionView extends React.Component<
         onTouchTap={this.handleCancel.bind(this)}
       />
     ];
-    const showingCopy = this.state.nowShowing == DialogType.Copy;
-    const showingDelete = this.state.nowShowing == DialogType.Delete;
-    const showingRename = this.state.nowShowing == DialogType.Rename;
+    const showingCopy = this.state.nowShowing === DialogType.Copy;
+    const showingDelete = this.state.nowShowing === DialogType.Delete;
+    const showingRename = this.state.nowShowing === DialogType.Rename;
 
     const handleClose = this.handleClose.bind(this);
     return (

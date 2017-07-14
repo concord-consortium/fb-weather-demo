@@ -8,7 +8,7 @@ export class Basestation {
   @observable callsign: string;
   @observable lat: number;
   @observable long: number;
-  @observable data: { time: number; value: number }[];
+  @observable data: Array<{ time: number; value: number }>;
   constructor() {
     this.id = uuid();
     this.imageUrl = "/img/farm.jpg";

@@ -72,7 +72,7 @@ export class SetupStationsView extends React.Component<
 
   readData() {}
   onDrop(acceptedFiles: File[], rejectedFiles: File[]) {
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.addEventListener(
       "loadend",
       function(event: any) {

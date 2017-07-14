@@ -1,3 +1,3 @@
 export interface ComponentStyleMap {
-  [key: string]: React.CSSProperties
+  [key: string]: React.CSSProperties;
 }

@@ -25,7 +25,7 @@ const log = function(msg: string) {
 };
 
 const updateSession = function(nextSession: string) {
-  if (nextSession && nextSession != dataStore.firebaseImp.session) {
+  if (nextSession && nextSession !== dataStore.firebaseImp.session) {
     dataStore.setSession(nextSession);
     const logString = `
       ================================================

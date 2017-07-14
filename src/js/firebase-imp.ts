@@ -118,7 +118,7 @@ export class FirebaseImp {
   }
 
   reqAuth() {
-    var provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new firebase.auth.GoogleAuthProvider();
     firebase
       .auth()
       //.signInWithRedirect(provider)
@@ -128,7 +128,7 @@ export class FirebaseImp {
   }
 
   failAuth(error: FirebaseError) {
-    var errorMessage = error.message;
+    const errorMessage = error.message;
     const email = error.email;
     this.error(["could not authenticate", errorMessage, email].join(" "));
   }
@@ -353,7 +353,7 @@ export class FirebaseImp {
       snap.forEach(function(childSnap: FirebaseData) {
         const key = childSnap.key;
         const name = childSnap.val().name;
-        if (name == oldName) {
+        if (name === oldName) {
           sessionsListRef.child(key).remove();
           oldRef.remove();
         }
