@@ -12,7 +12,7 @@ const div = React.DOM.div;
 
 export interface WeatherStationConfigState {}
 export interface WeatherStationConfigProps {
-  change(any: any): void;
+  change(key: any): void;
   x: number;
   y: number;
   name: string;

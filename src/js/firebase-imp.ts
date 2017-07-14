@@ -16,7 +16,7 @@ interface FirebaseError {
   email: string;
 }
 
-interface FirebaseLinstener {
+interface FirebaseListener {
   setState(state: any): void;
   setSessionPath(name: string): void;
   setSessionList(sessions: string[]): void;
@@ -54,8 +54,8 @@ export class FirebaseImp {
   sessionID: string;
   user: FirebaseUser;
   version: string;
-  listeners: FirebaseLinstener[];
-  sessionNames: String[];
+  listeners: FirebaseListener[];
+  sessionNames: string[];
   config: FireBaseConfig;
   connectionStatus: FirebaseRef;
   baseRef: FirebaseRef;
@@ -295,11 +295,11 @@ export class FirebaseImp {
     });
   }
 
-  addListener(listener: FirebaseLinstener) {
+  addListener(listener: FirebaseListener) {
     this.listeners.push(listener);
   }
 
-  removeListener(listener: FirebaseLinstener) {
+  removeListener(listener: FirebaseListener) {
     const oldListeners = this.listeners;
     this.listeners = oldListeners.filter(el => el !== listener);
   }
