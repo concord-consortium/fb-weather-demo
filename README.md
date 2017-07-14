@@ -20,6 +20,7 @@ if they are not already installed  your development system.  Also install `live-
 
 ## Misc:
 * [TypeScript](https://www.typescriptlang.org/) type support for better tooling and fewer bugs in your javascript.
+* [TSLint](https://palantir.github.io/tslint/) An extensible linter for the TypeScript language
 * [ESLint](http://eslint.org/) The pluggable linting utility for JavaScript and JSX
 
 ## Important files:
