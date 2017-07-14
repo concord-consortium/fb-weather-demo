@@ -1,6 +1,7 @@
 // Extended from: https://github.com/oeo4b/kriging.js/blob/master/LICENSE
 // oeo4b/kriging.js is licensed under the MIT License
 // TODO: Cleanup and ES6-ify. Stop extending Array.
+/* tslint:disable */
 
 Array.prototype.max = function() {
   return Math.max.apply(null, this);

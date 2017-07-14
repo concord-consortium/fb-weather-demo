@@ -55,7 +55,7 @@ class DataStore {
   @observable basestationMap: BasestationMap;
   @observable mapConfigMap: MapConfigMap;
   @observable editingMap: MapConfig | null;
-  @observable sessionList: String[];
+  @observable sessionList: string[];
   @observable sessionPath: string;
   firebaseImp: FirebaseImp;
 
@@ -91,7 +91,7 @@ class DataStore {
     this.nowShowing = _new;
   }
 
-  setSessionList(newSessions: String[]) {
+  setSessionList(newSessions: string[]) {
     this.sessionList = observable(newSessions);
   }
 
