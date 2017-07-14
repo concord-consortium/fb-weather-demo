@@ -26,8 +26,8 @@ type CsvRecords = CsvRecord[];
 
 export interface Prediction {
   name?: string;
-  temp?: number;
-  rationale?: string;
+  temp: number;
+  rationale: string;
   imageUrl?: string;
 }
 
@@ -194,7 +194,8 @@ class DataStore {
           let prediction = this.predictions[key];
           results.push({
             name: basestation.name,
-            temp: prediction.temp
+            temp: prediction.temp,
+            rationale: prediction.rationale
           });
         }
       }
@@ -228,6 +229,16 @@ class DataStore {
     const uuid = this.firebaseImp.sessionID;
     _.assignIn(this.presenceMap[uuid], baseChange);
     this.firebaseImp.saveUserData(this.presenceMap[uuid]);
+  }
+
+  predictionFor(basestationId: string):Prediction {
+    if (this.predictions[basestationId] !== undefined) {
+      return this.predictions[basestationId];
+    }
+    return {
+      temp: -1,
+      rationale: "(no answer)"
+    } // TBD: What do do when there is no prediction?
   }
 
   updateUserPref(key: any, value: any) {

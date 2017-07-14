@@ -29,7 +29,7 @@ export class LeafletMapMarker extends React.Component<
       basestation.data.length > dataStore.frameNumber
     ) {
       actualTemp = basestation.data[dataStore.frameNumber].value;
-      predictedTemp = basestation.data[0].value;
+      predictedTemp = dataStore.predictionFor(basestation.id).temp;
     }
     const precision = 0;
     const difTemp = predictedTemp - actualTemp;
