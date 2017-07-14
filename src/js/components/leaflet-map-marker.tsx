@@ -10,6 +10,7 @@ interface LeafletMapMarkerProps {
 }
 
 interface LeafletMapMarkerState {}
+const precision = 0;
 
 export class LeafletMapMarker extends React.Component<
   LeafletMapMarkerProps,
@@ -19,66 +20,84 @@ export class LeafletMapMarker extends React.Component<
     super(props, ctx);
   }
 
-  predictedTempDom(predictedTempString: string) {
-    if (dataStore.prefs.showPredictions) {
-      return `<span class="predictTemp">${predictedTempString}°</span> /`;
-    }
-    return "";
-  }
-
-  actualTempDom(actualTempString: string) {
-    if (dataStore.prefs.showTempValues) {
-      return `<span class="actualTemp">${actualTempString}°</span>`;
-    }
-    return "";
-  }
-
-  difTempDom(difTempString: string) {
-    if (dataStore.prefs.showDeltaTemp) {
-      return `<div class="difTemp">${difTempString}&#8457</div>`;
-    }
-    return "";
-  }
-
-  callsignDom(callsign: string) {
-    if (dataStore.prefs.showStationNames) {
-      return `<div>${callsign}</div>`;
-    }
-    return "";
-  }
-
-  render() {
+  get prediction() {
     const basestation = this.props.basestation;
-    let predictedTemp = 0;
-    let actualTemp = 0;
+    const prediction = dataStore.predictionFor(basestation.id);
+    return prediction;
+  }
+
+  get predictedTemp() {
+    if(this.prediction) {
+      return this.prediction.temp;
+    }
+    return null;
+  }
+
+  get actualTemp() {
+    const basestation = this.props.basestation;
     if (
       basestation &&
       basestation.data &&
       basestation.data.length > dataStore.frameNumber
     ) {
-      actualTemp = basestation.data[dataStore.frameNumber].value;
-      predictedTemp = dataStore.predictionFor(basestation.id).temp;
+      return basestation.data[dataStore.frameNumber].value;
     }
-    const precision = 0;
-    const difTemp = predictedTemp - actualTemp;
-    const predictedTempString = predictedTemp.toFixed(precision);
-    const actualTempString = actualTemp.toFixed(precision);
+    return null;
+  }
 
-    const center = { lat: basestation.lat, lng: basestation.long };
-    const key = basestation.id;
+  get diffTemp() {
+    if(this.actualTemp && this.predictedTemp) {
+      return(this.actualTemp - this.predictedTemp)
+    }
+    return null;
+  }
 
-    let difTempString = difTemp.toFixed(precision);
-    difTempString = difTemp < 0 ? difTempString : `+${difTempString}`;
+  predictedTempDiv() {
+    if(dataStore.prefs.showPredictions && this.prediction) {
+      if (this.prediction.temp) {
+        const predictedTempString = this.prediction.temp.toFixed(precision);
+        return `<span class="predictTemp">${predictedTempString}°</span> /`;
+      }
+    }
+    return "";
+  }
 
+  actualTempDiv() {
+    if (dataStore.prefs.showTempValues && this.actualTemp) {
+      const actualTempString = this.actualTemp.toFixed(precision);
+      return `<span class="actualTemp">${actualTempString}°</span>`;
+    }
+    return "";
+  }
+
+  diffTempDiv() {
+    if (dataStore.prefs.showDeltaTemp && this.diffTemp) {
+      let difTempString = this.diffTemp.toFixed(precision);
+      difTempString = this.diffTemp < 0 ? difTempString : `+${difTempString}`;
+      return `<div class="difTemp">${difTempString}&#8457</div>`;
+    }
+    return "";
+  }
+
+  callsignDiv() {
+    if (dataStore.prefs.showStationNames) {
+      return `<div>${this.props.basestation.callsign}</div>`;
+    }
+    return "";
+  }
+
+  render() {
+    const center = { lat: this.props.basestation.lat, lng: this.props.basestation.long };
+    const key = this.props.basestation.id;
     const icon = new DivIcon({
       html: `
         <div class "divIconContent" >
           <div>
-            ${this.predictedTempDom(predictedTempString)}
-            ${this.actualTempDom(actualTempString)}
+            ${this.predictedTempDiv()}
+            ${this.actualTempDiv()}
           </div>
-            ${this.difTempDom(difTempString)}
-            ${this.callsignDom(basestation.callsign)}
+            ${this.diffTempDiv()}
+            ${this.callsignDiv()}
         </div>`,
       iconSize: [50, 50],
       className: "divIcon"

@@ -232,14 +232,11 @@ class DataStore {
     this.firebaseImp.saveUserData(this.presenceMap[uuid]);
   }
 
-  predictionFor(basestationId: string):Prediction {
+  predictionFor(basestationId: string):Prediction | null{
     if (this.predictions[basestationId] !== undefined) {
       return this.predictions[basestationId];
     }
-    return {
-      temp: -1,
-      rationale: "(no answer)"
-    } // TBD: What do do when there is no prediction?
+    return null;
   }
 
   updateUserPref(key: any, value: any) {
