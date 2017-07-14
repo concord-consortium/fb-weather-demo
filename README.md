@@ -17,6 +17,7 @@ if they are not already installed  your development system.  Also install `live-
 * [React](https://facebook.github.io/react/) is the javascript view engine developed by Facebook.
 * [MobX](https://github.com/mobxjs/mobx) helps with passing state changes through components.
 * [Material-UI](http://www.material-ui.com/) is a react widget set developed by Google.
+* [React-Router](https://reacttraining.com/react-router/) url based view routing for react.
 
 ## Misc:
 * [TypeScript](https://www.typescriptlang.org/) type support for better tooling and fewer bugs in your javascript.
@@ -26,4 +27,4 @@ if they are not already installed  your development system.  Also install `live-
 ## Important files:
 * `src/js/firebase-imp.ts` – Manages all connections to firebase.
 * `src/js/data-store.ts` – Monolithic application state management. Brokers through `firebase-imp`. TODO: split this store into multiple smaller stores, extracting common core firebase setting / getting. Also look in to automating this with mobX triggers.
-* `src/js/router.ts` – Extracts configuration parameters from the URL.  The most important of which is the `session` parameter. This is intended to isolate simultaneous simulations or class runs by giving them a specific name-space on the firebase server. TODO: This feature was disabled during a refactoring. It needs to be reenabled. Expect to spend about 1-2 days getting that put back in. The tricky part will be switching all the DB references when the session changes. This will mean stopping listening to old connections, and creating new connections.
+* `src/js/main.tsx` – Configures the nested react-router routes, and the setups up the initial React view. The general form of URL routes is `/sessions/<sessionName>/show/<viewname>`.
