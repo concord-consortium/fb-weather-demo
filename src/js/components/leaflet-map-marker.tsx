@@ -19,6 +19,34 @@ export class LeafletMapMarker extends React.Component<
     super(props, ctx);
   }
 
+  predictedTempDom(predictedTempString: string) {
+    if (dataStore.prefs.showPredictions) {
+      return `<span class="predictTemp">${predictedTempString}°</span> /`;
+    }
+    return "";
+  }
+
+  actualTempDom(actualTempString: string) {
+    if (dataStore.prefs.showTempValues) {
+      return `<span class="actualTemp">${actualTempString}°</span>`;
+    }
+    return "";
+  }
+
+  difTempDom(difTempString: string) {
+    if (dataStore.prefs.showDeltaTemp) {
+      return `<div class="difTemp">${difTempString}&#8457</div>`;
+    }
+    return "";
+  }
+
+  callsignDom(callsign: string) {
+    if (dataStore.prefs.showStationNames) {
+      return `<div>${callsign}</div>`;
+    }
+    return "";
+  }
+
   render() {
     const basestation = this.props.basestation;
     let predictedTemp = 0;
@@ -46,12 +74,11 @@ export class LeafletMapMarker extends React.Component<
       html: `
         <div class "divIconContent" >
           <div>
-            <span class="predictTemp">${predictedTempString}°</span>
-              /
-            <span class="actualTemp">${actualTempString}°</span>
+            ${this.predictedTempDom(predictedTempString)}
+            ${this.actualTempDom(actualTempString)}
           </div>
-          <div class="difTemp">${difTempString}&#8457</div>
-          <div>${basestation.callsign}</div>
+            ${this.difTempDom(difTempString)}
+            ${this.callsignDom(basestation.callsign)}
         </div>`,
       iconSize: [50, 50],
       className: "divIcon"

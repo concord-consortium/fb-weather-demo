@@ -66,7 +66,8 @@ class DataStore {
       showBaseMap: true,
       showTempColors: false,
       showTempValues: false,
-      showGridLines: false,
+      showDeltaTemp: false,
+      showStationNames: false,
       enablePrediction: false,
       showPredictions: false
     };
