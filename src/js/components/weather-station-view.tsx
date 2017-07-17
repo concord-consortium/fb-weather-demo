@@ -42,12 +42,11 @@ export class WeatherStationView extends React.Component<
   }
 
   render() {
-    const frameNumber = dataStore.frameNumber;
     let x = 0;
     let y = 0;
     let name = "";
     let imgUrl = "img/farm.jpg";
-    let time = frameNumber;
+    let time = dataStore.timeString;
 
     if (dataStore.basestation) {
       name = dataStore.basestation.name;
@@ -90,7 +89,6 @@ export class WeatherStationView extends React.Component<
                     {name || "(no name provided)"}
                   </div>
                 </div>
-                <GridView x={x} y={y} rows={3} cols={3} />
               </div>
             </CardText>
             <CardMedia
@@ -101,7 +99,7 @@ export class WeatherStationView extends React.Component<
                     title={`Temp: ${dataStore.temp}°`}
                   />
                   <CardText style={styles.time}>
-                    {`${time} | frame(${frameNumber})`}
+                    {time}
                   </CardText>
                 </div>
               }

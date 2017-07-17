@@ -55,7 +55,7 @@ export class TeacherView extends React.Component<
     const rewind = this.rewind.bind(this);
     const play = this.play.bind(this);
     const pause = this.pause.bind(this);
-    const frame = dataStore.frameNumber;
+    const time = dataStore.timeString;
     const disablePlay = !!this.interval;
     const disablePause = !disablePlay;
     const handleChangeTab = (value: TeacherViewTab) => {
@@ -71,7 +71,7 @@ export class TeacherView extends React.Component<
           </Tab>
           <Tab label="Control" value="control">
             <CardTitle>
-              Time: {frame}
+              Time: {time}
             </CardTitle>
             <CardMedia
               style={{
