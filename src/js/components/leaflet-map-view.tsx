@@ -44,6 +44,9 @@ export class LeafletMapView extends React.Component<
       }
     };
     updateMap.bind(this);
+    const baseMap = dataStore.prefs.showBaseMap
+      ? <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
+      : null;
 
     return (
       <div>
@@ -62,10 +65,7 @@ export class LeafletMapView extends React.Component<
           keyboard={this.props.interaction}
           style={{ width: this.props.width, height: this.props.height }}
         >
-          <TileLayer
-            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
-          />
+          {baseMap}
           {this.props.baseStations.map(b =>
             <LeafletMapMarker basestation={b} key={b.id} />
           )}
