@@ -21,7 +21,7 @@ export class GridView extends React.Component<GridViewProps, GridViewState> {
     for (let y = 0; y < this.props.rows; y++) {
       rows = [];
       for (let x = 0; x < this.props.cols; x++) {
-        if (this.props.x == x && this.props.y == y) {
+        if (this.props.x === x && this.props.y === y) {
           rows.push(<td key={`${x}-${y}`} className="set" />);
         } else {
           rows.push(<td key={`${x}-${y}`} className="blank" />);

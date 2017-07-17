@@ -5,23 +5,23 @@ import { v1 as uuid } from "uuid";
 type Dimension = {
   height: number
   width: number
-}
+};
 
 export interface LatLong {
-  lat: number
-  lng: number
+  lat: number;
+  lng: number;
 }
 
 export interface MapConfigMap {
-  [id:string]: MapConfig
+  [id:string]: MapConfig;
 }
 
 export class MapConfig {
-  @observable id: string
-  @observable name: string
-  @observable lat: number
-  @observable long: number
-  @observable zoom: number
+  @observable id: string;
+  @observable name: string;
+  @observable lat: number;
+  @observable long: number;
+  @observable zoom: number;
   constructor() {
     this.id = uuid();
     this.name = "New Map";

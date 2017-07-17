@@ -23,7 +23,7 @@ export class FrameHelper {
       });
       const frames = _.map(grouped, function(value, key) {
         const stations = _.uniqBy(value, "STATION");
-        const time = parseInt(key) * timeSlice;
+        const time = parseInt(key, 10) * timeSlice;
         return { time: time, stations: stations };
       });
       this.frames = frames;

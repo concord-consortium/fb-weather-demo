@@ -65,7 +65,7 @@ export class PredictionView extends React.Component<
 
   updatePrecition(eventPoxy: any, value: string) {
     const prediction = dataStore.prediction;
-    prediction.temp = parseInt(value);
+    prediction.temp = parseInt(value, 10);
     dataStore.setPrediction(prediction);
   }
 
