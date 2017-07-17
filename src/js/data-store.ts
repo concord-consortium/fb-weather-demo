@@ -215,6 +215,20 @@ class DataStore {
   }
 
   @computed
+  get timeString():string {
+    const frameNumber = this.frameNumber;
+    const missingTimeString = `(${frameNumber})`;
+    for(let base of this.basestations) {
+       const basestation = new Basestation(base);
+       const timeString = basestation.dateForFrame(frameNumber);
+       if(timeString){
+         return timeString;
+       }
+    }
+    return missingTimeString;
+  }
+
+  @computed
   get mapConfig() {
     if (this.prefs.mapConfig) {
       return this.mapConfigMap[this.prefs.mapConfig];
@@ -297,7 +311,7 @@ class DataStore {
   }
 
   addBasestation() {
-    const bs = new Basestation();
+    const bs = new Basestation(null);
     this.basestationMap[bs.id] = bs;
     this.save({ basestations: this.basestationMap });
   }

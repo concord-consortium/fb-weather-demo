@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Tabs, Tab } from "material-ui/Tabs";
-import { Card, CardMedia } from "material-ui/Card";
+import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { SimPrefs } from "../sim-prefs";
 import { LeafletMapView } from "./leaflet-map-view";
 import { dataStore } from "../data-store";
@@ -17,10 +17,14 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
   }
 
   render() {
+    const time = dataStore.timeString;
     return (
       <Card className="ClassView">
         <Tabs>
           <Tab label="Class View">
+            <CardTitle>
+              Time: {time}
+            </CardTitle>
             <CardMedia
               style={{
                 display: "flex",
