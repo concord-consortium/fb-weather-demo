@@ -47,7 +47,7 @@ export class LeafletMapMarker extends React.Component<
 
   get diffTemp() {
     if(this.actualTemp && this.predictedTemp) {
-      return(this.actualTemp - this.predictedTemp)
+      return(this.actualTemp - this.predictedTemp);
     }
     return null;
   }
