@@ -1,7 +1,7 @@
 import { observable } from "mobx";
 import { v1 as uuid } from "uuid";
 
-require('datejs'); // extends DateObject with formatting
+import * as moment from 'moment';
 interface Date {   toString(formatting:string):string; }
 
 export interface BasestationParams {
@@ -48,10 +48,8 @@ export class Basestation implements BasestationParams {
     if(this.data && this.data.length >= frameNumber) {
       const time:number = this.data[frameNumber].time;
       if (time) {
-        const date:Date = new Date(time);
-        const dateString:string = date.toString('d');
-        const timeString:string = date.toString('t');
-        return `${dateString} ${timeString}`;
+        const date = moment(time);
+        return date.format("YYYY-MM-DD  h:mm a");
       }
     }
     return false;

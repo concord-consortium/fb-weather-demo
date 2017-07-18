@@ -1703,10 +1703,6 @@ dateformat@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-2.0.0.tgz#2743e3abb5c3fc2462e527dca445e04e9f4dee17"
 
-datejs@^1.0.0-rc3:
-  version "1.0.0-rc3"
-  resolved "https://registry.yarnpkg.com/datejs/-/datejs-1.0.0-rc3.tgz#bffa1efedefeb41fdd8a242af55afa01fb58de57"
-
 death@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/death/-/death-1.1.0.tgz#01aa9c401edd92750514470b8266390c66c67318"
@@ -3778,6 +3774,10 @@ mobx@^3.1.7:
 moment@2.x.x:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.17.1.tgz#fed9506063f36b10f066c8b59a144d7faebe1d82"
+
+momentjs@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/momentjs/-/momentjs-2.0.0.tgz#73df904b4fa418f6e3c605e831cef6ed5518ebd4"
 
 morgan@^1.6.1:
   version "1.8.1"
