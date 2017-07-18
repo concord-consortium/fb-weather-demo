@@ -1,4 +1,4 @@
-import { observable, computed } from "mobx";
+import { observable, computed, IObservableValue } from "mobx";
 import { v1 as uuid } from "uuid";
 import { Basestation, BasestationMap } from "./basestation";
 import { SimPrefs } from "./sim-prefs";
@@ -47,8 +47,8 @@ export interface FireBaseState {
 
 class DataStore {
   @observable nowShowing: NowShowingType;
-  @observable frameNumber: number;
-  @observable maxFrame: number;
+  @observable frameNumber: IObservableValue<number>;
+  @observable maxFrame: IObservableValue<number>;
   @observable prefs: SimPrefs;
   @observable predictions: PredictionMap;
   @observable presenceMap: PresenceMap;
@@ -61,7 +61,8 @@ class DataStore {
 
   constructor() {
     this.nowShowing = "loading";
-    this.frameNumber = 0;
+    this.frameNumber = observable(0);
+    this.maxFrame = observable(0);
     this.prefs = {
       showBaseMap: true,
       showTempColors: false,
@@ -73,7 +74,7 @@ class DataStore {
     };
     this.presenceMap = {};
     this.predictions = {};
-    this.basestationMap = {};
+    this.basestationMap = observable({} as BasestationMap);
     this.mapConfigMap = {};
     this.sessionList = [];
     this.registerFirebase();
@@ -98,11 +99,11 @@ class DataStore {
 
   setState(newState: FireBaseState) {
     if (newState.frameNumber) {
-      this.frameNumber = newState.frameNumber;
+      this.frameNumber.set(newState.frameNumber);
     }
 
     if (newState.maxFrame) {
-      this.maxFrame = newState.maxFrame;
+      this.maxFrame.set(newState.maxFrame);
     }
 
     if (newState.prefs) {
@@ -114,25 +115,25 @@ class DataStore {
     if (newState.predictions) {
       this.predictions = observable(newState.predictions);
     } else {
-      this.predictions = observable({});
+      this.predictions = observable({} as PredictionMap);
     }
 
     if (newState.presence) {
       this.presenceMap = observable(newState.presence);
     } else {
-      this.presenceMap = observable({});
+      this.presenceMap = observable({} as PresenceMap);
     }
 
     if (newState.basestations) {
       this.basestationMap = observable(newState.basestations);
     } else {
-      this.basestationMap = observable({});
+      this.basestationMap = observable({} as BasestationMap);
     }
 
     if (newState.mapConfigs) {
       this.mapConfigMap = observable(newState.mapConfigs);
     } else {
-      this.mapConfigMap = observable({});
+      this.mapConfigMap = observable({} as MapConfigMap);
     }
   }
 
@@ -206,9 +207,10 @@ class DataStore {
 
   @computed
   get temp() {
+    const frameNumber = this.frameNumber.get();
     if (this.basestation && this.basestation.data) {
-      if (this.basestation.data[this.frameNumber]) {
-        return this.basestation.data[this.frameNumber].value;
+      if (this.basestation.data[frameNumber]) {
+        return this.basestation.data[frameNumber].value;
       }
     }
     return 0;
@@ -216,7 +218,7 @@ class DataStore {
 
   @computed
   get timeString():string {
-    const frameNumber = this.frameNumber;
+    const frameNumber = this.frameNumber.get();
     const missingTimeString = `(${frameNumber})`;
     for(let base of this.basestations) {
        const basestation = new Basestation(base);
@@ -265,15 +267,15 @@ class DataStore {
   }
 
   nextFrame() {
-    const frameLength = this.maxFrame;
-    let frameNumber = (this.frameNumber || 0) + 1;
+    const frameLength = this.maxFrame.get();
+    let frameNumber = (this.frameNumber.get() || 0) + 1;
     frameNumber = frameNumber % frameLength;
     this.setFrame(frameNumber);
   }
 
-  setFrame(frame: number) {
-    this.frameNumber = frame;
-    this.save({ frame: frame });
+  setFrame(frameNumber: number) {
+    this.frameNumber.set(frameNumber);
+    this.save({ frameNumber: frameNumber });
   }
 
   setPref(key: string, value: any) {

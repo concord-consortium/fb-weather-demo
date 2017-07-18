@@ -93,6 +93,7 @@ export class PredictionView
       return;
     }
 
+    const frameNumber = dataStore.frameNumber.get();
     const userInfo = dataStore.userInfo,
           prediction = dataStore.prediction,
           predictionInterval = 3;  // ~20 min/frame
@@ -100,8 +101,8 @@ export class PredictionView
           station: userInfo.basestationId,
           type: PredictionType.eTemperature,  // default to temperature prediction
           timeStamp: new Date(),
-          predictionTime: dataStore.frameNumber,
-          predictedTime: dataStore.frameNumber + predictionInterval,
+          predictionTime: frameNumber,
+          predictedTime: frameNumber + predictionInterval,
           predictedValue: prediction.temp,
           description: prediction.rationale
         };
@@ -179,10 +180,11 @@ export class PredictionView
                             type="number"
                           />,
           optValueControl = prediction.type !== PredictionType.eDescription
-                              ? valueControl : null;
+                              ? valueControl : null,
+          frameNumber = dataStore.frameNumber.get();
     return (
       <CardText style={styles.prediction}>
-        {this.predictionPrompt(prediction.type, dataStore.frameNumber, prediction.predictedValue)}
+        {this.predictionPrompt(prediction.type, frameNumber, prediction.predictedValue)}
         <DropDownMenu
           style={styles.typeMenu}
           value={prediction.type}

@@ -35,12 +35,13 @@ export class LeafletMapMarker extends React.Component<
 
   get actualTemp() {
     const basestation = this.props.basestation;
+    const frameNumber = dataStore.frameNumber.get();
     if (
       basestation &&
       basestation.data &&
-      basestation.data.length > dataStore.frameNumber
+      basestation.data.length > frameNumber
     ) {
-      return basestation.data[dataStore.frameNumber].value;
+      return basestation.data[frameNumber].value;
     }
     return null;
   }
