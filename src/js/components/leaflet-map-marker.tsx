@@ -88,8 +88,18 @@ export class LeafletMapMarker extends React.Component<
   }
 
   render() {
+    const basestation = this.props.basestation;
+    const ds = dataStore;
+    const handleClick = function(evt:any) {
+      dataStore.setUserBaseStation(basestation.id);
+    };
+
     const center = { lat: this.props.basestation.lat, lng: this.props.basestation.long };
     const key = this.props.basestation.id;
+    let classes ="divIcon";
+    if(dataStore.basestation && dataStore.basestation.id === this.props.basestation.id) {
+      classes = `${classes} selected`;
+    }
     const icon = new DivIcon({
       html: `
         <div class "divIconContent" >
@@ -101,9 +111,9 @@ export class LeafletMapMarker extends React.Component<
             ${this.callsignDiv()}
         </div>`,
       iconSize: [50, 50],
-      className: "divIcon"
+      className: classes
     });
 
-    return <Marker position={center} icon={icon} key={key} />;
+    return <Marker onclick={handleClick} position={center} icon={icon} key={key} />;
   }
 }

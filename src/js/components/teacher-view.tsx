@@ -5,6 +5,7 @@ import { Tab, Tabs } from "material-ui/Tabs";
 import FloatingActionButton from "material-ui/FloatingActionButton";
 import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
+import { ComponentStyleMap } from "../component-style-map";
 import { dataStore } from "../data-store";
 
 export type TeacherViewTab = "control" | "configure";
@@ -16,6 +17,41 @@ export interface TeacherViewState {
   frameRate: number;
   tab: TeacherViewTab;
 }
+
+
+const styles:ComponentStyleMap = {
+  mapAndPrediction: {
+    display: "flex",
+    flexDirection: "row",
+    overflow: "hidden",
+    maxWidth: "90vw"
+  },
+  prediction: {
+    display: "flex",
+    flexDirection: "column",
+    padding: "0em 2em",
+    width: "20vw"
+  },
+  callsign: {
+    fontSize: "16pt",
+    fontWeight: "bold"
+  },
+  stationName: {
+    fontSize: "10pt"
+  },
+  temp: {
+    fontSize: "12pt",
+    fontWeight: "bold"
+  },
+  rationale: {
+    fontSize: "13pt"
+  },
+  image: {
+    height: "10vh"
+  }
+};
+
+
 
 @observer
 export class TeacherView extends React.Component<
@@ -51,6 +87,21 @@ export class TeacherView extends React.Component<
     dataStore.setFrame(0);
   }
 
+  renderPrediction() {
+    if(dataStore.basestation) {
+      return(
+        <div>
+          <img style={styles.image} src={dataStore.basestation.imageUrl}/>
+          <div style={styles.callsign}>{dataStore.basestation.callsign}</div>
+          <div style={styles.stationName}>{dataStore.basestation.name}</div>
+          <div style={styles.temp}>{dataStore.prediction.temp}</div>
+          <div style={styles.rationale}>{dataStore.prediction.rationale}</div>
+        </div>
+      );
+    }
+    return null;
+  }
+
   render() {
     const rewind = this.rewind.bind(this);
     const play = this.play.bind(this);
@@ -63,6 +114,7 @@ export class TeacherView extends React.Component<
         tab: value
       });
     };
+
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
@@ -80,13 +132,18 @@ export class TeacherView extends React.Component<
                 alignItems: "center"
               }}
             >
-              <LeafletMapView
-                mapConfig={dataStore.mapConfig}
-                interaction={false}
-                baseStations={dataStore.basestations}
-                width={600}
-                height={400}
-              />
+              <div style={styles.mapAndPrediction}>
+                <LeafletMapView
+                  mapConfig={dataStore.mapConfig}
+                  interaction={false}
+                  baseStations={dataStore.basestations}
+                  width={600}
+                  height={400}
+                />
+                <div style={styles.prediction}>
+                  {this.renderPrediction()}
+                </div>
+              </div>
               <CardActions>
                 <FloatingActionButton
                   iconClassName="icon-skip_previous"

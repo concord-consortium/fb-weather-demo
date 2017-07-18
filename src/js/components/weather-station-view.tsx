@@ -45,11 +45,13 @@ export class WeatherStationView extends React.Component<
     let x = 0;
     let y = 0;
     let name = "";
+    let callSign = "";
     let imgUrl = "img/farm.jpg";
     let time = dataStore.timeString;
 
     if (dataStore.basestation) {
       name = dataStore.basestation.name;
+      callSign = dataStore.basestation.callsign;
       imgUrl = dataStore.basestation.imageUrl;
     }
 
@@ -60,6 +62,14 @@ export class WeatherStationView extends React.Component<
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "flex-start"
+      },
+      callSign: {
+        fontSize: "14pt",
+        fontWeight: "bold"
+      },
+      name: {
+        fontSize: "9pt",
+        fontWeight: "bold"
       },
       temp: {
         fontSize: "4rem",
@@ -84,10 +94,11 @@ export class WeatherStationView extends React.Component<
           <Tab label="Weather" value="weather">
             <CardText>
               <div style={styles.info}>
-                <div>
-                  <div className="name">
-                    {name || "(no name provided)"}
-                  </div>
+                <div style={styles.callSign}>
+                  {callSign}
+                </div>
+                <div style={styles.name}>
+                  {name}
                 </div>
               </div>
             </CardText>
