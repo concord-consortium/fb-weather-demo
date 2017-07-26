@@ -39,9 +39,17 @@ const styles:ComponentStyleMap = {
   stationName: {
     fontSize: "10pt"
   },
+  values: {
+    marginTop: "1em"
+  },
   temp: {
     fontSize: "12pt",
     fontWeight: "bold"
+  },
+  label: {
+    fontSize: "9pt",
+    fontStyle: "italic",
+    marginTop: "1em"
   },
   rationale: {
     fontSize: "13pt"
@@ -94,8 +102,14 @@ export class TeacherView extends React.Component<
           <img style={styles.image} src={dataStore.basestation.imageUrl}/>
           <div style={styles.callsign}>{dataStore.basestation.callsign}</div>
           <div style={styles.stationName}>{dataStore.basestation.name}</div>
-          <div style={styles.temp}>{dataStore.prediction.temp}</div>
-          <div style={styles.rationale}>{dataStore.prediction.rationale}</div>
+          <div style={styles.values}>
+            <div>
+              <span style={styles.label}>Temp:</span>
+              <span style={styles.temp}>{dataStore.prediction.temp}°</span>
+            </div>
+            <div style={styles.label}>Reasoning:</div>
+            <div style={styles.rationale}>{dataStore.prediction.rationale}</div>
+          </div>
         </div>
       );
     }
