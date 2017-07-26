@@ -184,7 +184,7 @@ export class PredictionView
           frameNumber = dataStore.frameNumber.get();
     return (
       <CardText style={styles.prediction}>
-        {this.predictionPrompt(prediction.type, frameNumber, prediction.predictedValue)}
+        {this.predictionPrompt(prediction.type, frameNumber, dataStore.temp)}
         <DropDownMenu
           style={styles.typeMenu}
           value={prediction.type}
