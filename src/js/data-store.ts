@@ -53,6 +53,7 @@ class DataStore {
   @observable predictions: PredictionMap;
   @observable presenceMap: PresenceMap;
   @observable basestationMap: BasestationMap;
+  @observable selectedBasestationId: string | null;
   @observable mapConfigMap: MapConfigMap;
   @observable editingMap: MapConfig | null;
   @observable sessionList: string[];
@@ -63,6 +64,7 @@ class DataStore {
     this.nowShowing = "loading";
     this.frameNumber = observable(0);
     this.maxFrame = observable(0);
+    this.selectedBasestationId = null;
     this.prefs = {
       showBaseMap: true,
       showTempColors: false,
@@ -180,6 +182,22 @@ class DataStore {
   @computed
   get basestation() {
     return this.basestationMap[this.userInfo.basestationId];
+  }
+
+  @computed
+  get selectedBasestation() {
+    if(this.selectedBasestationId) {
+      return this.basestationMap[this.selectedBasestationId];
+    }
+    return null;
+  }
+  set selectedBasestation(basestation:Basestation|null) {
+    if(basestation) {
+      this.selectedBasestationId = basestation.id;
+    }
+    else {
+      this.selectedBasestationId = null;
+    }
   }
 
   @computed

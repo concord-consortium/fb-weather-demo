@@ -66,8 +66,10 @@ export class LeafletMapView extends React.Component<
           style={{ width: this.props.width, height: this.props.height }}
         >
           {baseMap}
-          {this.props.baseStations.map(b =>
-            <LeafletMapMarker basestation={b} key={b.id} />
+          {this.props.baseStations.map(b => {
+              const selected = b.id === dataStore.selectedBasestationId;
+              return <LeafletMapMarker basestation={b} key={b.id} selected={selected}/>;
+            }
           )}
         </Map>
       </div>

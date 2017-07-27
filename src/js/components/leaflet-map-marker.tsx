@@ -1,4 +1,5 @@
 import * as React from "react";
+import { observable } from "mobx";
 import { observer } from "mobx-react";
 import { Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
@@ -7,6 +8,7 @@ import { MapConfig } from "../map-config";
 import { Basestation } from "../basestation";
 interface LeafletMapMarkerProps {
   basestation: Basestation;
+  selected: boolean;
 }
 
 interface LeafletMapMarkerState {}
@@ -91,15 +93,18 @@ export class LeafletMapMarker extends React.Component<
     const basestation = this.props.basestation;
     const ds = dataStore;
     const handleClick = function(evt:any) {
-      dataStore.setUserBaseStation(basestation.id);
+      ds.selectedBasestation = basestation;
     };
 
     const center = { lat: this.props.basestation.lat, lng: this.props.basestation.long };
     const key = this.props.basestation.id;
     let classes ="divIcon";
-    if(dataStore.basestation && dataStore.basestation.id === this.props.basestation.id) {
+    const selected = this.props.selected;
+
+    if(selected) {
       classes = `${classes} selected`;
     }
+
     const icon = new DivIcon({
       html: `
         <div class "divIconContent" >
