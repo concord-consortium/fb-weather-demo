@@ -43,6 +43,7 @@ export interface FireBaseState {
   presence?: PresenceMap;
   basestations?: BasestationMap;
   mapConfigs?: MapConfigMap;
+  selectedBasestationId?: string;
 }
 
 class DataStore {
@@ -137,6 +138,9 @@ class DataStore {
     } else {
       this.mapConfigMap = observable({} as MapConfigMap);
     }
+    if (newState.selectedBasestationId) {
+      this.selectedBasestationId = newState.selectedBasestationId;
+    }
   }
 
   @computed
@@ -191,6 +195,14 @@ class DataStore {
     }
     return null;
   }
+  @computed
+  get selectedPrediction() {
+    const base = this.selectedBasestation;
+    if(base) {
+      return this.predictions[base.id];
+    }
+    return null;
+  }
   set selectedBasestation(basestation:Basestation|null) {
     if(basestation) {
       this.selectedBasestationId = basestation.id;
@@ -198,6 +210,7 @@ class DataStore {
     else {
       this.selectedBasestationId = null;
     }
+    this.saveToPath('selectedBasestationId',this.selectedBasestationId);
   }
 
   @computed

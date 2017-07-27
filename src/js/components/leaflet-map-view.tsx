@@ -8,8 +8,8 @@ import { Basestation } from "../basestation";
 import { LeafletMapMarker } from "./leaflet-map-marker";
 interface LeafletMapProps {
   mapConfig: MapConfig | null;
-  width: number;
-  height: number;
+  width: string;
+  height: string;
   interaction: boolean;
   baseStations: Basestation[];
   update?: (lat: number, long: number, zoom: number) => void;
