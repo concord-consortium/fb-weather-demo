@@ -7,6 +7,8 @@ import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore } from "../data-store";
+import { NullPredictionView } from "../null-prediction-view-obj";
+import { PredictionShareView } from "./prediction-share-view";
 
 export type TeacherViewTab = "control" | "configure";
 
@@ -25,37 +27,6 @@ const styles:ComponentStyleMap = {
     flexDirection: "row",
     overflow: "hidden",
     maxWidth: "90vw"
-  },
-  prediction: {
-    display: "flex",
-    flexDirection: "column",
-    padding: "0em 2em",
-    width: "20vw"
-  },
-  callsign: {
-    fontSize: "16pt",
-    fontWeight: "bold"
-  },
-  stationName: {
-    fontSize: "10pt"
-  },
-  values: {
-    marginTop: "1em"
-  },
-  temp: {
-    fontSize: "12pt",
-    fontWeight: "bold"
-  },
-  label: {
-    fontSize: "9pt",
-    fontStyle: "italic",
-    marginTop: "1em"
-  },
-  rationale: {
-    fontSize: "13pt"
-  },
-  image: {
-    height: "10vh"
   }
 };
 
@@ -95,27 +66,6 @@ export class TeacherView extends React.Component<
     dataStore.setFrame(0);
   }
 
-  renderPrediction() {
-    if(dataStore.basestation) {
-      return(
-        <div>
-          <img style={styles.image} src={dataStore.basestation.imageUrl}/>
-          <div style={styles.callsign}>{dataStore.basestation.callsign}</div>
-          <div style={styles.stationName}>{dataStore.basestation.name}</div>
-          <div style={styles.values}>
-            <div>
-              <span style={styles.label}>Temp:</span>
-              <span style={styles.temp}>{dataStore.prediction.temp}°</span>
-            </div>
-            <div style={styles.label}>Reasoning:</div>
-            <div style={styles.rationale}>{dataStore.prediction.rationale}</div>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  }
-
   render() {
     const rewind = this.rewind.bind(this);
     const play = this.play.bind(this);
@@ -151,12 +101,10 @@ export class TeacherView extends React.Component<
                   mapConfig={dataStore.mapConfig}
                   interaction={false}
                   baseStations={dataStore.basestations}
-                  width={600}
-                  height={400}
+                  width={"600"}
+                  height={"400"}
                 />
-                <div style={styles.prediction}>
-                  {this.renderPrediction()}
-                </div>
+                <PredictionShareView/>
               </div>
               <CardActions>
                 <FloatingActionButton
