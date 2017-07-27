@@ -5,7 +5,7 @@ import { v1 as uuid } from "uuid";
 import { Presence } from "./presence";
 
 const DEFAULT_SESSION = "default";
-const DEFAULT_VERSION_STRING = "1.1.0";
+const DEFAULT_VERSION_STRING = "1.2.wip";
 const DEFAULT_ACTIVITY = "default";
 
 interface FirebaseUser {
