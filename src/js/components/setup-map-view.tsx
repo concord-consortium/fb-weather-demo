@@ -89,8 +89,8 @@ export class SetupMapView extends React.Component<
             mapConfig={dataStore.editingMap}
             interaction={true}
             baseStations={dataStore.basestations}
-            width={600}
-            height={400}
+            width={"600"}
+            height={"400"}
             update={(lat, long, zoom) => {
               mapConfig.lat = lat;
               mapConfig.long = long;
@@ -151,8 +151,8 @@ export class SetupMapView extends React.Component<
                     mapConfig={map}
                     interaction={false}
                     baseStations={dataStore.basestations}
-                    width={600}
-                    height={400}
+                    width={"600"}
+                    height={"400"}
                   />
                 </div>
               </div>
