@@ -4,8 +4,7 @@ import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore } from "../data-store";
-import { Basestation } from "../basestation";
+import { weatherStationStore, WeatherStation} from "../models/weather-station";
 
 const _ = require("lodash");
 const div = React.DOM.div;
@@ -27,12 +26,12 @@ export class WeatherStationConfigView extends React.Component<
     super(props, ctx);
   }
 
-  setBasestation(evt: any, index: number, id: string) {
-    dataStore.setUserBaseStation(id);
+  setBasestation(evt: any, index: number, station: any) {
+    weatherStationStore.select(station);
   }
 
   renderBaseOptions() {
-    const bases = dataStore.basestations;
+    const bases = weatherStationStore.stations;
     const results = [];
     let base = null;
     for (let i = 0; i < bases.length; i++) {
@@ -45,7 +44,8 @@ export class WeatherStationConfigView extends React.Component<
   }
 
   render() {
-    const baseId = dataStore.basestation ? dataStore.basestation.id : null;
+    const weatherStation = weatherStationStore.selected;
+    const weatherStationId = weatherStation && weatherStation.id;
 
     const styles: ComponentStyleMap = {
       config: {
@@ -67,7 +67,7 @@ export class WeatherStationConfigView extends React.Component<
         <SelectField
           style={styles.textField}
           floatingLabelText="Choose your location"
-          value={baseId}
+          value={weatherStationId}
           autoWidth={true}
           onChange={this.setBasestation.bind(this)}
         >
