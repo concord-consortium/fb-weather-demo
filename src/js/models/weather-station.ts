@@ -1,6 +1,7 @@
-import { types, destroy } from "mobx-state-tree";
+import { types, destroy, onSnapshot, applySnapshot } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
-
+import { dataStore } from "../data-store";
+const firebase = dataStore.firebaseImp;
 // TBD we need to change this data def.
 const WeatherDatum = types.model("Datum", {
   time: types.number,
@@ -24,7 +25,7 @@ export const WeatherStation = types.model("WeatherStation",
   callsign: types.string,
   lat: types.number,
   long: types.number,
-  data: types.array(WeatherDatum)
+  data: types.maybe(types.array(WeatherDatum))
 },{
   update(props:WeatherUpdateProps) {
     if(props.name !== undefined) {
@@ -80,9 +81,29 @@ export const WeatherStationStore = types.model(
 
   }
 );
+export type IWeatherStationStore = typeof WeatherStationStore.Type;
 
 export const weatherStationStore = WeatherStationStore.create({
   stations: [],
   selected: null
+});
+
+const firebaseListener = {
+  setState(newData:any) {
+    if(newData.WeatherStations !== undefined){
+      applySnapshot(weatherStationStore, newData.WeatherStations);
+    }
+  },
+  setSessionPath(path:string) { return; },
+  setSessionList(sessions:string[]) { return; }
+};
+
+firebase.addListener(firebaseListener);
+
+onSnapshot(weatherStationStore, (newSnapshot:any) => {
+  const firebaseData = {
+    WeatherStations: newSnapshot
+  };
+  firebase.saveToFirebase(firebaseData);
 });
 
