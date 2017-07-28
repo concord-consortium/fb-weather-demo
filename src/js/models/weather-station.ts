@@ -8,15 +8,6 @@ const WeatherDatum = types.model("Datum", {
 });
 type IWeatherDatum = typeof WeatherDatum.Type;
 
-const Prediction = types.model("Prediction", {
-  predictionType: types.string,
-  id: types.optional(types.string, () => uuid()),
-  temp: types.number,
-  rationale: types.string,
-  name: types.optional(types.string, ""),
-  imageUrl: types.optional(types.string, "")
-});
-
 interface WeatherUpdateProps {
   name?: string;
   imageUrl?: string;
@@ -33,8 +24,7 @@ export const WeatherStation = types.model("WeatherStation",
   callsign: types.string,
   lat: types.number,
   long: types.number,
-  data: types.array(WeatherDatum),
-  predictions: types.array(types.reference(Prediction))
+  data: types.array(WeatherDatum)
 },{
   update(props:WeatherUpdateProps) {
     if(props.name !== undefined) {
@@ -76,8 +66,7 @@ export const WeatherStationStore = types.model(
         imageUrl: "",
         lat: 42.1,
         long: -72.0,
-        data: [],
-        predictions: []
+        data: []
       });
       this.stations.push(station);
       this.selected = station;
