@@ -7,26 +7,9 @@ import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore, Prediction } from "../data-store";
+import { PredictionType, INewPrediction } from "../models/prediction";
+import { IWeatherStation } from "../models/weather-station";
 const _ = require("lodash");
-
-enum PredictionType {
-  eDescription,
-  eTemperature,
-  ePrecipitation,
-  eWindSpeed,
-  eWindDirection
-}
-
-interface INewPrediction {
-  station?: string;
-  type: PredictionType;
-  timeStamp?: Date;
-  predictionTime?: number;
-  predictedTime?: number;
-  predictedValue?: number;
-  description?: string;
-  imageUrl?: string;
-}
 
 interface IControlLabels {
   question: string | null;     // null indicates skip the control entirely
@@ -34,17 +17,19 @@ interface IControlLabels {
   description: string | null;  // null indicates skip the control entirely
 }
 
-const controlsSpec: { [id: number]: IControlLabels } = {
-  0: { question: "What do you think will happen in the next hour?",
-        prediction: null, description: "Description" },
-  1: { question: "What do you think the temperature will be in 60 minutes?",
-        prediction: "Predicted Temperature", description: "Rationale" },
-  2: { question: "What do you think the precipitation will be in 60 minutes?",
-        prediction: "Predicted Precipitation", description: "Rationale" },
-  3: { question: "What do you think the wind speed will be in 60 minutes?",
-        prediction: "Predicted Wind Speed", description: "Rationale" },
-  4: { question: "What do you think the wind direction will be in 60 minutes?",
-        prediction: "Predicted Wind Direction", description: "Rationale" }
+const controlsSpec: { [id: string]: IControlLabels } = {
+  description: { question: "What do you think will happen in the next hour?",
+                  prediction: null, description: "Description" },
+  temperature: { question: "What do you think the temperature will be in 60 minutes?",
+                  prediction: "Predicted Temperature", description: "Rationale" },
+  humidity: { question: "What do you think the humidity will be in 60 minutes?",
+                prediction: "Predicted Humidity", description: "Rationale" },
+  precipitation: { question: "What do you think the precipitation will be in 60 minutes?",
+                    prediction: "Predicted Precipitation", description: "Rationale" },
+  windSpeed: { question: "What do you think the wind speed will be in 60 minutes?",
+                prediction: "Predicted Wind Speed", description: "Rationale" },
+  windDirection: { question: "What do you think the wind direction will be in 60 minutes?",
+                    prediction: "Predicted Wind Direction", description: "Rationale" }
 };
 
 const styles: ComponentStyleMap = {
@@ -104,7 +89,8 @@ export class PredictionView
           predictionTime: frameNumber,
           predictedTime: frameNumber + predictionInterval,
           predictedValue: prediction.temp,
-          description: prediction.rationale
+          description: prediction.rationale,
+          imageUrl: prediction.imageUrl
         };
     this.setState({ dataStorePrediction: _.clone(prediction), prediction: newPrediction });
   }
@@ -117,7 +103,7 @@ export class PredictionView
     this.updatePredictionFromDataStore();
   }
 
-  predictionPrompt(type: PredictionType, simTime: number, value?: number) {
+  predictionPrompt(type: string, simTime: number, value?: number) {
     const { enabled } = this.props;
     if (enabled) {
       const spec = controlsSpec[type],
@@ -140,7 +126,7 @@ export class PredictionView
     );
   }
 
-  handleTypeChange = (event: any, index: number, value: number) => {
+  handleTypeChange = (event: any, index: number, value: string) => {
     const prediction = this.state.prediction;
     prediction.type = value;
     this.setState({ prediction });
