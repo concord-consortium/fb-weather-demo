@@ -8,8 +8,7 @@ import * as Dropzone from "react-dropzone";
 import { GridList, GridTile } from "material-ui/GridList";
 import SelectField from "material-ui/SelectField";
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore } from "../data-store";
-import { Basestation } from "../basestation";
+import { weatherStationStore, IWeatherStation, WeatherStation} from "../models/weather-station";
 
 const _ = require("lodash");
 
@@ -76,62 +75,57 @@ export class SetupStationsView extends React.Component<
     reader.addEventListener(
       "loadend",
       function(event: any) {
-        dataStore.addBasestationData(event.target.result);
+        // TODO: Parse data in weather stations: dataStore.addBasestationData(event.target.result);
       }.bind(this)
     );
     reader.readAsText(acceptedFiles[0]);
   }
 
   renderEditor() {
-    const basestation = dataStore.basestation;
-    if (basestation) {
+    const weatherStation = weatherStationStore.selected;
+    if (weatherStation) {
       return (
         <div className="editBase" style={styles.config}>
           <TextField
-            value={basestation.callsign}
+            value={weatherStation.callsign}
             style={styles.textField}
             floatingLabelText="station call sign"
             onChange={(e, v) => {
-              basestation.callsign = v;
-              dataStore.saveBasestation();
+              weatherStation.update({callsign:v});
             }}
           />
           <TextField
-            value={basestation.name}
+            value={weatherStation.name}
             style={styles.textField}
             floatingLabelText="station name"
             onChange={(e, v) => {
-              basestation.name = v;
-              dataStore.saveBasestation();
+              weatherStation.update({name: v});
             }}
           />
           <TextField
-            value={basestation.imageUrl}
+            value={weatherStation.imageUrl}
             style={styles.textField}
             floatingLabelText="station image url"
             onChange={(e, v) => {
-              basestation.imageUrl = v;
-              dataStore.saveBasestation();
+              weatherStation.update({imageUrl: v});
             }}
           />
           <TextField
-            value={basestation.lat}
+            value={weatherStation.lat}
             style={styles.textField}
             type="number"
             floatingLabelText="station latitude "
             onChange={(e, v) => {
-              basestation.lat = parseFloat(v);
-              dataStore.saveBasestation();
+              weatherStation.update({lat: parseFloat(v)});
             }}
           />
           <TextField
-            value={basestation.long}
+            value={weatherStation.long}
             style={styles.textField}
             type="number"
             floatingLabelText="station longitude"
             onChange={(e, v) => {
-              basestation.long = parseFloat(v);
-              dataStore.saveBasestation();
+              weatherStation.update({long: parseFloat(v)});
             }}
           />
           <Dropzone onDrop={this.onDrop} style={styles.dropzone}>
@@ -143,7 +137,7 @@ export class SetupStationsView extends React.Component<
               primary={true}
               onTouchTap={() => {
                 {
-                  /* dataStore.basestation = null; */
+                  weatherStationStore.deselect();
                 }
               }}
             />
@@ -151,7 +145,8 @@ export class SetupStationsView extends React.Component<
               label="delete"
               secondary={true}
               onTouchTap={() =>
-                dataStore.deleteBasestation(dataStore.basestation)}
+                weatherStation.delete()
+              }
             />
           </div>
         </div>
@@ -160,7 +155,7 @@ export class SetupStationsView extends React.Component<
   }
 
   renderAddButton() {
-    if (dataStore.basestation) {
+    if (weatherStationStore.selected) {
       return;
     }
     return (
@@ -168,24 +163,21 @@ export class SetupStationsView extends React.Component<
         <FlatButton
           label="Add weather station"
           primary={true}
-          onTouchTap={() => dataStore.addBasestation()}
+          onTouchTap={() => weatherStationStore.addStation()}
         />
       </div>
     );
   }
   render() {
-    const baseStations = dataStore.basestations;
-    const setBasestation = (indicies: number[]) => {
-      const selected = baseStations[indicies[0]];
-      if (selected) {
-        dataStore.setUserBaseStation(selected.id);
-      }
+    const weatherStations = weatherStationStore.stations;
+    const setStation = (selected:IWeatherStation ) => {
+      weatherStationStore.select(selected);
     };
     return (
       <div className="configDataView">
         <div style={styles.scrollContainer}>
           <GridList style={styles.gridList}>
-            {_.map(baseStations, (base: Basestation) =>
+            {_.map(weatherStations, (base: IWeatherStation) =>
               <GridTile
                 style={styles.gridTile}
                 cols={1}
@@ -204,7 +196,7 @@ export class SetupStationsView extends React.Component<
               >
                 <img
                   src={base.imageUrl}
-                  onClick={() => dataStore.setUserBaseStation(base.id)}
+                  onClick={() => weatherStationStore.select(base)}
                 />
               </GridTile>
             )}
