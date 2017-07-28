@@ -309,6 +309,12 @@ export class FirebaseImp {
       this.dataRef.update(data);
     }
   }
+  saveToRelativePath(data:any, path:string) {
+    if (this.dataRef && this.dataRef.child) {
+      const childRef = this.dataRef.child(path);
+      childRef.update(data);
+    }
+  }
 
   saveUserData(data: Presence) {
     if (this.userRef && this.userRef.update) {

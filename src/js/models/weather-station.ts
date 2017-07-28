@@ -1,7 +1,7 @@
 import { types, destroy, onSnapshot, applySnapshot } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
-import { dataStore } from "../data-store";
-const firebase = dataStore.firebaseImp;
+import { Firebasify } from "../middlewares/firebase-decorator";
+
 // TBD we need to change this data def.
 const WeatherDatum = types.model("Datum", {
   time: types.number,
@@ -88,22 +88,5 @@ export const weatherStationStore = WeatherStationStore.create({
   selected: null
 });
 
-const firebaseListener = {
-  setState(newData:any) {
-    if(newData.WeatherStations !== undefined){
-      applySnapshot(weatherStationStore, newData.WeatherStations);
-    }
-  },
-  setSessionPath(path:string) { return; },
-  setSessionList(sessions:string[]) { return; }
-};
-
-firebase.addListener(firebaseListener);
-
-onSnapshot(weatherStationStore, (newSnapshot:any) => {
-  const firebaseData = {
-    WeatherStations: newSnapshot
-  };
-  firebase.saveToFirebase(firebaseData);
-});
+Firebasify(weatherStationStore,"WeatherStations");
 
