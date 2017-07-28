@@ -8,7 +8,7 @@ import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore, Prediction } from "../data-store";
 import { PredictionType, INewPrediction } from "../models/prediction";
-import { IWeatherStation } from "../models/weather-station";
+import { weatherStationStore, IWeatherStation } from "../models/weather-station";
 const _ = require("lodash");
 
 interface IControlLabels {
@@ -83,7 +83,7 @@ export class PredictionView
           prediction = dataStore.prediction,
           predictionInterval = 3;  // ~20 min/frame
     let newPrediction : INewPrediction = {
-          station: userInfo.basestationId,
+          station: weatherStationStore.selected,  // userInfo.basestationId,
           type: PredictionType.eTemperature,  // default to temperature prediction
           timeStamp: new Date(),
           predictionTime: frameNumber,

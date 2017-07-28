@@ -21,7 +21,7 @@ export const PredictionType = {
 };
 
 export const NewPrediction = types.model({
-  station: types.reference(WeatherStation),
+  station: types.maybe(types.reference(WeatherStation)),  // shouldn't really be maybe
   type: types.enumeration('PredictionType', [
                             PredictionType.eDescription,
                             PredictionType.eTemperature,
