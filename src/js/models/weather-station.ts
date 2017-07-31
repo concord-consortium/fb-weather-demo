@@ -1,6 +1,7 @@
 import { types, destroy, onSnapshot, applySnapshot } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 import { Firebasify } from "../middlewares/firebase-decorator";
+import { NewPrediction, INewPrediction } from "./prediction";
 
 // TBD we need to change this data def.
 const WeatherDatum = types.model("Datum", {
@@ -25,7 +26,10 @@ export const WeatherStation = types.model("WeatherStation",
   callsign: types.string,
   lat: types.number,
   long: types.number,
-  data: types.maybe(types.array(WeatherDatum))
+  data: types.maybe(types.array(WeatherDatum)),
+  get temp() {
+    return 3; //TODO ???
+  }
 },{
   update(props:WeatherUpdateProps) {
     if(props.name !== undefined) {
@@ -47,10 +51,11 @@ export const WeatherStation = types.model("WeatherStation",
   delete() {
     destroy(this);
   },
-  setDat(newData:IWeatherDatum) {
+  setData(newData:IWeatherDatum) {
     this.data = newData;
   }
 });
+
 export type IWeatherStation = typeof WeatherStation.Type;
 
 export const WeatherStationStore = types.model(

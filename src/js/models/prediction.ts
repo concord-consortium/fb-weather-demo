@@ -20,6 +20,22 @@ export const PredictionType = {
   eWindDirection: 'windDirection'
 };
 
+export const FreshPrediction = function(){
+  const time = new Date();
+  const timeInt = time.getUTCSeconds();
+  return NewPrediction.create(
+    {
+      type: PredictionType.eTemperature,
+      timeStamp: new Date(),
+      predictedTime: timeInt,
+      predictionTime: timeInt,
+      predictedValue: -1,
+      description: "",
+      imageUrl: undefined
+    }
+  );
+};
+
 export const NewPrediction = types.model({
   station: types.maybe(types.reference(WeatherStation)),  // shouldn't really be maybe
   type: types.enumeration('PredictionType', [

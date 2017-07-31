@@ -2,7 +2,6 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import DevTools from "mobx-react-devtools";
-import { Presence } from "../presence";
 import { dataStore } from "../data-store";
 import { Link } from "react-router";
 
@@ -14,9 +13,9 @@ interface routeParams {
 export interface AppViewProps {
   params: routeParams;
 }
+
 export interface AppViewState {
   session: string;
-  presence?: Presence;
 }
 
 @observer

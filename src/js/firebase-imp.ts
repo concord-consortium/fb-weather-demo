@@ -2,7 +2,6 @@ const firebase = require("firebase");
 const _ = require("lodash");
 
 import { v1 as uuid } from "uuid";
-import { Presence } from "./presence";
 
 const DEFAULT_SESSION = "default";
 const DEFAULT_VERSION_STRING = "1.2.wip";
@@ -61,7 +60,6 @@ export class FirebaseImp {
   baseRef: FirebaseRef;
   sessionsListRef: FirebaseRef;
   dataRef: FirebaseRef;
-  userRef: FirebaseRef;
   pendingCallbacks: Function[];
 
   constructor() {
@@ -88,8 +86,6 @@ export class FirebaseImp {
     };
     this.config = configs.new;
     this.listeners = [];
-    this.sessionID = localStorage.getItem("CCweatherSession") || uuid();
-    localStorage.setItem("CCweatherSession", this.sessionID);
   }
 
   log(msg: string) {
@@ -179,7 +175,6 @@ export class FirebaseImp {
   setDataRef() {
     const fn = function() {
       this.rebindFirebaseHandlers();
-      this.setupPresence();
     };
     this.try(fn);
   }
@@ -232,37 +227,6 @@ export class FirebaseImp {
     return this._activity;
   }
 
-  setupPresence() {
-    // Remove old user listening:
-    if (this.connectionStatus) {
-      this.connectionStatus.off();
-    }
-    if (this.userRef) {
-      this.userRef.off();
-      this.userRef.remove();
-    }
-
-    this.connectionStatus = firebase.database().ref(".info/connected");
-    this.userRef = firebase
-      .database()
-      .ref(`${this.sessionPath}/presence/${this.sessionID}`);
-
-    const userRef = this.userRef;
-    const log = this.log.bind(this);
-    const updateUserData = this.saveUserData.bind(this);
-    this.connectionStatus.on("value", function(snapshot: any) {
-      log("online -- ");
-      updateUserData({
-        oneline: true,
-        start: new Date(),
-        name: "(no name)"
-      });
-      if (snapshot.val()) {
-        userRef.onDisconnect().remove();
-      }
-    });
-  }
-
   load() {
     this.dataRef.once("value").then(this.loadDataFromFirebase.bind(this));
   }
@@ -309,27 +273,19 @@ export class FirebaseImp {
       this.dataRef.update(data);
     }
   }
-  saveToRelativePath(data:any, path:string) {
+
+  refForPath(path:string) {
     if (this.dataRef && this.dataRef.child) {
-      const childRef = this.dataRef.child(path);
-      childRef.update(data);
-    }
-  }
-
-  saveUserData(data: Presence) {
-    if (this.userRef && this.userRef.update) {
-      this.userRef.update(data);
-    }
-  }
-
-  loadUserData(key: string): string | null {
-    if (this.userRef) {
-      this.userRef.once("value").then(function(snap) {
-        const value = snap.val();
-        return value[key];
-      });
+      return this.dataRef.child(path);
     }
     return null;
+  }
+
+  saveToRelativePath(data:any, path:string) {
+    const ref = this.refForPath(path);
+    if(ref) {
+       ref.update(data);
+    }
   }
 
   loadDataFromFirebase(data: FirebaseData) {

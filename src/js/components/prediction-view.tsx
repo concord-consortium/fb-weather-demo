@@ -9,6 +9,9 @@ import { ComponentStyleMap } from "../component-style-map";
 import { dataStore, Prediction } from "../data-store";
 import { PredictionType, INewPrediction } from "../models/prediction";
 import { weatherStationStore, IWeatherStation } from "../models/weather-station";
+import { predictionStore } from "../stores/prediction-store";
+import { presenceStore } from "../models/presence";
+
 const _ = require("lodash");
 
 interface IControlLabels {
@@ -74,22 +77,21 @@ export class PredictionView
   }
 
   updatePredictionFromDataStore() {
-    if (_.isEqual(this.state && this.state.dataStorePrediction, dataStore.prediction)) {
+    const prediction = predictionStore.prediction;
+    if (_.isEqual(this.state && this.state.dataStorePrediction, prediction)) {
       return;
     }
 
     const frameNumber = dataStore.frameNumber.get();
-    const userInfo = dataStore.userInfo,
-          prediction = dataStore.prediction,
-          predictionInterval = 3;  // ~20 min/frame
+    const predictionInterval = 3;  // ~20 min/frame
     let newPrediction : INewPrediction = {
           station: weatherStationStore.selected,  // userInfo.basestationId,
           type: PredictionType.eTemperature,  // default to temperature prediction
           timeStamp: new Date(),
           predictionTime: frameNumber,
           predictedTime: frameNumber + predictionInterval,
-          predictedValue: prediction.temp,
-          description: prediction.rationale,
+          predictedValue: prediction.predictedValue,
+          description: prediction.description,
           imageUrl: prediction.imageUrl
         };
     this.setState({ dataStorePrediction: _.clone(prediction), prediction: newPrediction });
@@ -134,19 +136,25 @@ export class PredictionView
 
   handlePredictionChange = (event: any, value: string) => {
     const predictedValue = parseFloat(value);
-    let prediction = dataStore.prediction,
+    const weatherStation = presenceStore.weatherStation;
+    let prediction = predictionStore.prediction,
         newPrediction = this.state.prediction;
-    prediction.temp = predictedValue;
-    dataStore.setPrediction(prediction);
+    prediction.predictedValue = predictedValue;
+    if(weatherStation) {
+      predictionStore.setPrediction(weatherStation, prediction);
+    }
     newPrediction.predictedValue = predictedValue;
     this.setState({ prediction: newPrediction });
   }
 
   handleDescriptionChange = (event: any, value: string) => {
-    let prediction = dataStore.prediction,
+    const weatherStation =presenceStore.weatherStation;
+    let prediction = predictionStore.prediction,
         newPrediction = this.state.prediction;
-    prediction.rationale = value;
-    dataStore.setPrediction(prediction);
+    prediction.description = value;
+    if(weatherStation) {
+      predictionStore.setPrediction(weatherStation, prediction);
+    }
     newPrediction.description = value;
     this.setState({ prediction: newPrediction });
   }
@@ -170,7 +178,7 @@ export class PredictionView
           frameNumber = dataStore.frameNumber.get();
     return (
       <CardText style={styles.prediction}>
-        {this.predictionPrompt(prediction.type, frameNumber, dataStore.temp)}
+        {this.predictionPrompt(prediction.type, frameNumber, 6)}
         <DropDownMenu
           style={styles.typeMenu}
           value={prediction.type}

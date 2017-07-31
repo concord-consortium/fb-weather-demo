@@ -15,7 +15,7 @@ export const Firebasify = (model:any, relativeDataPath:string) => {
         applySnapshot(model, myData);
       }
     },
-    // ignore these listener methods. TODO: remove from API
+    // Ignore these listener methods... Don't think we need them.
     setSessionPath(path:string) { return; },
     setSessionList(sessions:string[]) { return; }
   };
@@ -26,6 +26,5 @@ export const Firebasify = (model:any, relativeDataPath:string) => {
   onSnapshot(model, (newSnapshot:any) => {
     firebase.saveToRelativePath(newSnapshot, relativeDataPath);
   });
-
 };
 

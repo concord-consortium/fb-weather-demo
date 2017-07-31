@@ -4,7 +4,6 @@ import { Basestation, BasestationMap } from "./basestation";
 import { SimPrefs } from "./sim-prefs";
 import { FirebaseImp } from "./firebase-imp";
 import { FrameHelper } from "./frame-helper";
-import { Presence, PresenceMap } from "./presence";
 import { MapConfig, MapConfigMap } from "./map-config";
 
 const _ = require("lodash");
@@ -40,7 +39,6 @@ export interface FireBaseState {
   maxFrame: number;
   prefs?: SimPrefs;
   predictions?: PredictionMap;
-  presence?: PresenceMap;
   basestations?: BasestationMap;
   mapConfigs?: MapConfigMap;
 }
@@ -51,7 +49,6 @@ class DataStore {
   @observable maxFrame: IObservableValue<number>;
   @observable prefs: SimPrefs;
   @observable predictions: PredictionMap;
-  @observable presenceMap: PresenceMap;
   @observable basestationMap: BasestationMap;
   @observable selectedBasestationId: string | null;
   @observable mapConfigMap: MapConfigMap;
@@ -74,7 +71,6 @@ class DataStore {
       enablePrediction: false,
       showPredictions: false
     };
-    this.presenceMap = {};
     this.predictions = {};
     this.basestationMap = observable({} as BasestationMap);
     this.mapConfigMap = {};
@@ -120,12 +116,6 @@ class DataStore {
       this.predictions = observable({} as PredictionMap);
     }
 
-    if (newState.presence) {
-      this.presenceMap = observable(newState.presence);
-    } else {
-      this.presenceMap = observable({} as PresenceMap);
-    }
-
     if (newState.basestations) {
       this.basestationMap = observable(newState.basestations);
     } else {
@@ -137,31 +127,6 @@ class DataStore {
     } else {
       this.mapConfigMap = observable({} as MapConfigMap);
     }
-  }
-
-  @computed
-  get prediction(): Prediction {
-    const defaultPrediction = {
-      temp: 32,
-      rationale: "(no rationale)",
-      imageUrl: ""
-    };
-    if (this.basestation) {
-      const uuid = this.basestation.id;
-      return this.predictions[uuid] || defaultPrediction;
-    }
-    return defaultPrediction;
-  }
-
-  @computed
-  get userInfo() {
-    const uuid = this.firebaseImp.sessionID;
-    const defaultPresence = {
-      name: "",
-      id: "",
-      baseStationId: "none"
-    };
-    return this.presenceMap[uuid] || observable(defaultPresence);
   }
 
   // in list form instead of Map
@@ -179,10 +144,6 @@ class DataStore {
     });
   }
 
-  @computed
-  get basestation() {
-    return this.basestationMap[this.userInfo.basestationId];
-  }
 
   @computed
   get selectedBasestation() {
@@ -200,39 +161,8 @@ class DataStore {
     }
   }
 
-  @computed
-  get filteredPredictions() {
-    const predictionKeys = _.keys(this.predictions);
-    const presenceKeys = _.keys(this.presenceMap);
-    const results: Prediction[] = [];
-    for (let i = 0; i < presenceKeys.length; i++) {
-      let key = presenceKeys[i];
-      let presence = this.presenceMap[key];
-      let basestation = this.basestationMap[presence.basestationId];
-      if (basestation) {
-        if (_.includes(predictionKeys, key)) {
-          let prediction = this.predictions[key];
-          results.push({
-            name: basestation.name,
-            temp: prediction.temp,
-            rationale: prediction.rationale
-          });
-        }
-      }
-    }
-    return results;
-  }
 
-  @computed
-  get temp() {
-    const frameNumber = this.frameNumber.get();
-    if (this.basestation && this.basestation.data) {
-      if (this.basestation.data[frameNumber]) {
-        return this.basestation.data[frameNumber].value;
-      }
-    }
-    return 0;
-  }
+
 
   @computed
   get timeString():string {
@@ -260,28 +190,11 @@ class DataStore {
     this.setPref("mapConfig", config.id);
   }
 
-  set userInfo(baseChange: Presence) {
-    const uuid = this.firebaseImp.sessionID;
-    _.assignIn(this.presenceMap[uuid], baseChange);
-    this.firebaseImp.saveUserData(this.presenceMap[uuid]);
-  }
-
   predictionFor(basestationId: string):Prediction | null{
     if (this.predictions[basestationId] !== undefined) {
       return this.predictions[basestationId];
     }
     return null;
-  }
-
-  updateUserPref(key: any, value: any) {
-    const uuid = this.firebaseImp.sessionID;
-    const prefs = this.presenceMap[uuid] as any;
-    prefs[key] = value;
-    this.firebaseImp.saveUserData(prefs);
-  }
-
-  setUserBaseStation(id: string) {
-    this.updateUserPref("basestationId", id);
   }
 
   nextFrame() {
@@ -322,59 +235,6 @@ class DataStore {
     this.firebaseImp.removeSession(sessionName);
   }
 
-  setPrediction(prediction: Prediction) {
-    if (this.basestation) {
-      const uuid = this.basestation.id;
-      this.predictions[uuid] = prediction;
-      this.save({ predictions: this.predictions });
-    }
-  }
-
-  addBasestation() {
-    const bs = new Basestation(null);
-    this.basestationMap[bs.id] = bs;
-    this.save({ basestations: this.basestationMap });
-  }
-
-  addBasestationData(data: string) {
-    const records = CsvParse(data, { auto_parse: true, columns: true });
-    if (records && this.basestation) {
-      const timeSlice = 1000 * 60 * 60;
-      const grouped = _.groupBy(records, (item: CsvRecord) => {
-        return Math.floor(Date.parse(item.DATE as string) / timeSlice);
-      });
-      const frames = _.map(records, (item: CsvRecord) => {
-        const time =
-          Math.floor(Date.parse(item.time as string) / timeSlice) * timeSlice;
-        return { time: time, value: item.air_temperature };
-      });
-      this.basestation.data = frames;
-      const key = `basestations/${this.basestation.id}/data`;
-      this.saveToPath(key, this.basestation.data);
-    } else {
-      console.error("Could not load data in frame-helper");
-    }
-  }
-
-  updateBasestation(data: Basestation) {
-    const key = `basestations/${this.basestation.id}`;
-    this.basestationMap[this.basestation.id] = data;
-    this.saveToPath(key, data);
-  }
-
-  saveBasestation() {
-    if (this.basestation) {
-      const key = `basestations/${this.basestation.id}`;
-      this.saveToPath(key, this.basestation);
-    }
-  }
-
-  deleteBasestation(base: Basestation | null) {
-    if (base) {
-      delete this.basestationMap[base.id];
-      this.save({ basestations: this.basestationMap });
-    }
-  }
 
   addMapConfig() {
     const map = new MapConfig();

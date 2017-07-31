@@ -7,6 +7,9 @@ import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore } from "../data-store";
+import { weatherStationStore } from "../models/weather-station";
+import { INewPrediction, NewPrediction } from "../models/prediction";
+import { predictionStore } from "../stores/prediction-store";
 
 export type TeacherViewTab = "control" | "configure";
 
@@ -96,22 +99,26 @@ export class TeacherView extends React.Component<
   }
 
   renderPrediction() {
-    if(dataStore.basestation) {
-      return(
-        <div>
-          <img style={styles.image} src={dataStore.basestation.imageUrl}/>
-          <div style={styles.callsign}>{dataStore.basestation.callsign}</div>
-          <div style={styles.stationName}>{dataStore.basestation.name}</div>
-          <div style={styles.values}>
-            <div>
-              <span style={styles.label}>Temp:</span>
-              <span style={styles.temp}>{dataStore.prediction.temp}°</span>
+    const weatherStation = weatherStationStore.selected;
+    if(weatherStation) {
+      const prediction = predictionStore.predictionFor(weatherStation);
+      if (prediction) {
+        return(
+          <div>
+            <img style={styles.image} src={weatherStation.imageUrl}/>
+            <div style={styles.callsign}>{weatherStation.callsign}</div>
+            <div style={styles.stationName}>{weatherStation.name}</div>
+            <div style={styles.values}>
+              <div>
+                <span style={styles.label}>Temp:</span>
+                <span style={styles.temp}>{prediction}°</span>
+              </div>
+              <div style={styles.label}>Reasoning:</div>
+              <div style={styles.rationale}>{prediction.description}</div>
             </div>
-            <div style={styles.label}>Reasoning:</div>
-            <div style={styles.rationale}>{dataStore.prediction.rationale}</div>
           </div>
-        </div>
-      );
+        );
+      }
     }
     return null;
   }

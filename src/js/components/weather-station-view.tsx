@@ -7,8 +7,9 @@ import { GridView } from "./grid-view";
 import { PredictionView } from "./prediction-view";
 import { SimPrefs } from "../sim-prefs";
 import { ComponentStyleMap } from "../component-style-map";
+import { presenceStore } from "../models/presence";
+import { IWeatherStation } from "../models/weather-station";
 import { dataStore } from "../data-store";
-import { Basestation } from "../basestation";
 
 const dateFormat = require("dateformat");
 const div = React.DOM.div;
@@ -37,8 +38,8 @@ export class WeatherStationView extends React.Component<
     };
   }
 
-  setConfig(data: Basestation) {
-    dataStore.updateBasestation(data);
+  setConfig(data: IWeatherStation) {
+    presenceStore.setStation(data);
   }
 
   render() {
@@ -48,11 +49,12 @@ export class WeatherStationView extends React.Component<
     let callSign = "";
     let imgUrl = "img/farm.jpg";
     let time = dataStore.timeString;
-
-    if (dataStore.basestation) {
-      name = dataStore.basestation.name;
-      callSign = dataStore.basestation.callsign;
-      imgUrl = dataStore.basestation.imageUrl;
+    let temp = 5; // TODO, we need to look this up...
+    const weatherStation = presenceStore.weatherStation;
+    if (weatherStation) {
+      name = weatherStation.name;
+      callSign = weatherStation.callsign;
+      imgUrl = weatherStation.imageUrl;
     }
 
     const change = this.setConfig.bind(this);
@@ -107,7 +109,7 @@ export class WeatherStationView extends React.Component<
                 <div>
                   <CardTitle
                     titleStyle={styles.temp}
-                    title={`Temp: ${dataStore.temp}°`}
+                    title={`Temp: ${temp}°`}
                   />
                   <CardText style={styles.time}>
                     {time}
