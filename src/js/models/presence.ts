@@ -12,7 +12,7 @@ const presenceId = () => {
   return sessionID;
 };
 
-export const Presence = types.model("Precense",
+export const Presence = types.model("Presence",
 {
   username: types.optional(types.string, () => "anonymous"),
   id: types.optional(types.identifier(types.string),() => presenceId()),
