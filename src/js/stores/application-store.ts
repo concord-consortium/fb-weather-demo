@@ -17,10 +17,3 @@ export const applicationStore = ApplicationStore.create({
   presences: presenceStore
 });
 
-
-export const init = function() {
-  const win = (window as any);
-  win.predictions = predictionStore;
-  win.weatherStations = weatherStationStore;
-  win.presences = predictionStore;
-};

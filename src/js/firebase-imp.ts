@@ -139,6 +139,7 @@ export class FirebaseImp {
     for (callback of this.pendingCallbacks) {
       callback.bind(context)();
     }
+    this.pendingCallbacks=[];
   }
 
   get basePath() {
@@ -242,7 +243,7 @@ export class FirebaseImp {
       }
     }
     this.dataRef = firebase.database().ref(this.sessionPath);
-    this.load();
+    // this.load();
     const setData = this.loadDataFromFirebase.bind(this);
     const log = this.log.bind(this);
     this.dataRef.on("value", setData);

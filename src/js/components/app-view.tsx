@@ -4,6 +4,7 @@ import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import DevTools from "mobx-react-devtools";
 import { dataStore } from "../data-store";
 import { Link } from "react-router";
+import { applicationStore as appStore } from "../stores/application-store";
 
 interface routeParams {
   blarg: string;
