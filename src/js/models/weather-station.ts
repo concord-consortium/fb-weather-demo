@@ -22,7 +22,7 @@ export const WeatherStation = types.model("WeatherStation",
 {
   name: types.string,
   imageUrl: types.string,
-  id: types.optional(types.identifier(types.string),() => uuid()),
+  id: types.identifier(types.string),
   callsign: types.string,
   lat: types.number,
   long: types.number,

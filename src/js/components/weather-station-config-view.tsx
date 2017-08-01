@@ -4,7 +4,8 @@ import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import { ComponentStyleMap } from "../component-style-map";
-import { weatherStationStore, WeatherStation} from "../models/weather-station";
+import { weatherStationStore } from "../models/weather-station";
+import { presenceStore } from "../models/presence";
 
 const _ = require("lodash");
 const div = React.DOM.div;
@@ -27,7 +28,7 @@ export class WeatherStationConfigView extends React.Component<
   }
 
   setBasestation(evt: any, index: number, station: any) {
-    weatherStationStore.select(station);
+    presenceStore.setStation(station);
   }
 
   renderBaseOptions() {
@@ -44,7 +45,7 @@ export class WeatherStationConfigView extends React.Component<
   }
 
   render() {
-    const weatherStation = weatherStationStore.selected;
+    const weatherStation = presenceStore.weatherStation;
     const weatherStationId = weatherStation && weatherStation.id;
 
     const styles: ComponentStyleMap = {

@@ -7,7 +7,7 @@ import { dataStore } from "../data-store";
 const getWeatherSimId = () => {
   const sessionID = localStorage.getItem("CCweatherSession") || uuid();
   localStorage.setItem("CCweatherSession", sessionID);
-  return sessionID;
+  return uuid();
 };
 
 export const Presence = types.model("Precense",
@@ -37,20 +37,14 @@ export const PresenceStore = types.model(
   },{
     connectionStatus: null,
   },{
-    afterCreate() {
+    XafterCreate() {
       const firebase = dataStore.firebaseImp;
       if (this.connectionStatus) { this.connectionStatus.off(); }
       this.connectionStatus = firebase.database.ref(".info/connected");
       const setupConnection = function(snapshot: any) {
         // add a new presence for the current browser session...
         console.log(" --- ONLINE --- ");
-        const presence = Presence.create( {
-          id: getWeatherSimId(),
-          start: new Date(),
-          username: "anonymous",
-          weatherStation: null
-        });
-        this.addPresence(presence);
+
         if (snapshot.val()) {
           const ref = firebase.refForPath(`Presences/${presence.id}`);
           if(ref) {
@@ -74,8 +68,15 @@ export const PresenceStore = types.model(
 export type IPresenceStore = typeof PresenceStore.Type;
 
 export const presenceStore = PresenceStore.create({
-  presences: [],
-  selected: null
+  presences: []
 });
+
+const presence = Presence.create( {
+  id: getWeatherSimId(),
+  start: new Date(),
+  username: "anonymous",
+  weatherStation: null
+});
+presenceStore.addPresence(presence);
 
 Firebasify(presenceStore,"Presences");

@@ -8,10 +8,11 @@ export const PredictionStore = types.model({
   predictions: types.array(NewPrediction),
   get prediction(): INewPrediction {
     const station = presenceStore.weatherStation;
+    let prediction = null;
     if (station) {
-      return this.predictions.filter((p:INewPrediction) => p.station === station).first;
+      prediction = this.predictions.filter((p:INewPrediction) => p.station === station).first;
     }
-    return FreshPrediction();
+    return prediction || FreshPrediction();
   },
   get value(): number | null{
     const prediction:INewPrediction | null = this.prediction;

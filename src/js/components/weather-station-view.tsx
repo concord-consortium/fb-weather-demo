@@ -10,6 +10,7 @@ import { ComponentStyleMap } from "../component-style-map";
 import { presenceStore } from "../models/presence";
 import { IWeatherStation } from "../models/weather-station";
 import { dataStore } from "../data-store";
+import { applicationStore as appStore } from "../stores/application-store";
 
 const dateFormat = require("dateformat");
 const div = React.DOM.div;
@@ -50,7 +51,7 @@ export class WeatherStationView extends React.Component<
     let imgUrl = "img/farm.jpg";
     let time = dataStore.timeString;
     let temp = 5; // TODO, we need to look this up...
-    const weatherStation = presenceStore.weatherStation;
+    const weatherStation = appStore.presences.weatherStation;
     if (weatherStation) {
       name = weatherStation.name;
       callSign = weatherStation.callsign;
