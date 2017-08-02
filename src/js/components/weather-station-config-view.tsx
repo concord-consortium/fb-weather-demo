@@ -38,7 +38,7 @@ export class WeatherStationConfigView extends React.Component<
     for (let i = 0; i < bases.length; i++) {
       base = bases[i];
       results.push(
-        <MenuItem key={base.id} value={base.id} primaryText={base.name} />
+        <MenuItem key={base.id} value={base.id} primaryText={`${base.callsign} ${base.name}`} />
       );
     }
     return results;
