@@ -14,7 +14,6 @@
   "author": "npaessel@concord.org",
   "license": "MIT",
   "dependencies": {
-    "csv-parse": "^1.2.0",
     "dateformat": "^2.0.0",
     "firebase": "^3.7.0",
     "leaflet": "^1.0.3",

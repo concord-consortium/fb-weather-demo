@@ -7,21 +7,6 @@ import { FrameHelper } from "./frame-helper";
 import { MapConfig, MapConfigMap } from "./map-config";
 
 const _ = require("lodash");
-const CsvParse = require("csv-parse/lib/sync");
-
-type NowShowingType =
-  | "loading"
-  | "choose"
-  | "teacher"
-  | "student"
-  | "classroom"
-  | "setup";
-
-type CsvRecord = {
-  [key: string]: string | number | null;
-};
-
-type CsvRecords = CsvRecord[];
 
 export interface Prediction {
   name?: string;
@@ -44,13 +29,11 @@ export interface FireBaseState {
 }
 
 class DataStore {
-  @observable nowShowing: NowShowingType;
   @observable frameNumber: IObservableValue<number>;
   @observable maxFrame: IObservableValue<number>;
   @observable prefs: SimPrefs;
   @observable predictions: PredictionMap;
   @observable basestationMap: BasestationMap;
-  @observable selectedBasestationId: string | null;
   @observable mapConfigMap: MapConfigMap;
   @observable editingMap: MapConfig | null;
   @observable sessionList: string[];
@@ -58,10 +41,8 @@ class DataStore {
   firebaseImp: FirebaseImp;
 
   constructor() {
-    this.nowShowing = "loading";
     this.frameNumber = observable(0);
     this.maxFrame = observable(0);
-    this.selectedBasestationId = null;
     this.prefs = {
       showBaseMap: true,
       showTempColors: false,
@@ -81,14 +62,9 @@ class DataStore {
   registerFirebase() {
     this.firebaseImp = new FirebaseImp();
     this.firebaseImp.addListener(this);
-    this.setNowShowing("loading");
     this.firebaseImp.initFirebase(() => {
       // TBD: Initialize an empty instance
     });
-  }
-
-  setNowShowing(_new: NowShowingType) {
-    this.nowShowing = _new;
   }
 
   setSessionList(newSessions: string[]) {
@@ -143,25 +119,6 @@ class DataStore {
       return g;
     });
   }
-
-
-  @computed
-  get selectedBasestation() {
-    if(this.selectedBasestationId) {
-      return this.basestationMap[this.selectedBasestationId];
-    }
-    return null;
-  }
-  set selectedBasestation(basestation:Basestation|null) {
-    if(basestation) {
-      this.selectedBasestationId = basestation.id;
-    }
-    else {
-      this.selectedBasestationId = null;
-    }
-  }
-
-
 
 
   @computed
