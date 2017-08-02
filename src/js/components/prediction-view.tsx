@@ -6,7 +6,7 @@ import TextField from "material-ui/TextField";
 import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore, Prediction } from "../data-store";
+import { dataStore  } from "../data-store";
 import { PredictionType, INewPrediction } from "../models/prediction";
 import { weatherStationStore, IWeatherStation } from "../models/weather-station";
 import { predictionStore } from "../stores/prediction-store";
@@ -65,7 +65,7 @@ export interface PredictionViewProps {
 }
 
 export interface PredictionViewState {
-  dataStorePrediction: Prediction;
+  dataStorePrediction: INewPrediction;
   prediction: INewPrediction;
 }
 
@@ -85,7 +85,7 @@ export class PredictionView
     const frameNumber = dataStore.frameNumber.get();
     const predictionInterval = 3;  // ~20 min/frame
     let newPrediction : INewPrediction = {
-          station: weatherStationStore.selected,  // userInfo.basestationId,
+          station: presenceStore.weatherStation,
           type: PredictionType.eTemperature,  // default to temperature prediction
           timeStamp: new Date(),
           predictionTime: frameNumber,
@@ -137,26 +137,19 @@ export class PredictionView
   handlePredictionChange = (event: any, value: string) => {
     const predictedValue = parseFloat(value);
     const weatherStation = presenceStore.weatherStation;
-    let prediction = predictionStore.prediction,
-        newPrediction = this.state.prediction;
-    prediction.predictedValue = predictedValue;
-    if(weatherStation) {
-      predictionStore.setPrediction(weatherStation, prediction);
-    }
-    newPrediction.predictedValue = predictedValue;
-    this.setState({ prediction: newPrediction });
+    this.state.prediction.predictedValue = predictedValue;
+    this.setState({ prediction: this.state.prediction }); // TODO: Required?
   }
 
   handleDescriptionChange = (event: any, value: string) => {
     const weatherStation =presenceStore.weatherStation;
-    let prediction = predictionStore.prediction,
-        newPrediction = this.state.prediction;
-    prediction.description = value;
-    if(weatherStation) {
-      predictionStore.setPrediction(weatherStation, prediction);
-    }
-    newPrediction.description = value;
-    this.setState({ prediction: newPrediction });
+    this.state.prediction.description = value;
+    this.setState({ prediction: this.state.prediction }); // TODO: Required?
+  }
+
+  // TODO TS signature for TouchTapEvent handler??
+  updatePrediction = (event: any) => {
+    predictionStore.addPrediction(this.state.prediction);
   }
 
   render() {
@@ -199,7 +192,7 @@ export class PredictionView
           rows={4}
         />
         <CardActions>
-          <FlatButton label="Share" />
+          <FlatButton label="Share" onTouchTap={this.updatePrediction} />
         </CardActions>
       </CardText>
     );

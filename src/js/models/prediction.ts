@@ -31,7 +31,7 @@ export const FreshPrediction = function(){
       predictionTime: timeInt,
       predictedValue: -1,
       description: "",
-      imageUrl: undefined
+      imageUrl: ""
     }
   );
 };

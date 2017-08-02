@@ -10,7 +10,7 @@ export const PredictionStore = types.model({
     const station = presenceStore.weatherStation;
     let prediction = null;
     if (station) {
-      prediction = this.predictions.filter((p:INewPrediction) => p.station === station).first;
+      prediction = this.predictions.filter((p:INewPrediction) => p.station === station)[0];
     }
     return prediction || FreshPrediction();
   },
@@ -37,6 +37,11 @@ export const PredictionStore = types.model({
   },
   setPrediction(station:IWeatherStation, prediction:INewPrediction) {
     prediction.station = station;
+  },
+  addPrediction(prediction:INewPrediction) {
+    prediction.timeStamp = new Date();
+    prediction.station = presenceStore.weatherStation;
+    this.predictions.push(prediction);
   }
 });
 
