@@ -76,6 +76,7 @@ export const WeatherStationStore = types.model(
       });
       this.stations.push(station);
       this.selected = station;
+      return station;
     },
     select(station:IWeatherStation) {
       this.selected=station;

@@ -14,8 +14,15 @@ const _ = require("lodash");
 
 const div = React.DOM.div;
 
-export interface SetupStationState {}
 export interface SetupStationProps {}
+export interface SetupStationState {
+  weatherStation?: IWeatherStation;
+  callsign?: string;
+  name?: string;
+  imageUrl?: string;
+  lat?: string;
+  long?: string;
+}
 
 const styles: ComponentStyleMap = {
   config: {
@@ -60,6 +67,26 @@ const styles: ComponentStyleMap = {
   }
 };
 
+function stationToState(weatherStation?: IWeatherStation | null) {
+  return weatherStation
+          ? {
+            weatherStation,
+            callsign: weatherStation.callsign,
+            name: weatherStation.name,
+            imageUrl: weatherStation.imageUrl,
+            lat: String(weatherStation.lat),
+            long: String(weatherStation.long)
+          }
+          : {
+            weatherStation: undefined,
+            callsign: undefined,
+            name: undefined,
+            imageUrl: undefined,
+            lat: undefined,
+            long: undefined
+          };
+}
+
 @observer
 export class SetupStationsView extends React.Component<
   SetupStationProps,
@@ -67,6 +94,8 @@ export class SetupStationsView extends React.Component<
 > {
   constructor(props: SetupStationProps, ctx: any) {
     super(props, ctx);
+
+    this.state = stationToState(weatherStationStore.selected);
   }
 
   readData() {}
@@ -81,77 +110,120 @@ export class SetupStationsView extends React.Component<
     reader.readAsText(acceptedFiles[0]);
   }
 
-  renderEditor() {
-    const weatherStation = weatherStationStore.selected;
-    if (weatherStation) {
-      return (
-        <div className="editBase" style={styles.config}>
-          <TextField
-            value={weatherStation.callsign}
-            style={styles.textField}
-            floatingLabelText="station call sign"
-            onChange={(e, v) => {
-              weatherStation.update({callsign:v});
-            }}
-          />
-          <TextField
-            value={weatherStation.name}
-            style={styles.textField}
-            floatingLabelText="station name"
-            onChange={(e, v) => {
-              weatherStation.update({name: v});
-            }}
-          />
-          <TextField
-            value={weatherStation.imageUrl}
-            style={styles.textField}
-            floatingLabelText="station image url"
-            onChange={(e, v) => {
-              weatherStation.update({imageUrl: v});
-            }}
-          />
-          <TextField
-            value={weatherStation.lat}
-            style={styles.textField}
-            type="number"
-            floatingLabelText="station latitude "
-            onChange={(e, v) => {
-              weatherStation.update({lat: parseFloat(v)});
-            }}
-          />
-          <TextField
-            value={weatherStation.long}
-            style={styles.textField}
-            type="number"
-            floatingLabelText="station longitude"
-            onChange={(e, v) => {
-              weatherStation.update({long: parseFloat(v)});
-            }}
-          />
-          <Dropzone onDrop={this.onDrop} style={styles.dropzone}>
-            <div>Add Data Files</div>
-          </Dropzone>
-          <div style={styles.buttonRow}>
-            <RaisedButton
-              label="done"
-              primary={true}
-              onTouchTap={() => {
-                {
-                  weatherStationStore.deselect();
-                }
-              }}
-            />
-            <RaisedButton
-              label="delete"
-              secondary={true}
-              onTouchTap={() =>
-                weatherStation.delete()
-              }
-            />
-          </div>
-        </div>
-      );
+  handleKeyDown = (e: any) => {
+    if (e.keyCode === 13) {
+      e.target.blur();
     }
+  }
+
+  updateWeatherStation(weatherStation?: IWeatherStation) {
+    this.setState(stationToState(weatherStation));
+  }
+
+  updateStateValue = (prop: string, value: string) => {
+    this.setState({ [prop]: value });
+  }
+
+  updateRemoteString = (prop: string, value: string) => {
+    if (this.state.weatherStation) {
+      this.state.weatherStation.update({ [prop]: value });
+    }
+  }
+
+  updateRemoteFloat = (prop: string, value: string) => {
+    const numValue = parseFloat(value);
+    if (this.state.weatherStation && !isNaN(numValue)) {
+      this.state.weatherStation.update({ [prop]: numValue });
+    }
+  }
+
+  renderEditor() {
+    const { weatherStation, callsign, name, imageUrl, lat, long } = this.state;
+
+    if (!weatherStation) {
+      return null;
+    }
+
+    return (
+      <div className="editBase" style={styles.config}>
+        <TextField
+          value={callsign}
+          style={styles.textField}
+          floatingLabelText="station call sign"
+          onChange={(e, v) => { this.updateStateValue('callsign', v); }}
+          onKeyDown={ this.handleKeyDown }
+          onBlur={(e) => {
+            this.updateRemoteString('callsign', (e.target as HTMLTextAreaElement).value);
+          }}
+        />
+        <TextField
+          value={name}
+          style={styles.textField}
+          floatingLabelText="station name"
+          onChange={(e, v) => { this.updateStateValue('name', v); }}
+          onKeyDown={ this.handleKeyDown }
+          onBlur={(e) => {
+            this.updateRemoteString('name', (e.target as HTMLTextAreaElement).value);
+          }}
+        />
+        <TextField
+          value={imageUrl}
+          style={styles.textField}
+          floatingLabelText="station image url"
+          onChange={(e, v) => { this.updateStateValue('imageUrl', v); }}
+          onKeyDown={ this.handleKeyDown }
+          onBlur={(e) => {
+            this.updateRemoteString('imageUrl', (e.target as HTMLTextAreaElement).value);
+          }}
+        />
+        <TextField
+          value={lat}
+          style={styles.textField}
+          type="number"
+          floatingLabelText="station latitude "
+          onChange={(e, v) => { this.updateStateValue('lat', v); }}
+          onKeyDown={ this.handleKeyDown }
+          onBlur={(e) => {
+            this.updateRemoteFloat('lat', (e.target as HTMLTextAreaElement).value);
+          }}
+        />
+        <TextField
+          value={long}
+          style={styles.textField}
+          type="number"
+          floatingLabelText="station longitude"
+          onChange={(e, v) => { this.updateStateValue('long', v); }}
+          onKeyDown={ this.handleKeyDown }
+          onBlur={(e) => {
+            this.updateRemoteFloat('long', (e.target as HTMLTextAreaElement).value);
+          }}
+        />
+        <Dropzone onDrop={this.onDrop} style={styles.dropzone}>
+          <div>Add Data Files</div>
+        </Dropzone>
+        <div style={styles.buttonRow}>
+          <RaisedButton
+            label="done"
+            primary={true}
+            onTouchTap={() => {
+              {
+                this.updateWeatherStation();
+                weatherStationStore.deselect();
+              }
+            }}
+          />
+          <RaisedButton
+            label="delete"
+            secondary={true}
+            onTouchTap={() => {
+              this.updateWeatherStation();
+              weatherStationStore.deselect();
+              weatherStation.delete();
+            }}
+          />
+        </div>
+      </div>
+    );
   }
 
   renderAddButton() {
@@ -163,7 +235,10 @@ export class SetupStationsView extends React.Component<
         <FlatButton
           label="Add weather station"
           primary={true}
-          onTouchTap={() => weatherStationStore.addStation()}
+          onTouchTap={() => {
+            const station = weatherStationStore.addStation();
+            this.updateWeatherStation(station);
+          }}
         />
       </div>
     );
@@ -192,7 +267,10 @@ export class SetupStationsView extends React.Component<
                     </div>
                   </div>
                 }
-                onTouchTap={() => weatherStationStore.select(base)}
+                onTouchTap={() => {
+                  this.updateWeatherStation(base);
+                  weatherStationStore.select(base);
+                }}
                 titleBackground="linear-gradient(to top, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
               >
                 <img src={base.imageUrl} />
