@@ -177,34 +177,39 @@ export class TeacherView extends React.Component<
                 alignItems: "center"
               }}
             >
-              <div style={styles.mapAndPrediction}>
-                <LeafletMapView
-                  mapConfig={dataStore.mapConfig}
-                  interaction={false}
-                  weatherStations={weatherStationStore.stations}
-                  width={600}
-                  height={400}
-                />
-                <div style={styles.prediction}>
-                  {this.renderPredictions()}
+              {/* extra div eliminates material-ui warning:
+                  "You cannot call prepareStyles() on the same style object more than once"
+                  cf. https://github.com/callemall/material-ui/issues/4177 */}
+              <div>
+                <div style={styles.mapAndPrediction}>
+                  <LeafletMapView
+                    mapConfig={dataStore.mapConfig}
+                    interaction={false}
+                    weatherStations={weatherStationStore.stations}
+                    width={600}
+                    height={400}
+                  />
+                  <div style={styles.prediction}>
+                    {this.renderPredictions()}
+                  </div>
                 </div>
+                <CardActions>
+                  <FloatingActionButton
+                    iconClassName="icon-skip_previous"
+                    onTouchTap={rewind}
+                  />
+                  <FloatingActionButton
+                    iconClassName="icon-play_circle_filled"
+                    disabled={disablePlay}
+                    onTouchTap={play}
+                  />
+                  <FloatingActionButton
+                    iconClassName="icon-pause_circle_filled"
+                    disabled={disablePause}
+                    onTouchTap={pause}
+                  />
+                </CardActions>
               </div>
-              <CardActions>
-                <FloatingActionButton
-                  iconClassName="icon-skip_previous"
-                  onTouchTap={rewind}
-                />
-                <FloatingActionButton
-                  iconClassName="icon-play_circle_filled"
-                  disabled={disablePlay}
-                  onTouchTap={play}
-                />
-                <FloatingActionButton
-                  iconClassName="icon-pause_circle_filled"
-                  disabled={disablePause}
-                  onTouchTap={pause}
-                />
-              </CardActions>
             </CardMedia>
           </Tab>
         </Tabs>
