@@ -7,7 +7,7 @@ import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore  } from "../data-store";
-import { PredictionType, INewPrediction } from "../models/prediction";
+import { PredictionType, INewPrediction, FreshPrediction } from "../models/prediction";
 import { weatherStationStore, IWeatherStation } from "../models/weather-station";
 import { predictionStore } from "../stores/prediction-store";
 import { presenceStore } from "../models/presence";
@@ -98,11 +98,12 @@ export class PredictionView
   }
 
   componentWillMount() {
-    this.updatePredictionFromDataStore();
+    // this.updatePredictionFromDataStore();
+    this.setState({prediction: _.clone(FreshPrediction())});
   }
 
   componentWillReceiveProps(nextProps: any) {
-    this.updatePredictionFromDataStore();
+    // this.updatePredictionFromDataStore();
   }
 
   predictionPrompt(type: string, simTime: number, value?: number) {

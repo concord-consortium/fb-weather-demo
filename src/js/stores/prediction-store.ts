@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { WeatherStation, IWeatherStation } from "../models/weather-station";
+import { WeatherStation, IWeatherStation, weatherStationStore } from "../models/weather-station";
 import { NewPrediction, INewPrediction, FreshPrediction } from "../models/prediction";
 import { presenceStore } from "../models/presence";
 import { Firebasify } from "../middlewares/firebase-decorator";
@@ -13,6 +13,14 @@ export const PredictionStore = types.model({
       prediction = this.predictions.filter((p:INewPrediction) => p.station === station)[0];
     }
     return prediction || FreshPrediction();
+  },
+  get teacherPredictions(): INewPrediction {
+    const station = weatherStationStore.selected;
+    let predictions = [];
+    if (station) {
+      predictions = this.predictions.filter((p:INewPrediction) => p.station === station).reverse();
+    }
+    return predictions;
   },
   get value(): number | null{
     const prediction:INewPrediction | null = this.prediction;
@@ -30,7 +38,7 @@ export const PredictionStore = types.model({
   }
 },{
   predictionsFor(station:IWeatherStation):INewPrediction[] {
-    return this.predictions.filter((p:INewPrediction)  => p.station === station);
+    return this.predictions.filter((p:INewPrediction)  => p.station === station).reverse();
   },
   predictionFor(station:IWeatherStation):INewPrediction|null {
     return this.predictionsFor(station)[0];

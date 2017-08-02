@@ -79,7 +79,6 @@ const styles:ComponentStyleMap = {
 };
 
 
-
 @observer
 export class TeacherView extends React.Component<
   TeacherViewProps,
@@ -118,7 +117,7 @@ export class TeacherView extends React.Component<
   renderPredictions() {
     const weatherStation = weatherStationStore.selected;
     if(weatherStation) {
-      const predictions = predictionStore.predictionsFor(weatherStation);
+      const predictions = predictionStore.teacherPredictions;
 
       const renderPrediction = (prediction:INewPrediction, index:number) => {
         const style = index % 2 === 0 ? styles.predictionItemEven :  styles.predictionItemOdd;
