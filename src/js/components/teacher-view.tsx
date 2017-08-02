@@ -8,8 +8,10 @@ import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore } from "../data-store";
 import { weatherStationStore } from "../models/weather-station";
-import { INewPrediction, NewPrediction } from "../models/prediction";
+import { INewPrediction } from "../models/prediction";
 import { predictionStore } from "../stores/prediction-store";
+
+const _ = require("lodash");
 
 export type TeacherViewTab = "control" | "configure";
 
@@ -29,11 +31,25 @@ const styles:ComponentStyleMap = {
     overflow: "hidden",
     maxWidth: "90vw"
   },
+  predictionContainer: {
+    overflowY: "auto",
+    height: "264px"
+  },
   prediction: {
     display: "flex",
     flexDirection: "column",
     padding: "0em 2em",
     width: "20vw"
+  },
+  predictionItemEven: {
+    backgroundColor: "hsl(0, 0%, 95%)",
+    marginTop: "1em",
+    padding: "0.25em"
+  },
+  predictionItemOdd: {
+    backgroundColor: "hsl(0, 0%, 100%)",
+    marginTop: "1em",
+    padding: "0.25em"
   },
   callsign: {
     fontSize: "16pt",
@@ -98,27 +114,36 @@ export class TeacherView extends React.Component<
     dataStore.setFrame(0);
   }
 
-  renderPrediction() {
+
+  renderPredictions() {
     const weatherStation = weatherStationStore.selected;
     if(weatherStation) {
-      const prediction = predictionStore.predictionFor(weatherStation);
-      if (prediction) {
-        return(
-          <div>
-            <img style={styles.image} src={weatherStation.imageUrl}/>
-            <div style={styles.callsign}>{weatherStation.callsign}</div>
-            <div style={styles.stationName}>{weatherStation.name}</div>
-            <div style={styles.values}>
-              <div>
-                <span style={styles.label}>Temp:</span>
-                <span style={styles.temp}>{prediction}°</span>
-              </div>
-              <div style={styles.label}>Reasoning:</div>
-              <div style={styles.rationale}>{prediction.description}</div>
-            </div>
+      const predictions = predictionStore.predictionsFor(weatherStation);
+
+      const renderPrediction = (prediction:INewPrediction, index:number) => {
+        const style = index % 2 === 0 ? styles.predictionItemEven :  styles.predictionItemOdd;
+        const result =(
+          <div style={style} key={index}>
+             {/* <span style={styles.temp}>{prediction.timeStamp}</span> */}
+            <span style={styles.label}>Temp:</span>
+            <span style={styles.temp}>{prediction.predictedValue}°</span>
+            <div style={styles.label}>Reasoning:</div>
+            <div style={styles.rationale}>{prediction.description}</div>
+          </div>);
+        // debugger;
+        return result;
+      };
+
+      return (
+        <div>
+          <img style={styles.image} src={weatherStation.imageUrl}/>
+          <div style={styles.callsign}>{weatherStation.callsign}</div>
+          <div style={styles.stationName}>{weatherStation.name}</div>
+          <div style={styles.predictionContainer}>
+              {_.map(predictions,renderPrediction) }
           </div>
-        );
-      }
+        </div>
+      );
     }
     return null;
   }
@@ -162,7 +187,7 @@ export class TeacherView extends React.Component<
                   height={400}
                 />
                 <div style={styles.prediction}>
-                  {this.renderPrediction()}
+                  {this.renderPredictions()}
                 </div>
               </div>
               <CardActions>

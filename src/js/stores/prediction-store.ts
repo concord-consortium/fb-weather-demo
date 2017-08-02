@@ -33,7 +33,7 @@ export const PredictionStore = types.model({
     return this.predictions.filter((p:INewPrediction)  => p.station === station);
   },
   predictionFor(station:IWeatherStation):INewPrediction|null {
-    return this.predictionsFor.last;
+    return this.predictionsFor(station)[0];
   },
   setPrediction(station:IWeatherStation, prediction:INewPrediction) {
     prediction.station = station;
