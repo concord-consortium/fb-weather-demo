@@ -23,8 +23,8 @@ export class LeafletMapMarker extends React.Component<
   }
 
   get prediction() {
-    const basestation = this.props.weatherStation;
-    const prediction = dataStore.predictionFor(basestation.id);
+    const weatherStation = this.props.weatherStation;
+    const prediction = dataStore.predictionFor(weatherStation.id);
     return prediction;
   }
 
@@ -36,14 +36,14 @@ export class LeafletMapMarker extends React.Component<
   }
 
   get actualTemp() {
-    const basestation = this.props.weatherStation;
+    const weatherStation = this.props.weatherStation;
     const frameNumber = dataStore.frameNumber.get();
     if (
-      basestation &&
-      basestation.data &&
-      basestation.data.length > frameNumber
+      weatherStation &&
+      weatherStation.data &&
+      weatherStation.data.length > frameNumber
     ) {
-      return basestation.data[frameNumber].value;
+      return weatherStation.data[frameNumber].value;
     }
     return null;
   }
@@ -90,10 +90,10 @@ export class LeafletMapMarker extends React.Component<
   }
 
   render() {
-    const basestation = this.props.weatherStation;
+    const weatherStation = this.props.weatherStation;
     const ds = dataStore;
     const handleClick = function(evt:any) {
-      weatherStationStore.select(basestation);
+      weatherStationStore.select(weatherStation);
     };
 
     const center = { lat: this.props.weatherStation.lat, lng: this.props.weatherStation.long };

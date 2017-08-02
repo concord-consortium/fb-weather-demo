@@ -89,7 +89,7 @@ export class SetupMapView extends React.Component<
           <LeafletMapView
             mapConfig={dataStore.editingMap}
             interaction={true}
-            weatherStations={dataStore.basestations}
+            weatherStations={weatherStationStore.stations}
             width={600}
             height={400}
             update={(lat, long, zoom) => {
