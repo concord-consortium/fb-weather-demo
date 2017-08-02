@@ -5,9 +5,9 @@ import { Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
 import { dataStore } from "../data-store";
 import { MapConfig } from "../map-config";
-import { Basestation } from "../basestation";
+import { IWeatherStation, weatherStationStore } from "../models/weather-station";
 interface LeafletMapMarkerProps {
-  basestation: Basestation;
+  weatherStation: IWeatherStation;
   selected: boolean;
 }
 
@@ -23,7 +23,7 @@ export class LeafletMapMarker extends React.Component<
   }
 
   get prediction() {
-    const basestation = this.props.basestation;
+    const basestation = this.props.weatherStation;
     const prediction = dataStore.predictionFor(basestation.id);
     return prediction;
   }
@@ -36,7 +36,7 @@ export class LeafletMapMarker extends React.Component<
   }
 
   get actualTemp() {
-    const basestation = this.props.basestation;
+    const basestation = this.props.weatherStation;
     const frameNumber = dataStore.frameNumber.get();
     if (
       basestation &&
@@ -84,20 +84,20 @@ export class LeafletMapMarker extends React.Component<
 
   callsignDiv() {
     if (dataStore.prefs.showStationNames) {
-      return `<div>${this.props.basestation.callsign}</div>`;
+      return `<div>${this.props.weatherStation.callsign}</div>`;
     }
     return "";
   }
 
   render() {
-    const basestation = this.props.basestation;
+    const basestation = this.props.weatherStation;
     const ds = dataStore;
     const handleClick = function(evt:any) {
-      ds.selectedBasestation = basestation;
+      weatherStationStore.select(basestation);
     };
 
-    const center = { lat: this.props.basestation.lat, lng: this.props.basestation.long };
-    const key = this.props.basestation.id;
+    const center = { lat: this.props.weatherStation.lat, lng: this.props.weatherStation.long };
+    const key = this.props.weatherStation.id;
     let classes ="divIcon";
     const selected = this.props.selected;
 

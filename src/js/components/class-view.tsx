@@ -4,6 +4,7 @@ import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { SimPrefs } from "../sim-prefs";
 import { LeafletMapView } from "./leaflet-map-view";
 import { dataStore } from "../data-store";
+import { weatherStationStore } from "../models/weather-station";
 
 export interface ClassViewProps {
   frame: number;
@@ -35,7 +36,7 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
               <LeafletMapView
                 mapConfig={dataStore.mapConfig}
                 interaction={false}
-                baseStations={dataStore.basestations}
+                weatherStations={weatherStationStore.stations}
                 width={800}
                 height={600}
               />

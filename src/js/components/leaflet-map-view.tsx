@@ -4,14 +4,14 @@ import { Map, TileLayer, Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
 import { dataStore } from "../data-store";
 import { MapConfig } from "../map-config";
-import { Basestation } from "../basestation";
+import { weatherStationStore, IWeatherStation } from "../models/weather-station";
 import { LeafletMapMarker } from "./leaflet-map-marker";
 interface LeafletMapProps {
   mapConfig: MapConfig | null;
   width: number;
   height: number;
   interaction: boolean;
-  baseStations: Basestation[];
+  weatherStations: IWeatherStation[];
   update?: (lat: number, long: number, zoom: number) => void;
 }
 
@@ -66,9 +66,9 @@ export class LeafletMapView extends React.Component<
           style={{ width: this.props.width, height: this.props.height }}
         >
           {baseMap}
-          {this.props.baseStations.map(b => {
-              const selected = b.id === dataStore.selectedBasestationId;
-              return <LeafletMapMarker basestation={b} key={b.id} selected={selected}/>;
+          {this.props.weatherStations.map(b => {
+              const selected = b === weatherStationStore.selected;
+              return <LeafletMapMarker weatherStation={b} key={b.id} selected={selected}/>;
             }
           )}
         </Map>

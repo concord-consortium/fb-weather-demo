@@ -157,7 +157,7 @@ export class TeacherView extends React.Component<
                 <LeafletMapView
                   mapConfig={dataStore.mapConfig}
                   interaction={false}
-                  baseStations={dataStore.basestations}
+                  weatherStations={weatherStationStore.stations}
                   width={600}
                   height={400}
                 />
