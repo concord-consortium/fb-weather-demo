@@ -192,12 +192,10 @@ export class SetupStationsView extends React.Component<
                     </div>
                   </div>
                 }
+                onTouchTap={() => weatherStationStore.select(base)}
                 titleBackground="linear-gradient(to top, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
               >
-                <img
-                  src={base.imageUrl}
-                  onClick={() => weatherStationStore.select(base)}
-                />
+                <img src={base.imageUrl} />
               </GridTile>
             )}
           </GridList>
