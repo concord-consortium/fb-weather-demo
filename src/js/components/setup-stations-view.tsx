@@ -8,7 +8,8 @@ import * as Dropzone from "react-dropzone";
 import { GridList, GridTile } from "material-ui/GridList";
 import SelectField from "material-ui/SelectField";
 import { ComponentStyleMap } from "../component-style-map";
-import { weatherStationStore, IWeatherStation, WeatherStation} from "../models/weather-station";
+import { IWeatherStation } from "../models/weather-station";
+import { weatherStationStore } from "../stores/weather-station-store";
 
 const _ = require("lodash");
 

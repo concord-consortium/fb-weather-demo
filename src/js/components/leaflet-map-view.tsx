@@ -4,8 +4,10 @@ import { Map, TileLayer, Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
 import { dataStore } from "../data-store";
 import { MapConfig } from "../map-config";
-import { weatherStationStore, IWeatherStation } from "../models/weather-station";
+import { IWeatherStation } from "../models/weather-station";
+import { weatherStationStore } from "../stores/weather-station-store";
 import { LeafletMapMarker } from "./leaflet-map-marker";
+
 interface LeafletMapProps {
   mapConfig: MapConfig | null;
   width: number;

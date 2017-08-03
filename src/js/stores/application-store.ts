@@ -1,17 +1,17 @@
 import { types } from "mobx-state-tree";
-import { weatherStationStore, WeatherStationStore, IWeatherStation } from "../models/weather-station";
 import { PresenceStore, presenceStore } from "../models/presence";
 import { PredictionStore, predictionStore } from "./prediction-store";
+import { WeatherStationStore, weatherStationStore } from "../stores/weather-station-store";
 
 export const ApplicationStore = types.model({
-  predictions: PredictionStore,
+  presences: PresenceStore,
   weatherStations: WeatherStationStore,
-  presences: PresenceStore
+  predictions: PredictionStore
 });
 
 export const applicationStore = ApplicationStore.create({
-  predictions: predictionStore,
+  presences: presenceStore,
   weatherStations: weatherStationStore,
-  presences: presenceStore
+  predictions: predictionStore
 });
 

@@ -1,7 +1,8 @@
 import { types } from "mobx-state-tree";
-import { WeatherStation, IWeatherStation, weatherStationStore } from "../models/weather-station";
 import { Prediction, IPrediction, FreshPrediction } from "../models/prediction";
 import { presenceStore } from "../models/presence";
+import { IWeatherStation } from "../models/weather-station";
+import { weatherStationStore } from "../stores/weather-station-store";
 import { Firebasify } from "../middlewares/firebase-decorator";
 
 export const PredictionStore = types.model({

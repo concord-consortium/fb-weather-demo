@@ -9,7 +9,7 @@ import { Card } from "material-ui/Card";
 import { LeafletMapView } from "./leaflet-map-view";
 import { MapConfig } from "../map-config";
 import { dataStore } from "../data-store";
-import { weatherStationStore } from "../models/weather-station";
+import { weatherStationStore } from "../stores/weather-station-store";
 
 const _ = require("lodash");
 

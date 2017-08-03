@@ -4,8 +4,8 @@ import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import { ComponentStyleMap } from "../component-style-map";
-import { weatherStationStore } from "../models/weather-station";
 import { presenceStore } from "../models/presence";
+import { weatherStationStore } from "../stores/weather-station-store";
 
 const _ = require("lodash");
 const div = React.DOM.div;

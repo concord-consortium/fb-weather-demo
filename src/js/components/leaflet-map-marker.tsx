@@ -7,7 +7,9 @@ import { dataStore } from "../data-store";
 import { MapConfig } from "../map-config";
 import { PredictionType } from "../models/prediction";
 import { predictionStore } from "../stores/prediction-store";
-import { IWeatherStation, weatherStationStore } from "../models/weather-station";
+import { IWeatherStation } from "../models/weather-station";
+import { weatherStationStore } from "../stores/weather-station-store";
+
 interface LeafletMapMarkerProps {
   weatherStation: IWeatherStation;
   selected: boolean;

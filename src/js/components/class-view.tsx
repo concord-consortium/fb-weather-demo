@@ -4,7 +4,7 @@ import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { SimPrefs } from "../sim-prefs";
 import { LeafletMapView } from "./leaflet-map-view";
 import { dataStore } from "../data-store";
-import { weatherStationStore } from "../models/weather-station";
+import { weatherStationStore } from "../stores/weather-station-store";
 
 export interface ClassViewProps {
   frame: number;

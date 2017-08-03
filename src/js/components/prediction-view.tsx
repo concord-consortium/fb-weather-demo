@@ -8,9 +8,9 @@ import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore  } from "../data-store";
 import { PredictionType, IPrediction, FreshPrediction } from "../models/prediction";
-import { weatherStationStore, IWeatherStation } from "../models/weather-station";
 import { predictionStore } from "../stores/prediction-store";
 import { presenceStore } from "../models/presence";
+import { weatherStationStore } from "../stores/weather-station-store";
 
 const _ = require("lodash");
 

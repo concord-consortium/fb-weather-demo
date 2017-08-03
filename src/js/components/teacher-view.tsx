@@ -6,10 +6,10 @@ import FloatingActionButton from "material-ui/FloatingActionButton";
 import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore } from "../data-store";
-import { weatherStationStore } from "../models/weather-station";
 import { IPrediction } from "../models/prediction";
+import { dataStore } from "../data-store";
 import { predictionStore } from "../stores/prediction-store";
+import { weatherStationStore } from "../stores/weather-station-store";
 
 const _ = require("lodash");
 
