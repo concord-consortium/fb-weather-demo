@@ -8,22 +8,10 @@ import { MapConfig, MapConfigMap } from "./map-config";
 
 const _ = require("lodash");
 
-export interface Prediction {
-  name?: string;
-  temp: number;
-  rationale: string;
-  imageUrl?: string;
-}
-
-export interface PredictionMap {
-  [key: string]: Prediction;
-}
-
 export interface FireBaseState {
   frameNumber?: number;
   maxFrame: number;
   prefs?: SimPrefs;
-  predictions?: PredictionMap;
   basestations?: BasestationMap;
   mapConfigs?: MapConfigMap;
 }
@@ -32,7 +20,6 @@ class DataStore {
   @observable frameNumber: IObservableValue<number>;
   @observable maxFrame: IObservableValue<number>;
   @observable prefs: SimPrefs;
-  @observable predictions: PredictionMap;
   @observable basestationMap: BasestationMap;
   @observable mapConfigMap: MapConfigMap;
   @observable editingMap: MapConfig | null;
@@ -52,7 +39,6 @@ class DataStore {
       enablePrediction: false,
       showPredictions: false
     };
-    this.predictions = {};
     this.basestationMap = observable({} as BasestationMap);
     this.mapConfigMap = {};
     this.sessionList = [];
@@ -84,12 +70,6 @@ class DataStore {
       this.prefs = observable(newState.prefs);
     } else {
       this.setPrefs(new SimPrefs());
-    }
-
-    if (newState.predictions) {
-      this.predictions = observable(newState.predictions);
-    } else {
-      this.predictions = observable({} as PredictionMap);
     }
 
     if (newState.basestations) {
@@ -145,13 +125,6 @@ class DataStore {
 
   set mapConfig(config: any) {
     this.setPref("mapConfig", config.id);
-  }
-
-  predictionFor(basestationId: string):Prediction | null{
-    if (this.predictions[basestationId] !== undefined) {
-      return this.predictions[basestationId];
-    }
-    return null;
   }
 
   nextFrame() {

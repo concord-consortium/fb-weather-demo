@@ -35,14 +35,14 @@ export const PredictionStore = types.model({
       return prediction.description;
     }
     return null;
-  }
-},{
+  },
   predictionsFor(station:IWeatherStation):INewPrediction[] {
     return this.predictions.filter((p:INewPrediction)  => p.station === station).reverse();
   },
   predictionFor(station:IWeatherStation):INewPrediction|null {
     return this.predictionsFor(station)[0];
-  },
+  }
+},{
   setPrediction(station:IWeatherStation, prediction:INewPrediction) {
     prediction.station = station;
   },

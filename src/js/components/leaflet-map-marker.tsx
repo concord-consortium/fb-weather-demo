@@ -5,6 +5,8 @@ import { Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
 import { dataStore } from "../data-store";
 import { MapConfig } from "../map-config";
+import { PredictionType } from "../models/prediction";
+import { predictionStore } from "../stores/prediction-store";
 import { IWeatherStation, weatherStationStore } from "../models/weather-station";
 interface LeafletMapMarkerProps {
   weatherStation: IWeatherStation;
@@ -24,15 +26,13 @@ export class LeafletMapMarker extends React.Component<
 
   get prediction() {
     const weatherStation = this.props.weatherStation;
-    const prediction = dataStore.predictionFor(weatherStation.id);
+    const prediction = predictionStore.predictionFor(weatherStation);
     return prediction;
   }
 
   get predictedTemp() {
-    if(this.prediction) {
-      return this.prediction.temp;
-    }
-    return null;
+    return (this.prediction && (this.prediction.type === PredictionType.eTemperature))
+              ? this.prediction.predictedValue : null;
   }
 
   get actualTemp() {
@@ -57,8 +57,8 @@ export class LeafletMapMarker extends React.Component<
 
   predictedTempDiv() {
     if(dataStore.prefs.showPredictions && this.prediction) {
-      if (this.prediction.temp) {
-        const predictedTempString = this.prediction.temp.toFixed(precision);
+      if ((this.predictedTemp != null) && !isNaN(this.predictedTemp)) {
+        const predictedTempString = this.predictedTemp.toFixed(precision);
         return `<span class="predictTemp">${predictedTempString}°</span> /`;
       }
     }
@@ -112,8 +112,8 @@ export class LeafletMapMarker extends React.Component<
             ${this.predictedTempDiv()}
             ${this.actualTempDiv()}
           </div>
-            ${this.diffTempDiv()}
-            ${this.callsignDiv()}
+          ${this.diffTempDiv()}
+          ${this.callsignDiv()}
         </div>`,
       iconSize: [50, 50],
       className: classes
