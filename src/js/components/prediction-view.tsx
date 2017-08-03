@@ -1,7 +1,5 @@
 import * as React from "react";
-import DropDownMenu from 'material-ui/DropDownMenu';
 import FlatButton from "material-ui/FlatButton";
-import MenuItem from 'material-ui/MenuItem';
 import TextField from "material-ui/TextField";
 import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
@@ -129,12 +127,6 @@ export class PredictionView
     );
   }
 
-  handleTypeChange = (event: any, index: number, value: string) => {
-    const prediction = this.state.prediction;
-    prediction.type = value;
-    this.setState({ prediction });
-  }
-
   handlePredictionChange = (event: any, value: string) => {
     const predictedValue = parseFloat(value);
     const weatherStation = presenceStore.weatherStation;
@@ -173,14 +165,6 @@ export class PredictionView
     return (
       <CardText style={styles.prediction}>
         {this.predictionPrompt(prediction.type, frameNumber, 6)}
-        <DropDownMenu
-          style={styles.typeMenu}
-          value={prediction.type}
-          autoWidth={true}
-          onChange={this.handleTypeChange}>
-          <MenuItem value={PredictionType.eTemperature} primaryText="Temperature Prediction" />
-          <MenuItem value={PredictionType.eDescription} primaryText="Descriptive Prediction" />
-        </DropDownMenu>
         {optValueControl}
         <TextField
           style={styles.textField}
