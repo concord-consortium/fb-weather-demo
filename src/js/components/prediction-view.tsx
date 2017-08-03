@@ -7,7 +7,7 @@ import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore  } from "../data-store";
-import { PredictionType, INewPrediction, FreshPrediction } from "../models/prediction";
+import { PredictionType, IPrediction, FreshPrediction } from "../models/prediction";
 import { weatherStationStore, IWeatherStation } from "../models/weather-station";
 import { predictionStore } from "../stores/prediction-store";
 import { presenceStore } from "../models/presence";
@@ -65,8 +65,8 @@ export interface PredictionViewProps {
 }
 
 export interface PredictionViewState {
-  dataStorePrediction: INewPrediction;
-  prediction: INewPrediction;
+  dataStorePrediction: IPrediction;
+  prediction: IPrediction;
 }
 
 @observer
@@ -84,7 +84,7 @@ export class PredictionView
 
     const frameNumber = dataStore.frameNumber.get();
     const predictionInterval = 3;  // ~20 min/frame
-    let newPrediction : INewPrediction = {
+    let newPrediction : IPrediction = {
           station: presenceStore.weatherStation,
           type: PredictionType.eTemperature,  // default to temperature prediction
           timeStamp: new Date(),

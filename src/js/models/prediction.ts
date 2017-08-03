@@ -23,7 +23,7 @@ export const PredictionType = {
 export const FreshPrediction = function(){
   const time = new Date();
   const timeInt = time.getUTCSeconds();
-  return NewPrediction.create(
+  return Prediction.create(
     {
       type: PredictionType.eTemperature,
       timeStamp: new Date(),
@@ -36,7 +36,7 @@ export const FreshPrediction = function(){
   );
 };
 
-export const NewPrediction = types.model({
+export const Prediction = types.model({
   station: types.maybe(types.reference(WeatherStation)),  // shouldn't really be maybe
   type: types.enumeration('PredictionType', [
                             PredictionType.eDescription,
@@ -55,17 +55,4 @@ export const NewPrediction = types.model({
 }, {
 
 });
-export type INewPrediction = typeof NewPrediction.Type;
-
-/*
-export interface INewPrediction {
-  station?: string;
-  type: PredictionType;
-  timeStamp?: Date;
-  predictionTime?: number;
-  predictedTime?: number;
-  predictedValue?: number;
-  description?: string;
-  imageUrl?: string;
-}
-*/
+export type IPrediction = typeof Prediction.Type;

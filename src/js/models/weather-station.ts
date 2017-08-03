@@ -1,7 +1,6 @@
 import { types, destroy, onSnapshot, applySnapshot } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 import { Firebasify } from "../middlewares/firebase-decorator";
-import { NewPrediction, INewPrediction } from "./prediction";
 
 // TBD we need to change this data def.
 const WeatherDatum = types.model("Datum", {

@@ -8,7 +8,7 @@ import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore } from "../data-store";
 import { weatherStationStore } from "../models/weather-station";
-import { INewPrediction } from "../models/prediction";
+import { IPrediction } from "../models/prediction";
 import { predictionStore } from "../stores/prediction-store";
 
 const _ = require("lodash");
@@ -119,7 +119,7 @@ export class TeacherView extends React.Component<
     if(weatherStation) {
       const predictions = predictionStore.teacherPredictions;
 
-      const renderPrediction = (prediction:INewPrediction, index:number) => {
+      const renderPrediction = (prediction:IPrediction, index:number) => {
         const style = index % 2 === 0 ? styles.predictionItemEven :  styles.predictionItemOdd;
         const result =(
           <div style={style} key={index}>
