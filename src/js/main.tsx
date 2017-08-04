@@ -10,6 +10,7 @@ import {
 } from "react-router";
 import * as injectTapEventPlugin from "react-tap-event-plugin";
 import { dataStore } from "./data-store";
+import { gFirebase } from "./firebase-imp";
 
 import { TeacherView } from "./components/teacher-view";
 import { WeatherStationView } from "./components/weather-station-view";
@@ -25,7 +26,7 @@ const log = function(msg: string) {
 };
 
 const updateSession = function(nextSession: string) {
-  if (nextSession && nextSession !== dataStore.firebaseImp.session) {
+  if (nextSession && nextSession !== gFirebase.session) {
     dataStore.setSession(nextSession);
     const logString = `
       ================================================

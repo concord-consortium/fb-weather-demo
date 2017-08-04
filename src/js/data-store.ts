@@ -2,7 +2,7 @@ import { observable, computed, IObservableValue } from "mobx";
 import { v1 as uuid } from "uuid";
 import { Basestation, BasestationMap } from "./basestation";
 import { SimPrefs } from "./sim-prefs";
-import { FirebaseImp } from "./firebase-imp";
+import { gFirebase } from "./firebase-imp";
 import { FrameHelper } from "./frame-helper";
 import { MapConfig, MapConfigMap } from "./map-config";
 
@@ -25,7 +25,6 @@ class DataStore {
   @observable editingMap: MapConfig | null;
   @observable sessionList: string[];
   @observable sessionPath: string;
-  firebaseImp: FirebaseImp;
 
   constructor() {
     this.frameNumber = observable(0);
@@ -42,15 +41,8 @@ class DataStore {
     this.basestationMap = observable({} as BasestationMap);
     this.mapConfigMap = {};
     this.sessionList = [];
-    this.registerFirebase();
-  }
 
-  registerFirebase() {
-    this.firebaseImp = new FirebaseImp();
-    this.firebaseImp.addListener(this);
-    this.firebaseImp.initFirebase(() => {
-      // TBD: Initialize an empty instance
-    });
+    gFirebase.addListener(this);
   }
 
   setSessionList(newSessions: string[]) {
@@ -153,16 +145,16 @@ class DataStore {
   }
 
   setSession(session: string) {
-    this.firebaseImp.session = session;
+    gFirebase.session = session;
   }
 
   renameSession(sessionName: string) {}
   copySession(oldName: string, newName: string) {
-    this.firebaseImp.copySession(oldName, newName);
+    gFirebase.copySession(oldName, newName);
   }
 
   deleteSession(sessionName: string) {
-    this.firebaseImp.removeSession(sessionName);
+    gFirebase.removeSession(sessionName);
   }
 
 
@@ -192,15 +184,15 @@ class DataStore {
   saveToPath(key: string, value: any) {
     const obj: any = {};
     obj[key] = value;
-    this.firebaseImp.saveToFirebase(obj);
+    gFirebase.saveToFirebase(obj);
   }
 
   save(obj: any) {
-    this.firebaseImp.saveToFirebase(obj);
+    gFirebase.saveToFirebase(obj);
   }
 
   unregisterFirebase() {
-    this.firebaseImp.removeListener(this);
+    gFirebase.removeListener(this);
     console.log("firebase unregistered");
     return true;
   }

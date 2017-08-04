@@ -86,6 +86,10 @@ export class FirebaseImp {
     };
     this.config = configs.new;
     this.listeners = [];
+
+    this.initFirebase(() => {
+      // TBD: notify that Firebase is ready
+    });
   }
 
   log(msg: string) {
@@ -326,3 +330,5 @@ export class FirebaseImp {
     });
   }
 }
+
+export const gFirebase = new FirebaseImp();

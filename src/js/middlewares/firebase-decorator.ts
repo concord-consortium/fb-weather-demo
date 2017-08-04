@@ -1,10 +1,9 @@
 import { types, onSnapshot, applySnapshot } from "mobx-state-tree";
 import { dataStore } from "../data-store";
+import { gFirebase } from "../firebase-imp";
 
 const _ = require("lodash");
 
-// TODO: Lets get this somewhere else besides the dataStore
-const firebase = dataStore.firebaseImp;
 let maxStart = 0;
 
 export const Firebasify = (model:any, relativeDataPath:string, callback?:Function) => {
@@ -30,11 +29,11 @@ export const Firebasify = (model:any, relativeDataPath:string, callback?:Functio
   };
 
   // TBD: track these, so that we can optionally remove them?
-  firebase.addListener(firebaseListener);
+  gFirebase.addListener(firebaseListener);
 
   onSnapshot(model, (newSnapshot:any) => {
     // console.log(`Calling saveToRelativePath for ${relativeDataPath}`);
-    firebase.saveToRelativePath(newSnapshot, relativeDataPath);
+    gFirebase.saveToRelativePath(newSnapshot, relativeDataPath);
   });
 };
 
