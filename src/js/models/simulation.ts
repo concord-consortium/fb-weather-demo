@@ -5,11 +5,13 @@ import { WeatherScenario, IWeatherScenario } from './weather-scenario';
 
 export const Simulation = types.model('Simulation', {
   scenario: types.reference(WeatherScenario),
-  stations: types.array(tyes.reference(WeatherStation));
+  presences: presenceStore,
+  weatherStations: weatherStationStore,
+  predictions: predictionStore,
   stationStates: types.array(WeatherStationState),
   isPlaying: types.boolean;
-  currentFrame: types.number;
-  maxFrame: types.number;
+  simulationTime: types.Date;
+  simulationSpeed: types.number;
   settings: SimulationSettings;
 }, {
 
