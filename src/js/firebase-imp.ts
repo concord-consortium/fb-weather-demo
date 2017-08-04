@@ -291,10 +291,12 @@ export class FirebaseImp {
 
   loadDataFromFirebase(data: FirebaseData) {
     const dataV = data.val();
-    this.log(dataV);
-    for (let listener of this.listeners) {
-      listener.setState(dataV);
-    }
+    if (dataV) {
+      this.log(dataV);
+      for (let listener of this.listeners) {
+        listener.setState(dataV);
+      }
+     }
   }
 
   copySession(oldName: string, newName: string) {
