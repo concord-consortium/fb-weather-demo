@@ -10,6 +10,17 @@ export const WeatherStationStore = types.model(
     selected: types.maybe(types.reference(WeatherStation))
   },
   {
+    preProcessSnapshot(snapshot: any) {
+      if (snapshot.selected) {
+        if (snapshot.stations.findIndex(function(station: IWeatherStation) {
+                                        return station.id === snapshot.selected;
+                                      }) < 0) {
+          snapshot.selected = null;
+        }
+      }
+      return snapshot;
+    },
+
     addStation() {
       const station = WeatherStation.create({
         name: "untitled",
