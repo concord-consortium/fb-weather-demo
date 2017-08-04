@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { PresenceStore, presenceStore } from "../models/presence";
+import { PresenceStore, presenceStore } from "./presence-store";
 import { PredictionStore, predictionStore } from "./prediction-store";
 import { WeatherStationStore, weatherStationStore } from "../stores/weather-station-store";
 

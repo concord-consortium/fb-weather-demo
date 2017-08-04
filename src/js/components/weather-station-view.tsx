@@ -7,10 +7,10 @@ import { GridView } from "./grid-view";
 import { PredictionView } from "./prediction-view";
 import { SimPrefs } from "../sim-prefs";
 import { ComponentStyleMap } from "../component-style-map";
-import { presenceStore } from "../models/presence";
 import { IWeatherStation } from "../models/weather-station";
 import { dataStore } from "../data-store";
 import { applicationStore as appStore } from "../stores/application-store";
+import { presenceStore } from "../stores/presence-store";
 
 const dateFormat = require("dateformat");
 const div = React.DOM.div;

@@ -1,7 +1,7 @@
 import { types } from "mobx-state-tree";
 import { Prediction, IPrediction, FreshPrediction } from "../models/prediction";
-import { presenceStore } from "../models/presence";
 import { IWeatherStation } from "../models/weather-station";
+import { presenceStore } from "../stores/presence-store";
 import { weatherStationStore } from "../stores/weather-station-store";
 import { Firebasify } from "../middlewares/firebase-decorator";
 

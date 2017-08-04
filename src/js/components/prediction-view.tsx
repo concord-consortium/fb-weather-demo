@@ -9,7 +9,7 @@ import { ComponentStyleMap } from "../component-style-map";
 import { dataStore  } from "../data-store";
 import { PredictionType, IPrediction, FreshPrediction } from "../models/prediction";
 import { predictionStore } from "../stores/prediction-store";
-import { presenceStore } from "../models/presence";
+import { presenceStore } from "../stores/presence-store";
 import { weatherStationStore } from "../stores/weather-station-store";
 
 const _ = require("lodash");

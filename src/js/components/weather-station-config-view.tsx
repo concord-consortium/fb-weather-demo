@@ -4,7 +4,7 @@ import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import { ComponentStyleMap } from "../component-style-map";
-import { presenceStore } from "../models/presence";
+import { presenceStore } from "../stores/presence-store";
 import { weatherStationStore } from "../stores/weather-station-store";
 
 const _ = require("lodash");
