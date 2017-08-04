@@ -123,7 +123,7 @@ export class WeatherStationView extends React.Component<
           </Tab>
           <Tab label="Predict" value="predict">
             <CardText>
-              <PredictionView enabled={dataStore.prefs.enablePrediction} />
+              <PredictionView enabled={dataStore.prefs.enabledPredictions !== 'disabled'} />
             </CardText>
           </Tab>
         </Tabs>

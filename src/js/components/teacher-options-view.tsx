@@ -22,10 +22,6 @@ export class TeacherOptionsView extends React.Component<
     super(props, ctxt);
   }
 
-  setGrid(e: any, index: number, name: string) {
-    dataStore.setPref("gridName", name);
-  }
-
   setMap(e: any, indexs: number, id: string) {
     dataStore.mapConfig = dataStore.mapConfigMap[id];
   }
@@ -53,10 +49,9 @@ export class TeacherOptionsView extends React.Component<
   }
 
   render() {
-    const setGrid = this.setGrid.bind(this);
     const setMap = this.setMap.bind(this);
     const gridNames = ["default", "classGrid"];
-    const gridName = dataStore.prefs.gridName || "default";
+    const gridName = /* dataStore.prefs.gridName || */ "default";
     const mapId = dataStore.mapConfig ? dataStore.mapConfig.id : 0;
     const styles = {
       block: {

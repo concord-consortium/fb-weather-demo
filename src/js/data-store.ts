@@ -1,17 +1,18 @@
 import { observable, computed, IObservableValue } from "mobx";
+import { applySnapshot, getSnapshot } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 import { Basestation, BasestationMap } from "./basestation";
-import { SimPrefs } from "./sim-prefs";
 import { gFirebase } from "./firebase-imp";
 import { FrameHelper } from "./frame-helper";
-import { MapConfig, MapConfigMap } from "./map-config";
+import { MapConfig, IMapConfig, MapConfigMap } from "./models/map-config";
+import { SimulationSettings, ISimulationSettings } from "./models/simulation-settings";
 
 const _ = require("lodash");
 
 export interface FireBaseState {
   frameNumber?: number;
   maxFrame: number;
-  prefs?: SimPrefs;
+  prefs?: ISimulationSettings;
   basestations?: BasestationMap;
   mapConfigs?: MapConfigMap;
 }
@@ -19,25 +20,17 @@ export interface FireBaseState {
 class DataStore {
   @observable frameNumber: IObservableValue<number>;
   @observable maxFrame: IObservableValue<number>;
-  @observable prefs: SimPrefs;
+  @observable prefs: ISimulationSettings;
   @observable basestationMap: BasestationMap;
   @observable mapConfigMap: MapConfigMap;
-  @observable editingMap: MapConfig | null;
+  @observable editingMap: IMapConfig | null;
   @observable sessionList: string[];
   @observable sessionPath: string;
 
   constructor() {
     this.frameNumber = observable(0);
     this.maxFrame = observable(0);
-    this.prefs = {
-      showBaseMap: true,
-      showTempColors: false,
-      showTempValues: false,
-      showDeltaTemp: false,
-      showStationNames: false,
-      enablePrediction: false,
-      showPredictions: false
-    };
+    this.prefs = SimulationSettings.create();
     this.basestationMap = observable({} as BasestationMap);
     this.mapConfigMap = {};
     this.sessionList = [];
@@ -59,9 +52,10 @@ class DataStore {
     }
 
     if (newState.prefs) {
-      this.prefs = observable(newState.prefs);
-    } else {
-      this.setPrefs(new SimPrefs());
+      applySnapshot(this.prefs, newState.prefs);
+    }
+    else {
+      this.prefs = SimulationSettings.create();
     }
 
     if (newState.basestations) {
@@ -87,7 +81,7 @@ class DataStore {
 
   @computed
   get mapConfigs() {
-    return _.map(this.mapConfigMap, (g: MapConfig) => {
+    return _.map(this.mapConfigMap, (g: IMapConfig) => {
       return g;
     });
   }
@@ -132,12 +126,12 @@ class DataStore {
   }
 
   setPref(key: string, value: any) {
-    this.prefs[key] = value;
-    this.save({ prefs: this.prefs });
+    this.prefs.setSetting(key, value);
+    this.save({ prefs: getSnapshot(this.prefs) });
   }
 
-  setPrefs(prefs: SimPrefs) {
-    this.save({ prefs: prefs });
+  setPrefs(prefs: ISimulationSettings) {
+    this.save({ prefs: getSnapshot(prefs) });
   }
 
   setSessionPath(sessionPath: string) {
@@ -159,7 +153,7 @@ class DataStore {
 
 
   addMapConfig() {
-    const map = new MapConfig();
+    const map = MapConfig.create();
     this.mapConfigMap[map.id] = map;
     this.editingMap = map;
     this.save({ mapConfigs: this.mapConfigMap });
