@@ -3,8 +3,8 @@ import { Tabs, Tab } from "material-ui/Tabs";
 import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { SimPrefs } from "../sim-prefs";
 import { LeafletMapView } from "./leaflet-map-view";
-import { dataStore } from "../data-store";
 import { weatherStationStore } from "../stores/weather-station-store";
+import { simulationStore } from "../stores/simulation-store";
 
 export interface ClassViewProps {
   frame: number;
@@ -18,7 +18,7 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
   }
 
   render() {
-    const time = dataStore.timeString;
+    const time = simulationStore.timeString;
     return (
       <Card className="ClassView">
         <Tabs>
@@ -34,7 +34,7 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
               }}
             >
               <LeafletMapView
-                mapConfig={dataStore.mapConfig}
+                mapConfig={simulationStore.mapConfig}
                 interaction={false}
                 weatherStations={weatherStationStore.stations}
                 width={800}

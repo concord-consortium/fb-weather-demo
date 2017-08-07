@@ -1,5 +1,4 @@
 import { types, onSnapshot, applySnapshot } from "mobx-state-tree";
-import { dataStore } from "../data-store";
 import { gFirebase } from "../firebase-imp";
 
 const _ = require("lodash");

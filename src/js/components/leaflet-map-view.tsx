@@ -2,11 +2,12 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Map, TileLayer, Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
-import { dataStore } from "../data-store";
-import { MapConfig } from "../map-config";
+import { LeafletMapMarker } from "./leaflet-map-marker";
+
+import { MapConfig } from "../models/map-config";
 import { IWeatherStation } from "../models/weather-station";
 import { weatherStationStore } from "../stores/weather-station-store";
-import { LeafletMapMarker } from "./leaflet-map-marker";
+import { simulationStore } from "../stores/simulation-store";
 
 interface LeafletMapProps {
   mapConfig: MapConfig | null;
@@ -46,7 +47,7 @@ export class LeafletMapView extends React.Component<
       }
     };
     updateMap.bind(this);
-    const baseMap = dataStore.prefs.showBaseMap
+    const baseMap = simulationStore.selected.prefs.showBaseMap
       ? <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
       : null;
 

@@ -7,8 +7,8 @@ import { ComponentStyleMap } from "../component-style-map";
 import { GridList } from "material-ui/GridList";
 import { Card } from "material-ui/Card";
 import { LeafletMapView } from "./leaflet-map-view";
-import { MapConfig } from "../map-config";
-import { dataStore } from "../data-store";
+import { MapConfig } from "../models/map-config";
+import { mapConfigStore } from "../stores/map-config-store";
 import { weatherStationStore } from "../stores/weather-station-store";
 
 const _ = require("lodash");
@@ -73,7 +73,7 @@ export class SetupMapView extends React.Component<
   }
 
   renderEditor() {
-    const mapConfig = dataStore.editingMap;
+    const mapConfig = mapConfigStore.selected;
     if (mapConfig) {
       return (
         <div style={styles.config}>
@@ -82,21 +82,17 @@ export class SetupMapView extends React.Component<
             style={styles.textField}
             floatingLabelText="name"
             onChange={(e, v) => {
-              mapConfig.name = v;
-              dataStore.saveMapConfig();
+              mapConfig.update()
             }}
           />
           <LeafletMapView
-            mapConfig={dataStore.editingMap}
+            mapConfig={mapConfigStore.selected}
             interaction={true}
             weatherStations={weatherStationStore.stations}
             width={600}
             height={400}
             update={(lat, long, zoom) => {
-              mapConfig.lat = lat;
-              mapConfig.long = long;
-              mapConfig.zoom = zoom;
-              dataStore.saveMapConfig();
+              mapConfig.update({lat,long,zoom});
             }}
           />
           <div style={styles.buttonRow}>
@@ -104,7 +100,7 @@ export class SetupMapView extends React.Component<
               label="done"
               primary={true}
               onTouchTap={() => {
-                dataStore.editingMap = null;
+                mapConfigStore.deselect();
               }}
             />
             <RaisedButton

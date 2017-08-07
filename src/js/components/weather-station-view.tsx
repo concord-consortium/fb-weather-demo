@@ -8,8 +8,8 @@ import { PredictionView } from "./prediction-view";
 import { SimPrefs } from "../sim-prefs";
 import { ComponentStyleMap } from "../component-style-map";
 import { IWeatherStation } from "../models/weather-station";
-import { dataStore } from "../data-store";
 import { applicationStore as appStore } from "../stores/application-store";
+import { simulationStore } from "../stores/simulation-store";
 import { presenceStore } from "../stores/presence-store";
 
 const dateFormat = require("dateformat");
@@ -49,7 +49,7 @@ export class WeatherStationView extends React.Component<
     let name = "";
     let callSign = "";
     let imgUrl = "img/farm.jpg";
-    let time = dataStore.timeString;
+    let time = simulationStore.timeString;
     let temp = 5; // TODO, we need to look this up...
     const weatherStation = appStore.presences.weatherStation;
     if (weatherStation) {

@@ -4,8 +4,8 @@ import { Card, CardText, CardTitle } from "material-ui/Card";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import Toggle from "material-ui/Toggle";
-import { MapConfig } from "../map-config";
-import { dataStore } from "../data-store";
+import { simulationStore } from "../stores/simulation-store";
+
 
 export type TeacherViewTab = "control" | "configure";
 
@@ -23,7 +23,7 @@ export class TeacherOptionsView extends React.Component<
   }
 
   setMap(e: any, indexs: number, id: string) {
-    dataStore.mapConfig = dataStore.mapConfigMap[id];
+    simulationStore.mapConfig = map.mapConfigs[id];
   }
 
   renderPrefButton(label: string, key: string) {

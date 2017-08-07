@@ -4,7 +4,7 @@ import { WeatherScenario, IWeatherScenario } from "./weather-scenario";
 import { WeatherStation } from "./weather-station";
 import { PresenceStore } from "../stores/presence-store";
 import { PredictionStore } from "../stores/prediction-store";
-
+import * as moment from 'moment';
 
 export const Simulation = types.model('Simulation', {
   name: types.string,
@@ -16,8 +16,21 @@ export const Simulation = types.model('Simulation', {
   isPlaying: types.boolean,
   simulationTime: types.Date,
   simulationSpeed: types.number,
-  settings: SimulationSettings
+  settings: SimulationSettings,
+  get timeString() {
+    // https://momentjs.com/
+    return moment(this.simulationTime).format('lll');
+  },
+  get mapConfig() {
+    return this.WeatherScenario.mapConfig;
+  }
 }, {
-
+}, {
+  play() {
+    this.isPlaying = true;
+  },
+  stop() {
+    this.isPlaying = false;
+  }
 });
 export type ISimulation = typeof Simulation.Type;

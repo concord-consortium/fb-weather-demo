@@ -11,7 +11,7 @@ export const PresenceStore = types.model(
       return this.selected && this.selected.weatherStation;
     }
   },{
-    selected: null,
+    selected: types.maybe(Presence),
   },{
     setStation(station:IWeatherStation) {
       if(this.selected) {

@@ -9,7 +9,7 @@ import {
   ChangeHook
 } from "react-router";
 import * as injectTapEventPlugin from "react-tap-event-plugin";
-import { dataStore } from "./data-store";
+import { applicationStore } from "./stores/application-store";
 import { gFirebase } from "./firebase-imp";
 
 import { TeacherView } from "./components/teacher-view";
@@ -27,7 +27,7 @@ const log = function(msg: string) {
 
 const updateSession = function(nextSession: string) {
   if (nextSession && nextSession !== gFirebase.session) {
-    dataStore.setSession(nextSession);
+    applicationStore.simulations.selectByName(nextSession);
     const logString = `
       ================================================
       Changed state path to: ${nextSession}

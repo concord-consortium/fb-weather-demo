@@ -12,7 +12,7 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
-import { dataStore } from "../data-store";
+import { simulationStore } from "../stores/simulation-store";
 
 const _ = require("lodash");
 
@@ -104,16 +104,16 @@ export class ChooseSessionView extends React.Component<
 
   handleClose() {
     if (this.state.nowShowing === DialogType.Copy) {
-      dataStore.copySession(
+      simulationStore.copySimulation(
         this.state.oldSessionName,
         this.state.newSessionName
       );
     }
     if (this.state.nowShowing === DialogType.Rename) {
-      dataStore.renameSession(this.state.newSessionName);
+      simulationStore.renameSimulation(this.state.newSessionName);
     }
     if (this.state.nowShowing === DialogType.Delete) {
-      dataStore.deleteSession(this.state.newSessionName);
+      simulationStore.deleteSimulation(this.state.newSessionName);
     }
     this.setState({ nowShowing: DialogType.None });
   }
@@ -123,7 +123,7 @@ export class ChooseSessionView extends React.Component<
   }
 
   render() {
-    const names = dataStore.sessionList.sort();
+    const names = simulationStore.simulationList;
     const visList = _.map(names, (name: string) => {
       const pathString: string = `sessions/${name}`;
       return (

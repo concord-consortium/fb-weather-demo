@@ -2,7 +2,6 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import DevTools from "mobx-react-devtools";
-import { dataStore } from "../data-store";
 import { Link } from "react-router";
 import { applicationStore as appStore } from "../stores/application-store";
 
@@ -35,7 +34,7 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
         <div>
           <div style={{ fontSize: "9pt", color: "gray" }}>
             <Link to="/sessions">
-              {dataStore.sessionPath}
+              {appStore.simulationName}
             </Link>
           </div>
           {/*<DevTools />*/}

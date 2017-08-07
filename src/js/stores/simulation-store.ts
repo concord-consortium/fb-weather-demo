@@ -12,7 +12,7 @@ import { StationSpec, IStationSpec } from "../models/weather-scenario";
 const _ = require("lodash");
 
 const createStations = function (stations:IStationSpec[]) {
-  const stationMap = {};
+  const stationMap:any= {}; // TODO bad any.
   for(let station of stations) {
     stationMap[station.id] = _.clone(station);
   }
@@ -24,7 +24,22 @@ export const SimulationStore = types.model(
   {
     simulations: types.map(Simulation)
   }, {
-    selected: null
+    selected: null,
+    get simulationList() {
+      return _.sort(_.map(this.stations), 'name');
+    },
+    get timeString() {
+      if(this.selected) {
+        return this.selected.timeString;
+      }
+      return "";
+    },
+    get mapConfig() {
+      if(this.selected) {
+        return this.selected.mapConfig;
+      }
+      return null;
+    }
   },
   {
     addSimulation(name:string, scenario:IWeatherScenario) {
@@ -47,10 +62,30 @@ export const SimulationStore = types.model(
     select(simulation:ISimulation) {
       this.selected=simulation;
     },
+    selectByName(name:string) {
+      this.selected=this.simulations.get(name);
+    },
     deselect(){
       this.selected=null;
+    },
+    deleteSimulation(nameOfDoomed:string) {
+      alert("deleteSimulation: Nothing happening at the moment");
+    },
+    renameSimulation(newName:string) {
+      alert("renameSimulation: Nothing happening at the moment");
+    },
+    copySimulation(oldName:string, newName:string) {
+      alert("copySimulation: Nothing happening at the moment");
+    },
+    stop() {
+      if(this.selected) { this.selected.stop(); }
+    },
+    play() {
+      if(this.selected) { this.selected.play(); }
+    },
+    rewind() {
+      if(this.selected) { this.selected.rewind(); }
     }
-
   }
 );
 export type ISimulationStore = typeof SimulationStore.Type;

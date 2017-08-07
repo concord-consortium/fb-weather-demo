@@ -12,6 +12,7 @@ import { dataStore } from "../data-store";
 import { PredictionType, IPrediction } from "../models/prediction";
 import { predictionStore } from "../stores/prediction-store";
 import { weatherStationStore } from "../stores/weather-station-store";
+import { simulationStore } from "../stores/simulation-store";
 
 const _ = require("lodash");
 
@@ -96,28 +97,6 @@ export class TeacherView extends React.Component<
     };
   }
 
-  play() {
-    if (this.interval) {
-      clearInterval(this.interval);
-    }
-    this.interval = setInterval(() => dataStore.nextFrame(), 1000);
-    this.setState({ playing: true });
-  }
-
-  pause() {
-    clearInterval(this.interval);
-    this.interval = null;
-    this.setState({ playing: false });
-  }
-
-  rewind() {
-    dataStore.setFrame(0);
-  }
-
-  handlePredictionTypeChange = (event: any, index: number, value: string) => {
-    console.log(`New prediction type: ${value}`);
-    dataStore.setPref('enabledPredictions', value);
-  }
 
   renderPredictions() {
     const weatherStation = weatherStationStore.selected;
@@ -153,10 +132,10 @@ export class TeacherView extends React.Component<
   }
 
   render() {
-    const rewind = this.rewind.bind(this);
-    const play = this.play.bind(this);
-    const pause = this.pause.bind(this);
-    const time = dataStore.timeString;
+    const rewind = simulationStore.rewind;
+    const play = simulationStore.play;
+    const pause = simulationStore.stop;
+    const time = simulationStore.timeString;
     const disablePlay = !!this.interval;
     const disablePause = !disablePlay;
     const handleChangeTab = (value: TeacherViewTab) => {
@@ -188,7 +167,7 @@ export class TeacherView extends React.Component<
               <div>
                 <div style={styles.mapAndPrediction}>
                   <LeafletMapView
-                    mapConfig={dataStore.mapConfig}
+                    mapConfig={simulationStore.mapConfig}
                     interaction={false}
                     weatherStations={weatherStationStore.stations}
                     width={600}
