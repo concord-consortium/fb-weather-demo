@@ -146,7 +146,9 @@ export class PredictionView
   }
 
   render() {
-    const disabled = !this.props.enabled,
+    const enabledPredictions = dataStore.prefs.enabledPredictions,
+          isEnabled = enabledPredictions != null,
+          isNumericPrediction = isEnabled && (enabledPredictions !== PredictionType.eDescription),
           prediction = this.state.prediction,
           controlSpecs = controlsSpec[prediction.type],
           valueControl = <TextField
@@ -154,13 +156,15 @@ export class PredictionView
                             hintText="your prediction (numeric)"
                             floatingLabelText={controlsSpec[prediction.type].prediction}
                             multiLine={false}
-                            disabled={disabled}
+                            disabled={!isEnabled}
                             onChange={this.handlePredictionChange}
                             value={prediction.predictedValue}
                             type="number"
                           />,
-          optValueControl = prediction.type !== PredictionType.eDescription
-                              ? valueControl : null,
+          optValueControl = isNumericPrediction ? valueControl : null,
+          descriptionPrompt = isEnabled
+                                      ? controlsSpec[enabledPredictions as string].description
+                                      : "",
           frameNumber = dataStore.frameNumber.get();
     return (
       <CardText style={styles.prediction}>
@@ -169,15 +173,15 @@ export class PredictionView
         <TextField
           style={styles.textField}
           hintText="Write your reasoning here"
-          floatingLabelText={controlsSpec[prediction.type].description}
+          floatingLabelText={descriptionPrompt}
           multiLine={true}
           onChange={this.handleDescriptionChange}
-          disabled={disabled}
+          disabled={!isEnabled}
           value={prediction.description}
           rows={4}
         />
         <CardActions>
-          <FlatButton label="Share" onTouchTap={this.updatePrediction} />
+          <FlatButton label="Share" disabled={!isEnabled} onTouchTap={this.updatePrediction} />
         </CardActions>
       </CardText>
     );

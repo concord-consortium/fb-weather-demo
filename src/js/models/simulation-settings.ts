@@ -7,7 +7,7 @@ export const SimulationSettings = types.model('SimulationSettings', {
   showDeltaTemp: types.optional(types.boolean, false),
   showStationNames: types.optional(types.boolean, true),
   showPredictions: types.optional(types.boolean, true),
-  enabledPredictions: types.optional(types.string, 'disabled'),
+  enabledPredictions: types.maybe(types.string),  // null disables predictions
   mapConfig: types.maybe(types.string)
 }, {
 

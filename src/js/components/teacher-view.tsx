@@ -23,7 +23,7 @@ export interface TeacherViewState {
   playing: boolean;
   frameRate: number;
   tab: TeacherViewTab;
-  predictionType: string;
+  predictionType: string | null;
 }
 
 
@@ -81,8 +81,6 @@ const styles:ComponentStyleMap = {
   }
 };
 
-const kPredictionTypeDisabled = "disabled";
-
 @observer
 export class TeacherView extends React.Component<
   TeacherViewProps,
@@ -96,7 +94,7 @@ export class TeacherView extends React.Component<
       playing: false,
       frameRate: 2000,
       tab: "control",
-      predictionType: kPredictionTypeDisabled
+      predictionType: null
     };
   }
 
@@ -120,6 +118,7 @@ export class TeacherView extends React.Component<
 
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
     console.log(`New prediction type: ${value}`);
+    dataStore.prefs.setEnabledPredictions(value);
     this.setState({ predictionType: value });
   }
 
@@ -222,7 +221,7 @@ export class TeacherView extends React.Component<
                     value={this.state.predictionType}
                     autoWidth={true}
                     onChange={this.handlePredictionTypeChange}>
-                    <MenuItem value={kPredictionTypeDisabled} primaryText="Disable Predictions" />
+                    <MenuItem value={null} primaryText="Disable Predictions" />
                     <MenuItem value={PredictionType.eDescription} primaryText="Enable Descriptive Predictions" />
                     <MenuItem value={PredictionType.eTemperature} primaryText="Enable Temperature Predictions" />
                   </DropDownMenu>
