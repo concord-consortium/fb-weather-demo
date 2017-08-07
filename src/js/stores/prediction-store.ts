@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { Prediction, IPrediction, FreshPrediction } from "../models/prediction";
+import { Prediction, IPrediction } from "../models/prediction";
 import { IWeatherStation } from "../models/weather-station";
 import { presenceStore } from "../stores/presence-store";
 import { weatherStationStore } from "../stores/weather-station-store";
@@ -13,7 +13,7 @@ export const PredictionStore = types.model({
     if (station) {
       prediction = this.predictions.filter((p:IPrediction) => p.station === station)[0];
     }
-    return prediction || FreshPrediction();
+    return prediction;
   },
   get teacherPredictions(): IPrediction {
     const station = weatherStationStore.selected;

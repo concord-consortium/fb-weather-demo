@@ -10,22 +10,6 @@ export enum PredictionType {
   eWindDirection = 'windDirection'
 }
 
-export const FreshPrediction = function(){
-  const time = new Date();
-  const timeInt = time.getUTCSeconds();
-  return Prediction.create(
-    {
-      type: PredictionType.eTemperature,
-      timeStamp: new Date(),
-      predictedTime: timeInt,
-      predictionTime: timeInt,
-      predictedValue: -1,
-      description: "",
-      imageUrl: ""
-    }
-  );
-};
-
 export const Prediction = types.model({
   station: types.maybe(types.reference(WeatherStation)),  // shouldn't really be maybe
   type: types.enumeration('PredictionType', [
@@ -39,9 +23,9 @@ export const Prediction = types.model({
   timeStamp: types.Date,
   predictionTime: types.number,
   predictedTime: types.number,
-  predictedValue: types.number,
-  description: types.string,
-  imageUrl: types.union(types.string, types.undefined)
+  predictedValue: types.maybe(types.number),
+  description: types.optional(types.string, ""),
+  imageUrl: types.maybe(types.string)
 }, {
 
 });

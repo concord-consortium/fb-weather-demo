@@ -23,7 +23,6 @@ export interface TeacherViewState {
   playing: boolean;
   frameRate: number;
   tab: TeacherViewTab;
-  predictionType: string | null;
 }
 
 
@@ -93,8 +92,7 @@ export class TeacherView extends React.Component<
     this.state = {
       playing: false,
       frameRate: 2000,
-      tab: "control",
-      predictionType: null
+      tab: "control"
     };
   }
 
@@ -118,8 +116,7 @@ export class TeacherView extends React.Component<
 
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
     console.log(`New prediction type: ${value}`);
-    dataStore.prefs.setEnabledPredictions(value);
-    this.setState({ predictionType: value });
+    dataStore.setPref('enabledPredictions', value);
   }
 
   renderPredictions() {
@@ -218,7 +215,7 @@ export class TeacherView extends React.Component<
                   />
                   <DropDownMenu
                     style={styles.typeMenu}
-                    value={this.state.predictionType}
+                    value={dataStore.prefs.enabledPredictions}
                     autoWidth={true}
                     onChange={this.handlePredictionTypeChange}>
                     <MenuItem value={null} primaryText="Disable Predictions" />

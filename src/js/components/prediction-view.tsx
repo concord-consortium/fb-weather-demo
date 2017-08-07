@@ -5,7 +5,7 @@ import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { dataStore  } from "../data-store";
-import { PredictionType, IPrediction, FreshPrediction } from "../models/prediction";
+import { PredictionType, Prediction, IPrediction } from "../models/prediction";
 import { predictionStore } from "../stores/prediction-store";
 import { presenceStore } from "../stores/presence-store";
 import { weatherStationStore } from "../stores/weather-station-store";
@@ -58,13 +58,11 @@ const styles: ComponentStyleMap = {
 };
 
 export interface PredictionViewProps {
-  enabled: boolean;
-  updateUserData?(): void;
 }
 
 export interface PredictionViewState {
-  dataStorePrediction: IPrediction;
-  prediction: IPrediction;
+  predictedValue: string;
+  description: string;
 }
 
 @observer
@@ -72,47 +70,19 @@ export class PredictionView
         extends React.Component<PredictionViewProps, PredictionViewState> {
   constructor(props: PredictionViewProps, ctx: any) {
     super(props, ctx);
+
+    this.state = { predictedValue: "", description: "" };
   }
 
-  updatePredictionFromDataStore() {
-    const prediction = predictionStore.prediction;
-    if (_.isEqual(this.state && this.state.dataStorePrediction, prediction)) {
-      return;
-    }
-
-    const frameNumber = dataStore.frameNumber.get();
-    const predictionInterval = 3;  // ~20 min/frame
-    let newPrediction : IPrediction = {
-          station: presenceStore.weatherStation,
-          type: PredictionType.eTemperature,  // default to temperature prediction
-          timeStamp: new Date(),
-          predictionTime: frameNumber,
-          predictedTime: frameNumber + predictionInterval,
-          predictedValue: prediction.predictedValue,
-          description: prediction.description,
-          imageUrl: prediction.imageUrl
-        };
-    this.setState({ dataStorePrediction: _.clone(prediction), prediction: newPrediction });
-  }
-
-  componentWillMount() {
-    // this.updatePredictionFromDataStore();
-    this.setState({prediction: _.clone(FreshPrediction())});
-  }
-
-  componentWillReceiveProps(nextProps: any) {
-    // this.updatePredictionFromDataStore();
-  }
-
-  predictionPrompt(type: string, simTime: number, value?: number) {
-    const { enabled } = this.props;
+  predictionPrompt(type: string | null, simTime: number, value?: number) {
+    const enabled = dataStore.prefs.enabledPredictions != null;
     if (enabled) {
-      const spec = controlsSpec[type],
+      const spec = type && controlsSpec[type],
             timeStr = dataStore.timeString,
             prompt = "At time %1 the temperature is %2 degrees."
                       .replace(/%1/, timeStr)
                       .replace(/%2/, value != null ? String(value) : ""),
-            question = (spec && controlsSpec[type].question) || "";
+            question = (spec && spec.question) || "";
       return (
         <div style={styles.prompt}>
           <div>{prompt}</div>
@@ -122,53 +92,57 @@ export class PredictionView
     }
     return (
       <div style={styles.prompt}>
-        The teacher has not asked for your predictions yet.
+        Predictions have not been requested at this time.
       </div>
     );
   }
 
   handlePredictionChange = (event: any, value: string) => {
-    const predictedValue = parseFloat(value);
-    const weatherStation = presenceStore.weatherStation;
-    this.state.prediction.predictedValue = predictedValue;
-    this.setState({ prediction: this.state.prediction }); // TODO: Required?
+    this.setState({ predictedValue: value });
   }
 
   handleDescriptionChange = (event: any, value: string) => {
-    const weatherStation =presenceStore.weatherStation;
-    this.state.prediction.description = value;
-    this.setState({ prediction: this.state.prediction }); // TODO: Required?
+    this.setState({ description: value });
   }
 
-  // TODO TS signature for TouchTapEvent handler??
-  updatePrediction = (event: any) => {
-    predictionStore.addPrediction(this.state.prediction);
+  submitPrediction = (event: any) => {
+    const type = dataStore.prefs.enabledPredictions,
+          time = new Date(),
+          simulationTime = dataStore.frameNumber.get(),
+          predictedTime = simulationTime + 3,
+          prediction = Prediction.create({
+                          type: type,
+                          timeStamp: time,
+                          predictionTime: simulationTime,
+                          predictedTime: predictedTime,
+                          predictedValue: type !== PredictionType.eDescription
+                                            ? this.state.predictedValue : null,
+                          description: this.state.description
+                        });
+    predictionStore.addPrediction(prediction);
   }
 
   render() {
     const enabledPredictions = dataStore.prefs.enabledPredictions,
           isEnabled = enabledPredictions != null,
           isNumericPrediction = isEnabled && (enabledPredictions !== PredictionType.eDescription),
-          prediction = this.state.prediction,
-          controlSpecs = controlsSpec[prediction.type],
+          cSpec = controlsSpec[enabledPredictions || ''],
           valueControl = <TextField
                             style={styles.textField}
                             hintText="your prediction (numeric)"
-                            floatingLabelText={controlsSpec[prediction.type].prediction}
+                            floatingLabelText={cSpec && cSpec.prediction}
                             multiLine={false}
                             disabled={!isEnabled}
                             onChange={this.handlePredictionChange}
-                            value={prediction.predictedValue}
+                            value={this.state.predictedValue}
                             type="number"
                           />,
           optValueControl = isNumericPrediction ? valueControl : null,
-          descriptionPrompt = isEnabled
-                                      ? controlsSpec[enabledPredictions as string].description
-                                      : "",
+          descriptionPrompt = isEnabled && cSpec ? cSpec.description : "",
           frameNumber = dataStore.frameNumber.get();
     return (
       <CardText style={styles.prediction}>
-        {this.predictionPrompt(prediction.type, frameNumber, 6)}
+        {this.predictionPrompt(enabledPredictions, frameNumber, 6)}
         {optValueControl}
         <TextField
           style={styles.textField}
@@ -177,11 +151,11 @@ export class PredictionView
           multiLine={true}
           onChange={this.handleDescriptionChange}
           disabled={!isEnabled}
-          value={prediction.description}
+          value={this.state.description}
           rows={4}
         />
         <CardActions>
-          <FlatButton label="Share" disabled={!isEnabled} onTouchTap={this.updatePrediction} />
+          <FlatButton label="Submit" disabled={!isEnabled} onTouchTap={this.submitPrediction} />
         </CardActions>
       </CardText>
     );
