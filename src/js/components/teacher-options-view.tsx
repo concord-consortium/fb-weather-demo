@@ -76,7 +76,6 @@ export class TeacherOptionsView extends React.Component<
           {this.renderPrefButton("Show Temperature", "showTempValues")}
           {this.renderPrefButton("Show Predictions", "showPredictions")}
           {this.renderPrefButton("Show Prediction Diff", "showDeltaTemp")}
-          {this.renderPrefButton("Enable prediction", "enablePrediction")}
         </div>
       </CardText>
     );

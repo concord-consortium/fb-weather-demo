@@ -3,11 +3,13 @@ import { observer } from "mobx-react";
 import { Card, CardMedia, CardActions, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
 import FloatingActionButton from "material-ui/FloatingActionButton";
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
 import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../component-style-map";
-import { IPrediction } from "../models/prediction";
 import { dataStore } from "../data-store";
+import { PredictionType, IPrediction } from "../models/prediction";
 import { predictionStore } from "../stores/prediction-store";
 import { weatherStationStore } from "../stores/weather-station-store";
 
@@ -21,6 +23,7 @@ export interface TeacherViewState {
   playing: boolean;
   frameRate: number;
   tab: TeacherViewTab;
+  predictionType: string | null;
 }
 
 
@@ -78,7 +81,6 @@ const styles:ComponentStyleMap = {
   }
 };
 
-
 @observer
 export class TeacherView extends React.Component<
   TeacherViewProps,
@@ -91,7 +93,8 @@ export class TeacherView extends React.Component<
     this.state = {
       playing: false,
       frameRate: 2000,
-      tab: "control"
+      tab: "control",
+      predictionType: null
     };
   }
 
@@ -113,6 +116,11 @@ export class TeacherView extends React.Component<
     dataStore.setFrame(0);
   }
 
+  handlePredictionTypeChange = (event: any, index: number, value: string) => {
+    console.log(`New prediction type: ${value}`);
+    dataStore.prefs.setEnabledPredictions(value);
+    this.setState({ predictionType: value });
+  }
 
   renderPredictions() {
     const weatherStation = weatherStationStore.selected;
@@ -208,6 +216,15 @@ export class TeacherView extends React.Component<
                     disabled={disablePause}
                     onTouchTap={pause}
                   />
+                  <DropDownMenu
+                    style={styles.typeMenu}
+                    value={this.state.predictionType}
+                    autoWidth={true}
+                    onChange={this.handlePredictionTypeChange}>
+                    <MenuItem value={null} primaryText="Disable Predictions" />
+                    <MenuItem value={PredictionType.eDescription} primaryText="Enable Descriptive Predictions" />
+                    <MenuItem value={PredictionType.eTemperature} primaryText="Enable Temperature Predictions" />
+                  </DropDownMenu>
                 </CardActions>
               </div>
             </CardMedia>

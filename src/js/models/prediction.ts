@@ -1,7 +1,6 @@
 import { types } from "mobx-state-tree";
 import { WeatherStation } from "./weather-station";
 
-/* Requires TypeScript 2.4
 export enum PredictionType {
   eDescription = 'description',
   eTemperature = 'temperature',
@@ -10,15 +9,6 @@ export enum PredictionType {
   eWindSpeed = 'windSpeed',
   eWindDirection = 'windDirection'
 }
-*/
-export const PredictionType = {
-  eDescription: 'description',
-  eTemperature: 'temperature',
-  eHumidity: 'humidity',
-  ePrecipitation: 'precipitation',
-  eWindSpeed: 'windSpeed',
-  eWindDirection: 'windDirection'
-};
 
 export const FreshPrediction = function(){
   const time = new Date();
