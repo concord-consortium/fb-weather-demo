@@ -2,7 +2,22 @@ import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 import { Firebasify } from "../middlewares/firebase-decorator";
 import { Simulation, ISimulation } from "../models/simulation";
+import { IWeatherScenario } from "../models/weather-scenario";
+import { PresenceStore } from "./presence-store";
+import { PredictionStore } from "./prediction-store";
+import { SimulationSettings } from "../models/simulation-settings";
+import { WeatherStation } from "../models/weather-station";
+import { StationSpec, IStationSpec } from "../models/weather-scenario";
 
+const _ = require("lodash");
+
+const createStations = function (stations:IStationSpec[]) {
+  const stationMap = {};
+  for(let station of stations) {
+    stationMap[station.id] = _.clone(station);
+  }
+  return stationMap;
+};
 
 export const SimulationStore = types.model(
   "SimulationStore",
@@ -12,26 +27,19 @@ export const SimulationStore = types.model(
     selected: null
   },
   {
-    // addStation() {
-    //   const station = WeatherStation.create({
-    //     name: "untitled",
-    //     id: uuid(),
-    //     callsign: "",
-    //     imageUrl: "",
-    //     lat: 42.1,
-    //     long: -72.0,
-    //     data: []
-    //   });
-    //   this.stations.push(station);
-    //   this.selected = station;
-    //   return station;
-    // },
     addSimulation(name:string, scenario:IWeatherScenario) {
       const simulation = Simulation.create({
         name: name,
         id: uuid(),
+        scenario: scenario,
+        presences: PresenceStore.create({}),
+        predictions: PredictionStore.create({}),
+        stations: createStations(scenario.stations),
+        isPlaying: false,
+        simulationTime: scenario.startTime,
+        simulationSpeed: 1,
+        settings: SimulationSettings.create({})
       });
-      // ... fill in details of simulation from WeatherScenario
       this.simulations.put(simulation);
       this.selected = simulation;
       return simulation;
@@ -48,8 +56,7 @@ export const SimulationStore = types.model(
 export type ISimulationStore = typeof SimulationStore.Type;
 
 export const simulationStore = SimulationStore.create({
-  stations: {},
-  selected: null
+  simulations: {}
 });
 
 Firebasify(simulationStore,"Simulations");

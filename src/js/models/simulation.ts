@@ -1,18 +1,22 @@
 import { types } from "mobx-state-tree";
-import { SimulationSettings, ISimulationSettings } from './simulation';
-import { WeatherScenario, IWeatherScenario } from './weather-scenario';
+import { SimulationSettings, ISimulationSettings } from "./simulation-settings";
+import { WeatherScenario, IWeatherScenario } from "./weather-scenario";
+import { WeatherStation } from "./weather-station";
+import { PresenceStore } from "../stores/presence-store";
+import { PredictionStore } from "../stores/prediction-store";
 
 
 export const Simulation = types.model('Simulation', {
+  name: types.string,
+  id: types.string,
   scenario: types.reference(WeatherScenario),
-  presences: presenceStore,
-  weatherStations: weatherStationStore,
-  predictions: predictionStore,
-  stationStates: types.array(WeatherStationState),
-  isPlaying: types.boolean;
-  simulationTime: types.Date;
-  simulationSpeed: types.number;
-  settings: SimulationSettings;
+  presences: PresenceStore,
+  predictions: PredictionStore,
+  stations: types.map(WeatherStation),
+  isPlaying: types.boolean,
+  simulationTime: types.Date,
+  simulationSpeed: types.number,
+  settings: SimulationSettings
 }, {
 
 });

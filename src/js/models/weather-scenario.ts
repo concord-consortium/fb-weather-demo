@@ -1,18 +1,23 @@
 import { types } from "mobx-state-tree";
+import { MapConfig } from "./map-config";
+import { WeatherStation } from "./weather-station";
 
-interface IStationSpec {
-  id: string;
-  name: string;
-  imageUrl: string;
-}
+export const StationSpec = types.model({
+  id: types.string,
+  name: types.string,
+  imageUrl: types.string,
+  lat: types.number,
+  long: types.number
+});
+export type IStationSpec = typeof StationSpec.Type;
 
 export const WeatherScenario = types.model('WeatherScenario', {
-  name: types.string;
-  eventUrl: types.string;
-  stations: types.array(IStationSpec);
-  mapConfig: MapConfig;
-  startTime: types.Date;
-  endTime: types.Date;
+  name: types.string,
+  eventUrl: types.string,
+  stations: types.array(StationSpec),
+  mapConfig: MapConfig,
+  startTime: types.Date,
+  endTime: types.Date
 }, {
 
 });
@@ -24,18 +29,28 @@ export const theWeatherScenario = WeatherScenario.create({
   stations: [
     {
       id: "KASW", name: "Warsaw, IN",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b3/Warsaw-county-building-old.jpg" },
-    { id: "KBUU", name: "Burlington, WI",
-      imageUrl: "http://www.burlington-wi.gov/images/pages/N243/Wehmhoff-Junker%20Park_thumb_thumb_thumb.jpg" },
-    { id: "KC09", name: "Morris, IL",
-      imageUrl: "http://lease-an-apartment.com/wp-content/uploads/2011/03/morris-il.jpg" },
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b3/Warsaw-county-building-old.jpg",
+      lat: 41.27,
+      long: -85.83
+    },
+    {
+      id: "KBUU", name: "Burlington, WI",
+      imageUrl: "http://www.burlington-wi.gov/images/pages/N243/Wehmhoff-Junker%20Park_thumb_thumb_thumb.jpg",
+      lat: 42.689,
+      long: -88.3
+    },{
+      id: "KC09", name: "Morris, IL",
+      imageUrl: "http://lease-an-apartment.com/wp-content/uploads/2011/03/morris-il.jpg",
+      lat: 41.43,
+      long: -88.419
+    },
     // { id: 'KETB', name: ..., imageUrl: ... },
     // { id: 'KFWA', name: ..., imageUrl: ... },
     // { id: 'KIGQ', name: ..., imageUrl: ... }
-  ],
-  mapConfig: ...,
-  startTime: ...,
-  endTime: ...
+  ]
+  // mapConfig: ...,
+  // startTime: ...,
+  // endTime: ...
 });
 
 /*
