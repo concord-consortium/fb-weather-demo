@@ -53,6 +53,10 @@ export const SimulationSettings = types.model('SimulationSettings', {
 
   setEnabledPredictions(enabledPredictions: string) {
     this.enabledPredictions = enabledPredictions;
+  },
+  postProcessSnapshot(snapshot:any) {
+    snapshot.selected = null;
+    return snapshot;
   }
 
 });
