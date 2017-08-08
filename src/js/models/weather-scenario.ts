@@ -3,7 +3,7 @@ import { MapConfig } from "./map-config";
 import { WeatherStation } from "./weather-station";
 
 export const StationSpec = types.model({
-  id: types.string,
+  id: types.identifier(types.string),
   name: types.string,
   imageUrl: types.string,
   lat: types.number,
@@ -12,6 +12,7 @@ export const StationSpec = types.model({
 export type IStationSpec = typeof StationSpec.Type;
 
 export const WeatherScenario = types.model('WeatherScenario', {
+  id: types.identifier(types.string),
   name: types.string,
   eventUrl: types.string,
   stations: types.array(StationSpec),
@@ -24,8 +25,18 @@ export const WeatherScenario = types.model('WeatherScenario', {
 export type IWeatherScenario = typeof WeatherScenario.Type;
 
 export const theWeatherScenario = WeatherScenario.create({
+  id: "michigan6",
   name: "Lake Michigan (6 stations)",
   eventUrl: "https://github.com/concord-consortium/weather-events/blob/master/events/lake-michigan.json",
+  mapConfig: {
+    id: "LakeMichigan1",
+    name: "Lake Michigan",
+    lat: 41.3,
+    long: -85.8,
+    zoom: 7
+  },
+  startTime: new Date(), //TODO: Fixme
+  endTime: new Date(), //TODO: Fixme
   stations: [
     {
       id: "KASW", name: "Warsaw, IN",
@@ -43,14 +54,12 @@ export const theWeatherScenario = WeatherScenario.create({
       imageUrl: "http://lease-an-apartment.com/wp-content/uploads/2011/03/morris-il.jpg",
       lat: 41.43,
       long: -88.419
-    },
+    }
     // { id: 'KETB', name: ..., imageUrl: ... },
     // { id: 'KFWA', name: ..., imageUrl: ... },
     // { id: 'KIGQ', name: ..., imageUrl: ... }
   ]
-  // mapConfig: ...,
-  // startTime: ...,
-  // endTime: ...
+
 });
 
 /*

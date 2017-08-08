@@ -10,7 +10,7 @@ interface IMapConfigUpdate {
 export const MapConfig = types.model(
   "MapConfig",
   {
-    id: types.optional(types.string, () => uuid()),
+    id: types.identifier(types.string),
     name: types.optional(types.string, "New Map"),
     lat: types.optional(types.number, 0),
     long: types.optional(types.number, 0),

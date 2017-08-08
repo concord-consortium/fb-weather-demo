@@ -4,11 +4,13 @@ import { WeatherScenario, IWeatherScenario } from "./weather-scenario";
 import { WeatherStation } from "./weather-station";
 import { PresenceStore } from "../stores/presence-store";
 import { PredictionStore } from "../stores/prediction-store";
+import { v1 as uuid } from "uuid";
+
 import * as moment from 'moment';
 
 export const Simulation = types.model('Simulation', {
   name: types.string,
-  id: types.string,
+  id: types.optional(types.identifier(types.string), () => uuid()),
   scenario: types.reference(WeatherScenario),
   presences: PresenceStore,
   predictions: PredictionStore,
@@ -31,6 +33,9 @@ export const Simulation = types.model('Simulation', {
   },
   stop() {
     this.isPlaying = false;
+  },
+  setPref(key: string, value: any) {
+    this.settings.setSetting(key, value);
   }
 });
 export type ISimulation = typeof Simulation.Type;

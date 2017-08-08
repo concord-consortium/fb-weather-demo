@@ -4,7 +4,7 @@ const _ = require("lodash");
 import { v1 as uuid } from "uuid";
 
 const DEFAULT_SESSION = "default";
-const DEFAULT_VERSION_STRING = "1.2.wip";
+const DEFAULT_VERSION_STRING = "1.2.wip2";
 const DEFAULT_ACTIVITY = "default";
 
 interface FirebaseUser {

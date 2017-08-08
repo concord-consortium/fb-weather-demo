@@ -6,7 +6,7 @@ import { weatherStationStore } from "../stores/weather-station-store";
 import { Firebasify } from "../middlewares/firebase-decorator";
 
 export const PredictionStore = types.model({
-  predictions: types.array(Prediction),
+  predictions: types.optional(types.array(Prediction), []),
   get prediction(): IPrediction {
     const station = presenceStore.weatherStation;
     let prediction = null;

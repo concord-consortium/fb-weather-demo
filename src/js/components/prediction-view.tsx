@@ -4,11 +4,12 @@ import TextField from "material-ui/TextField";
 import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore  } from "../data-store";
 import { PredictionType, Prediction, IPrediction } from "../models/prediction";
 import { predictionStore } from "../stores/prediction-store";
 import { presenceStore } from "../stores/presence-store";
 import { weatherStationStore } from "../stores/weather-station-store";
+import { simulationStore } from "../stores/simulation-store";
+import { Simulation, ISimulation } from "../models/simulation";
 
 const _ = require("lodash");
 
@@ -74,11 +75,10 @@ export class PredictionView
     this.state = { predictedValue: "", description: "" };
   }
 
-  predictionPrompt(type: string | null, simTime: number, value?: number) {
-    const enabled = dataStore.prefs.enabledPredictions != null;
-    if (enabled) {
+  predictionPrompt(type: string | null, simTime: Date, value?: number) {
+    if(simulationStore.settings.showPredictions) {
       const spec = type && controlsSpec[type],
-            timeStr = dataStore.timeString,
+            timeStr = simulationStore.timeString,
             prompt = "At time %1 the temperature is %2 degrees."
                       .replace(/%1/, timeStr)
                       .replace(/%2/, value != null ? String(value) : ""),
@@ -87,8 +87,7 @@ export class PredictionView
         <div style={styles.prompt}>
           <div>{prompt}</div>
           <div>{question}</div>
-        </div>
-      );
+        </div>);
     }
     return (
       <div style={styles.prompt}>
@@ -106,9 +105,9 @@ export class PredictionView
   }
 
   submitPrediction = (event: any) => {
-    const type = dataStore.prefs.enabledPredictions,
+    const type = simulationStore.settings.showPredictions,
           time = new Date(),
-          simulationTime = dataStore.frameNumber.get(),
+          simulationTime = simulationStore.simulationTime,
           predictedTime = simulationTime + 3,
           prediction = Prediction.create({
                           type: type,
@@ -123,7 +122,7 @@ export class PredictionView
   }
 
   render() {
-    const enabledPredictions = dataStore.prefs.enabledPredictions,
+    const enabledPredictions = simulationStore.settings.enabledPredictions,
           isEnabled = enabledPredictions != null,
           isNumericPrediction = isEnabled && (enabledPredictions !== PredictionType.eDescription),
           cSpec = controlsSpec[enabledPredictions || ''],
@@ -139,10 +138,10 @@ export class PredictionView
                           />,
           optValueControl = isNumericPrediction ? valueControl : null,
           descriptionPrompt = isEnabled && cSpec ? cSpec.description : "",
-          frameNumber = dataStore.frameNumber.get();
+          simulationTime = simulationStore.simulationTime;
     return (
       <CardText style={styles.prediction}>
-        {this.predictionPrompt(enabledPredictions, frameNumber, 6)}
+        {this.predictionPrompt(enabledPredictions, simulationTime, 6)}
         {optValueControl}
         <TextField
           style={styles.textField}

@@ -10,6 +10,7 @@ import { LeafletMapView } from "./leaflet-map-view";
 import { MapConfig } from "../models/map-config";
 import { mapConfigStore } from "../stores/map-config-store";
 import { weatherStationStore } from "../stores/weather-station-store";
+import { IMapConfig } from "../models/map-config";
 
 const _ = require("lodash");
 
@@ -82,7 +83,7 @@ export class SetupMapView extends React.Component<
             style={styles.textField}
             floatingLabelText="name"
             onChange={(e, v) => {
-              mapConfig.update()
+              mapConfig.update({name: v});
             }}
           />
           <LeafletMapView
@@ -107,7 +108,7 @@ export class SetupMapView extends React.Component<
               label="delete"
               secondary={true}
               onTouchTap={() => {
-                dataStore.deleteMapConfig();
+                mapConfigStore.delete();
               }}
             />
           </div>
@@ -117,28 +118,29 @@ export class SetupMapView extends React.Component<
   }
 
   renderAddButton() {
+    const mapConfig = mapConfigStore.selected;
     return (
       <div style={styles.buttonRow}>
         <FlatButton
           label="add Map"
           primary={true}
-          onTouchTap={() => dataStore.addMapConfig()}
+          onTouchTap={() => mapConfigStore.new()}
         />
       </div>
     );
   }
 
   render() {
-    const maps = dataStore.mapConfigs;
+    const maps = mapConfigStore.mapConfigs;
     return (
       <div className="configDataView">
         <div style={styles.scrollContainer}>
           <GridList style={styles.gridList}>
-            {_.map(maps, (map: MapConfig) =>
+            {_.map(maps, (map: IMapConfig) =>
               <div
                 style={styles.mapGridTile}
                 key={map.id}
-                onClick={e => (dataStore.editingMap = map)}
+                onClick={e => (mapConfigStore.select(map))}
               >
                 <div>
                   {map.name}

@@ -4,13 +4,15 @@ import { Card, CardText, CardTitle } from "material-ui/Card";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import Toggle from "material-ui/Toggle";
+import { ISimulation } from "../models/simulation";
 import { simulationStore } from "../stores/simulation-store";
-
 
 export type TeacherViewTab = "control" | "configure";
 
 export interface TeacherOptionsViewProps {}
 export interface TeacherOptionsViewState {}
+
+const _ = require("lodash");
 
 @observer
 export class TeacherOptionsView extends React.Component<
@@ -22,8 +24,8 @@ export class TeacherOptionsView extends React.Component<
     super(props, ctxt);
   }
 
-  setMap(e: any, indexs: number, id: string) {
-    simulationStore.mapConfig = map.mapConfigs[id];
+  setScenario(e: any, indexs: number, id: string) {
+    simulationStore.selectById(id);
   }
 
   renderPrefButton(label: string, key: string) {
@@ -33,7 +35,7 @@ export class TeacherOptionsView extends React.Component<
 
     const prefFactory = function(key: string) {
       const returnF = function(e: any, v: any) {
-        dataStore.setPref(key, v);
+        simulationStore.settings.setPref(key, v);
       };
       return returnF.bind(this);
     }.bind(this);
@@ -43,16 +45,16 @@ export class TeacherOptionsView extends React.Component<
         label={label}
         style={toggleStyle}
         onToggle={prefFactory(key)}
-        defaultToggled={(dataStore.prefs as any)[key]} // TODO?
+        defaultToggled={(simulationStore.settings as any)[key]} // TODO?
       />
     );
   }
 
   render() {
-    const setMap = this.setMap.bind(this);
+    const setMap = this.setScenario.bind(this);
     const gridNames = ["default", "classGrid"];
     const gridName = /* dataStore.prefs.gridName || */ "default";
-    const mapId = dataStore.mapConfig ? dataStore.mapConfig.id : 0;
+    const simulationId = simulationStore.selected ? simulationStore.selected : 0;
     const styles = {
       block: {
         maxWidth: 250
@@ -62,12 +64,12 @@ export class TeacherOptionsView extends React.Component<
       <CardText>
         <SelectField
           floatingLabelText="Use this map:"
-          value={mapId}
+          value={simulationId}
           autoWidth={true}
           onChange={setMap}
         >
-          {dataStore.mapConfigs.map((map: MapConfig) =>
-            <MenuItem key={map.id} value={map.id} primaryText={map.name} />
+          {_.map(simulationStore.simulations, (simulation: ISimulation) =>
+              <MenuItem key={simulation.id} value={simulation.id} primaryText={simulation.name} />
           )}
         </SelectField>
         <div className="toggles" style={styles.block}>
@@ -76,6 +78,7 @@ export class TeacherOptionsView extends React.Component<
           {this.renderPrefButton("Show Temperature", "showTempValues")}
           {this.renderPrefButton("Show Predictions", "showPredictions")}
           {this.renderPrefButton("Show Prediction Diff", "showDeltaTemp")}
+          {this.renderPrefButton("Enable prediction", "enablePrediction")}
         </div>
       </CardText>
     );

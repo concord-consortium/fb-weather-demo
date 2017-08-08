@@ -8,11 +8,11 @@ import MenuItem from 'material-ui/MenuItem';
 import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../component-style-map";
-import { dataStore } from "../data-store";
 import { PredictionType, IPrediction } from "../models/prediction";
 import { predictionStore } from "../stores/prediction-store";
 import { weatherStationStore } from "../stores/weather-station-store";
 import { simulationStore } from "../stores/simulation-store";
+import { ISimulation } from "../models/simulation";
 
 const _ = require("lodash");
 
@@ -97,6 +97,13 @@ export class TeacherView extends React.Component<
     };
   }
 
+  handlePredictionTypeChange = (event: any, index: number, value: string) => {
+    const simulation = simulationStore.selected;
+    if(simulation) {
+      console.log(`New prediction type: ${value}`);
+      simulationStore.settings.setSetting('enabledPredictions', value);
+    }
+  }
 
   renderPredictions() {
     const weatherStation = weatherStationStore.selected;
@@ -143,6 +150,7 @@ export class TeacherView extends React.Component<
         tab: value
       });
     };
+    const simulationType = simulationStore.settings.simulationType;
 
     return (
       <Card>
@@ -194,7 +202,7 @@ export class TeacherView extends React.Component<
                   />
                   <DropDownMenu
                     style={styles.typeMenu}
-                    value={dataStore.prefs.enabledPredictions}
+                    value={simulationStore.settings.enabledPredictions}
                     autoWidth={true}
                     onChange={this.handlePredictionTypeChange}>
                     <MenuItem value={null} primaryText="Disable Predictions" />

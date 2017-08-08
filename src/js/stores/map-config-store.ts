@@ -6,9 +6,10 @@ import { IWeatherStation } from "../models/weather-station";
 export const MapConfigStore = types.model(
   "MapConfigStore",
   {
-    mapConfigs: types.map(MapConfig)
-  },{
+    mapConfigs: types.map(MapConfig),
     selected: types.maybe(types.reference(MapConfig))
+  },{
+
   },{
     deselect() {
       this.selected = null;
@@ -19,6 +20,10 @@ export const MapConfigStore = types.model(
     add(config:IMapConfig) {
       this.mapConfigs.put(config);
       this.select(config);
+    },
+    new() {
+      const mapConfig = MapConfig.create({});
+      this.add(mapConfig);
     },
     delete() {
       if(this.selected) {

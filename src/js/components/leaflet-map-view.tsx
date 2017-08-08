@@ -4,13 +4,13 @@ import { Map, TileLayer, Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
 import { LeafletMapMarker } from "./leaflet-map-marker";
 
-import { MapConfig } from "../models/map-config";
+import { MapConfig, IMapConfig } from "../models/map-config";
 import { IWeatherStation } from "../models/weather-station";
 import { weatherStationStore } from "../stores/weather-station-store";
 import { simulationStore } from "../stores/simulation-store";
 
 interface LeafletMapProps {
-  mapConfig: MapConfig | null;
+  mapConfig: IMapConfig | null;
   width: number;
   height: number;
   interaction: boolean;
@@ -47,7 +47,7 @@ export class LeafletMapView extends React.Component<
       }
     };
     updateMap.bind(this);
-    const baseMap = simulationStore.selected.prefs.showBaseMap
+    const baseMap = simulationStore.settings.showBaseMap
       ? <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
       : null;
 

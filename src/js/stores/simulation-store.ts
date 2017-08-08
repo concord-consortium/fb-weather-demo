@@ -7,8 +7,7 @@ import { PresenceStore } from "./presence-store";
 import { PredictionStore } from "./prediction-store";
 import { SimulationSettings } from "../models/simulation-settings";
 import { WeatherStation } from "../models/weather-station";
-import { StationSpec, IStationSpec } from "../models/weather-scenario";
-
+import { StationSpec, IStationSpec, theWeatherScenario } from "../models/weather-scenario";
 const _ = require("lodash");
 
 const createStations = function (stations:IStationSpec[]) {
@@ -22,39 +21,45 @@ const createStations = function (stations:IStationSpec[]) {
 export const SimulationStore = types.model(
   "SimulationStore",
   {
-    simulations: types.map(Simulation)
-  }, {
-    selected: null,
+    simulations: types.map(Simulation),
     get simulationList() {
-      return _.sort(_.map(this.stations), 'name');
+      return _.sortBy(_.map(this.stations), 'name');
     },
+    // Callthrough methods to selected simulation
     get timeString() {
-      if(this.selected) {
-        return this.selected.timeString;
-      }
-      return "";
+      return this.selected.timeString;
     },
     get mapConfig() {
-      if(this.selected) {
-        return this.selected.mapConfig;
-      }
-      return null;
+      return this.selected.mapConfig;
+    },
+    get settings() {
+      return this.selected.simulationSettings;
+    },
+    get predictions() {
+      return this.selected.predictions;
+    },
+    get simulationTime() {
+      return this.selected.simulationTime;
     }
+  },{
+    selected: null,
   },
   {
-    addSimulation(name:string, scenario:IWeatherScenario) {
+    addSimulation(name:string) {
+      const scenario = theWeatherScenario;
       const simulation = Simulation.create({
         name: name,
         id: uuid(),
         scenario: scenario,
-        presences: PresenceStore.create({}),
-        predictions: PredictionStore.create({}),
-        stations: createStations(scenario.stations),
+        presences: PresenceStore.create(),
+        predictions: PredictionStore.create(),
+        stations: {}, // createStations(scenario.stations),
         isPlaying: false,
         simulationTime: scenario.startTime,
         simulationSpeed: 1,
         settings: SimulationSettings.create({})
       });
+
       this.simulations.put(simulation);
       this.selected = simulation;
       return simulation;
@@ -62,8 +67,17 @@ export const SimulationStore = types.model(
     select(simulation:ISimulation) {
       this.selected=simulation;
     },
+    selectById(id:string) {
+      this.selected=this.simulations.get(id);
+    },
     selectByName(name:string) {
-      this.selected=this.simulations.get(name);
+      const found = _.find(this.simulations, (i:ISimulation) => i.name === name);
+      if(found) {
+        this.selected = found;
+      }
+      else {
+        this.addSimulation(name);
+      }
     },
     deselect(){
       this.selected=null;

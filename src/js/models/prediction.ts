@@ -1,5 +1,6 @@
 import { types } from "mobx-state-tree";
 import { WeatherStation } from "./weather-station";
+import { v1 as uuid } from "uuid";
 
 export enum PredictionType {
   eDescription = 'description',
@@ -11,6 +12,7 @@ export enum PredictionType {
 }
 
 export const Prediction = types.model({
+  id: types.optional(types.identifier(types.string), () => uuid()),
   station: types.maybe(types.reference(WeatherStation)),  // shouldn't really be maybe
   type: types.enumeration('PredictionType', [
                             PredictionType.eDescription,

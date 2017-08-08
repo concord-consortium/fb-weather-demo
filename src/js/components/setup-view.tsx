@@ -3,7 +3,6 @@ import { Card } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
 import { SetupStationsView } from "./setup-stations-view";
 import { SetupMapView } from "./setup-map-view";
-import { dataStore } from "../data-store";
 
 export type SetupViewTab = "stations" | "grids" | "maps";
 

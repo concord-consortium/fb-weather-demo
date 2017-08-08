@@ -1,6 +1,8 @@
 import { types } from "mobx-state-tree";
+import { v1 as uuid } from "uuid";
 
 export const SimulationSettings = types.model('SimulationSettings', {
+  id: types.optional(types.identifier(types.string), () => uuid()),
   showBaseMap: types.optional(types.boolean, true),
   showTempColors: types.optional(types.boolean, false),
   showTempValues: types.optional(types.boolean, true),

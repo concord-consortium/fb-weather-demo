@@ -2,16 +2,18 @@ import { types } from "mobx-state-tree";
 import { Firebasify } from "../middlewares/firebase-decorator";
 import { Presence, IPresence, presenceId } from "../models/presence";
 import { IWeatherStation } from "../models/weather-station";
+import { v1 as uuid } from "uuid";
 
 export const PresenceStore = types.model(
   "PresenceStore",
   {
-    presences: types.map(Presence),
+    id: types.optional(types.identifier(types.string), () => uuid()),
+    presences: types.optional(types.map(Presence), {}),
     get weatherStation():null | IWeatherStation {
       return this.selected && this.selected.weatherStation;
     }
   },{
-    selected: types.maybe(Presence),
+    selected: null
   },{
     setStation(station:IWeatherStation) {
       if(this.selected) {
@@ -21,6 +23,7 @@ export const PresenceStore = types.model(
     addPresence(presence:IPresence) {
       this.presences.put(presence);
       this.selected = presence;
+      return presence;
     },
     createPresence() {
       const presence = Presence.create( {
