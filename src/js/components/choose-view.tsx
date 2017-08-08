@@ -49,9 +49,11 @@ export class ChooseView extends React.Component<
               <RaisedButton containerElement={this.linkTo("show/classroom")}>
                 ClassRoom
               </RaisedButton>
+              {/*}
               <RaisedButton containerElement={this.linkTo("show/setup")}>
                 Setup
               </RaisedButton>
+              */}
             </CardActions>
           </Tab>
         </Tabs>
