@@ -25,7 +25,7 @@ export const Simulation = types.model('Simulation', {
     return moment(this.simulationTime).format('lll');
   },
   get mapConfig() {
-    return this.WeatherScenario.mapConfig;
+    return this.scenario && this.scenario.mapConfig;
   }
 }, {
 }, {
@@ -43,7 +43,7 @@ export const Simulation = types.model('Simulation', {
       snapshot.predictions = {predictions: []};
     }
     if (!!!snapshot.stations) {
-      snapshot.stations = {stations:{}};
+      snapshot.stations = {stations:[]};
     }
     return snapshot;
   },

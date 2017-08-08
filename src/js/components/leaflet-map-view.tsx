@@ -47,7 +47,7 @@ export class LeafletMapView extends React.Component<
       }
     };
     updateMap.bind(this);
-    const baseMap = simulationStore.settings.showBaseMap
+    const baseMap = (simulationStore.settings && simulationStore.settings.showBaseMap)
       ? <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
       : null;
 

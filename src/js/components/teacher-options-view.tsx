@@ -29,6 +29,9 @@ export class TeacherOptionsView extends React.Component<
   }
 
   renderPrefButton(label: string, key: string) {
+    if(!!!simulationStore.settings) {
+      return null;
+    }
     const toggleStyle = {
       marginBottom: 16
     };

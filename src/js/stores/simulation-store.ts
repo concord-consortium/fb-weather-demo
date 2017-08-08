@@ -36,7 +36,7 @@ export const SimulationStore = types.model(
       return this.selected && this.selected.mapConfig;
     },
     get settings() {
-      return this.selected && this.selected.simulationSettings;
+      return this.selected && this.selected.settings;
     },
     get predictions() {
       return this.selected && this.selected.predictions;
@@ -118,12 +118,7 @@ export const SimulationStore = types.model(
     },
     rewind() {
       if(this.selected) { this.selected.rewind(); }
-    },
-    // postProcessSnapshot(snapshot:any) {
-    //   console.log(snapshot);
-    //   console.log(`snapshot processed ${++debugCounter} times`);
-    //   return snapshot;
-    // }
+    }
   }
 );
 export type ISimulationStore = typeof SimulationStore.Type;

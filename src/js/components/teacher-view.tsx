@@ -149,8 +149,10 @@ export class TeacherView extends React.Component<
         tab: value
       });
     };
-    const simulationType = simulationStore.settings.simulationType;
 
+    const simulationType = simulationStore.settings && simulationStore.settings.simulationType;
+    const enabledPredictions = simulationStore.settings && simulationStore.settings.enabledPredictions;
+    
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
@@ -201,7 +203,7 @@ export class TeacherView extends React.Component<
                   />
                   <DropDownMenu
                     style={styles.typeMenu}
-                    value={simulationStore.settings.enabledPredictions}
+                    value={enabledPredictions}
                     autoWidth={true}
                     onChange={this.handlePredictionTypeChange}>
                     <MenuItem value={null} primaryText="Disable Predictions" />
