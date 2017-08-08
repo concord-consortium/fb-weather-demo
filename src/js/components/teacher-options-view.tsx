@@ -24,10 +24,6 @@ export class TeacherOptionsView extends React.Component<
     super(props, ctxt);
   }
 
-  setScenario(e: any, indexs: number, id: string) {
-    simulationStore.selectById(id);
-  }
-
   renderPrefButton(label: string, key: string) {
     if(!!!simulationStore.settings) {
       return null;
@@ -38,7 +34,7 @@ export class TeacherOptionsView extends React.Component<
 
     const prefFactory = function(key: string) {
       const returnF = function(e: any, v: any) {
-        simulationStore.settings.setPref(key, v);
+        simulationStore.setPref(key, v);
       };
       return returnF.bind(this);
     }.bind(this);
@@ -54,7 +50,6 @@ export class TeacherOptionsView extends React.Component<
   }
 
   render() {
-    const setMap = this.setScenario.bind(this);
     const gridNames = ["default", "classGrid"];
     const gridName = /* dataStore.prefs.gridName || */ "default";
     const simulationId = simulationStore.selected ? simulationStore.selected : 0;
@@ -65,16 +60,6 @@ export class TeacherOptionsView extends React.Component<
     };
     return (
       <CardText>
-        <SelectField
-          floatingLabelText="Use this map:"
-          value={simulationId}
-          autoWidth={true}
-          onChange={setMap}
-        >
-          {_.map(simulationStore.simulations, (simulation: ISimulation) =>
-              <MenuItem key={simulation.id} value={simulation.id} primaryText={simulation.name} />
-          )}
-        </SelectField>
         <div className="toggles" style={styles.block}>
           {this.renderPrefButton("Show Map", "showBaseMap")}
           {this.renderPrefButton("Show Names", "showStationNames")}
