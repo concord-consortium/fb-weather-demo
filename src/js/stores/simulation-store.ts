@@ -25,6 +25,7 @@ export const SimulationStore = types.model(
   "SimulationStore",
   {
     simulations: types.map(Simulation),
+    selected: types.maybe(types.reference(Simulation)),
     get simulationList() {
       return _.sortBy(_.map(this.simulations.toJSON(), 'name'), 'name');
     },
@@ -54,7 +55,7 @@ export const SimulationStore = types.model(
       return this.selected && this.selected.name;
     }
   },{
-    selected: null
+
   },
   {
     addSimulation(name:string, scenario:IWeatherScenario) {
@@ -76,14 +77,14 @@ export const SimulationStore = types.model(
       });
 
       this.simulations.put(simulation);
-      this.selected = simulation;
+      this.selected = simulation.id;
       return simulation;
     },
     select(simulation:ISimulation) {
-      this.selected=simulation;
+      this.selected=simulation.id;
     },
     selectById(id:string) {
-      this.selected=this.simulations.get(id);
+      this.selected=this.simulations.get(id).id;
     },
     selectByName(name:string) {
       const finder = (i:ISimulation) => {
@@ -92,7 +93,7 @@ export const SimulationStore = types.model(
       };
       const found = _.find(this.simulations.toJSON(), finder);
       if(found) {
-        this.selected = found;
+        this.selected = found.id;
       }
       else {
         this.addSimulation(name, theWeatherScenario);
@@ -110,6 +111,11 @@ export const SimulationStore = types.model(
     copySimulation(oldName:string, newName:string) {
       alert("copySimulation: Nothing happening at the moment");
     },
+     setPref(key: string, value: any) {
+      if(this.settings) {
+        this.settings.setSetting(key, value);
+      }
+    },
     stop() {
       if(this.selected) { this.selected.stop(); }
     },
@@ -124,7 +130,8 @@ export const SimulationStore = types.model(
 export type ISimulationStore = typeof SimulationStore.Type;
 
 export const simulationStore = SimulationStore.create({
-  simulations: {}
+  simulations: {},
+  selected: null
 });
 
 Firebasify(simulationStore,"Simulations");
