@@ -14,11 +14,18 @@ const _ = require("lodash");
 let debugCounter = 0;
 
 const createStations = function (stations:IStationSpec[]) {
-  const stationMap:any= {}; // TODO bad any.
-  for(let station of stations) {
-    stationMap[station.id] = _.clone(station);
-  }
-  return stationMap;
+  return _.map(stations, (s:IStationSpec) => {
+    const spec = {
+      name: s.name,
+      imageUrl: s.imageUrl,
+      id: s.id,
+      callsign: s.id,
+      lat: s.lat,
+      long: s.long
+    };
+    return WeatherStation.create(spec);
+  });
+
 };
 
 export const SimulationStore = types.model(
@@ -62,7 +69,10 @@ export const SimulationStore = types.model(
       const predictionStore = PredictionStore.create();
       const presenceStore = PresenceStore.create();
       const settings = SimulationSettings.create();
-      const weatherStationStore = WeatherStationStore.create();
+      const weatherStationStore = WeatherStationStore.create({
+        stations: createStations(scenario.stations),
+        selected: null
+      });
       const simulation = Simulation.create({
         name: name,
         id: uuid(),

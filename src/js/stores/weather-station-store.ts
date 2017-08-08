@@ -29,8 +29,7 @@ export const WeatherStationStore = types.model(
         callsign: "",
         imageUrl: "",
         lat: 42.1,
-        long: -72.0,
-        data: []
+        long: -72.0
       });
       this.stations.push(station);
       this.selected = station;

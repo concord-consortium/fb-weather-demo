@@ -23,7 +23,6 @@ export const WeatherStation = types.model("WeatherStation",
   callsign: types.string,
   lat: types.number,
   long: types.number,
-  data: types.maybe(types.array(WeatherDatum)),
   get temp() {
     return 3; //TODO ???
   }
