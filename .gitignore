@@ -1,3 +1,7 @@
+main.bundle*
 node_modules
+npm-debug.log
 dist
 *.xlsm
+.vscode
+.DS_Store

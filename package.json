@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "dateformat": "^2.0.0",
+    "es6-promise": "^4.1.1",
     "firebase": "^3.7.0",
     "leaflet": "^1.0.3",
     "lodash": "^4.17.4",
@@ -31,9 +32,11 @@
     "react-router": "3.0.5",
     "react-tap-event-plugin": "^2.0.1",
     "semver": "^5.3.0",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.71",
     "@types/material-ui": "^0.17.19",
     "@types/query-string": "^4.3.0",
     "@types/react": "^15.6.0",
