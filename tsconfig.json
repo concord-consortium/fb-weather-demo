@@ -4,6 +4,7 @@
     "sourceMap": true,
     // TODO:  Change this when things start to compile
     "noImplicitAny": true,
+    "noUnusedLocals": false,
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
