@@ -1,11 +1,14 @@
 import { observable, computed, IObservableValue } from "mobx";
 import { applySnapshot, getSnapshot } from "mobx-state-tree";
-import { v1 as uuid } from "uuid";
 import { Basestation, BasestationMap } from "./basestation";
 import { gFirebase } from "./firebase-imp";
-import { FrameHelper } from "./frame-helper";
 import { MapConfig, IMapConfig, MapConfigMap } from "./models/map-config";
 import { SimulationSettings, ISimulationSettings } from "./models/simulation-settings";
+import { SimulationControl, ISimulationControl } from "./models/simulation-control";
+/* test code for WeatherEvent, WeatherStationState
+import { gWeatherEvent } from "./models/weather-event";
+import { WeatherStationState } from "./models/weather-station-state";
+*/
 
 const _ = require("lodash");
 
@@ -18,6 +21,7 @@ export interface FireBaseState {
 }
 
 class DataStore {
+  @observable simulationControl: ISimulationControl;
   @observable frameNumber: IObservableValue<number>;
   @observable maxFrame: IObservableValue<number>;
   @observable prefs: ISimulationSettings;
@@ -28,6 +32,7 @@ class DataStore {
   @observable sessionPath: string;
 
   constructor() {
+    this.simulationControl = SimulationControl.create();
     this.frameNumber = observable(0);
     this.maxFrame = observable(0);
     this.prefs = SimulationSettings.create();
@@ -36,6 +41,27 @@ class DataStore {
     this.sessionList = [];
 
     gFirebase.addListener(this);
+
+    /* Test code for WeatherEvent, WeatherStationData
+    gWeatherEvent.stationData('KASW')
+      .then((stationData: any) => {
+        if (stationData) {
+          const count = stationData.rows && stationData.rows.length;
+          console.log(`${stationData.id}: loaded ${count} records`);
+          let state = new WeatherStationState(stationData, this.simulationControl);
+          console.log(`Temperature[0] = ${state.temperature}`);
+          this.simulationControl.setTime(gWeatherEvent.startTime);
+          console.log(`Temperature[1] = ${state.temperature}`);
+          this.simulationControl.advanceTime({ minutes: 10 });
+          console.log(`Temperature[2] = ${state.temperature}`);
+          this.simulationControl.advanceTime({ hours: 6 });
+          console.log(`Temperature[3] = ${state.temperature}`);
+        }
+      })
+      .catch((err: any) => {
+        console.log(`KASW: No station data received: "${err}"`);
+      });
+    */
   }
 
   setSessionList(newSessions: string[]) {

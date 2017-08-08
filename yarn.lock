@@ -16,6 +16,10 @@
   dependencies:
     "@types/geojson" "*"
 
+"@types/lodash@^4.14.71":
+  version "4.14.71"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.71.tgz#0dc383f78981216ac76e2f2c3afd998e0450e4c1"
+
 "@types/material-ui@^0.17.19":
   version "0.17.19"
   resolved "https://registry.yarnpkg.com/@types/material-ui/-/material-ui-0.17.19.tgz#24cd5fa629ce882b72e28bda8f0b83ec58c9b62d"
