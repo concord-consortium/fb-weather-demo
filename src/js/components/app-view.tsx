@@ -3,7 +3,8 @@ import { observer } from "mobx-react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import DevTools from "mobx-react-devtools";
 import { Link } from "react-router";
-import { applicationStore as appStore } from "../stores/application-store";
+import { simulationStore } from "../stores/simulation-store";
+import { ISimulation } from "../models/simulation";
 
 interface routeParams {
   blarg: string;
@@ -28,13 +29,14 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
     };
   }
 
+
   render() {
     return (
       <MuiThemeProvider>
         <div>
           <div style={{ fontSize: "9pt", color: "gray" }}>
             <Link to="/sessions">
-              {appStore.simulationName}
+              {simulationStore.simulationName}
             </Link>
           </div>
           {/*<DevTools />*/}

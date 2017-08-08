@@ -17,8 +17,8 @@ export const WeatherScenario = types.model('WeatherScenario', {
   eventUrl: types.string,
   stations: types.array(StationSpec),
   mapConfig: MapConfig,
-  startTime: types.Date,
-  endTime: types.Date
+  startTime: types.maybe(types.Date),
+  endTime: types.maybe(types.Date)
 }, {
 
 });
@@ -35,8 +35,6 @@ export const theWeatherScenario = WeatherScenario.create({
     long: -85.8,
     zoom: 7
   },
-  startTime: new Date(), //TODO: Fixme
-  endTime: new Date(), //TODO: Fixme
   stations: [
     {
       id: "KASW", name: "Warsaw, IN",

@@ -5,11 +5,10 @@ import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { PredictionType, Prediction, IPrediction } from "../models/prediction";
-import { predictionStore } from "../stores/prediction-store";
-import { presenceStore } from "../stores/presence-store";
+
 import { weatherStationStore } from "../stores/weather-station-store";
 import { simulationStore } from "../stores/simulation-store";
-import { Simulation, ISimulation } from "../models/simulation";
+
 
 const _ = require("lodash");
 
@@ -76,7 +75,7 @@ export class PredictionView
   }
 
   predictionPrompt(type: string | null, simTime: Date, value?: number) {
-    if(simulationStore.settings.showPredictions) {
+    if(simulationStore.settings && simulationStore.settings.showPredictions) {
       const spec = type && controlsSpec[type],
             timeStr = simulationStore.timeString,
             prompt = "At time %1 the temperature is %2 degrees."
@@ -118,11 +117,13 @@ export class PredictionView
                                             ? this.state.predictedValue : null,
                           description: this.state.description
                         });
-    predictionStore.addPrediction(prediction);
+    simulationStore.predictions.addPrediction(prediction);
   }
 
   render() {
-    const enabledPredictions = simulationStore.settings.enabledPredictions,
+    const settings = simulationStore.settings;
+
+    const enabledPredictions = settings && settings.enabledPredictions,
           isEnabled = enabledPredictions != null,
           isNumericPrediction = isEnabled && (enabledPredictions !== PredictionType.eDescription),
           cSpec = controlsSpec[enabledPredictions || ''],

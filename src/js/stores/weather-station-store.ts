@@ -5,8 +5,9 @@ import { WeatherStation, IWeatherStation } from "../models/weather-station";
 
 
 export const WeatherStationStore = types.model(
+  "WeatherStationStore",
   {
-    stations: types.array(WeatherStation),
+    stations: types.optional(types.array(WeatherStation), []),
     selected: types.maybe(types.reference(WeatherStation))
   },
   {

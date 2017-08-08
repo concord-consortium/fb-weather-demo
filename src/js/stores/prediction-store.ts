@@ -1,14 +1,14 @@
 import { types } from "mobx-state-tree";
 import { Prediction, IPrediction } from "../models/prediction";
 import { IWeatherStation } from "../models/weather-station";
-import { presenceStore } from "../stores/presence-store";
 import { weatherStationStore } from "../stores/weather-station-store";
 import { Firebasify } from "../middlewares/firebase-decorator";
+import { simulationStore } from "../stores/simulation-store";
 
-export const PredictionStore = types.model({
+export const PredictionStore = types.model("PredictionStore", {
   predictions: types.optional(types.array(Prediction), []),
   get prediction(): IPrediction {
-    const station = presenceStore.weatherStation;
+    const station = simulationStore.presences.selected.weatherStation;
     let prediction = null;
     if (station) {
       prediction = this.predictions.filter((p:IPrediction) => p.station === station)[0];
@@ -47,16 +47,9 @@ export const PredictionStore = types.model({
   setPrediction(station:IWeatherStation, prediction:IPrediction) {
     prediction.station = station;
   },
-  addPrediction(prediction:IPrediction) {
+  addPrediction(prediction:IPrediction, station:IWeatherStation) {
     prediction.timeStamp = new Date();
-    prediction.station = presenceStore.weatherStation;
+    prediction.station = station;
     this.predictions.push(prediction);
   }
 });
-
-export const predictionStore = PredictionStore.create({
-  predictions: []
-});
-
-
-Firebasify(predictionStore, "Predictions");

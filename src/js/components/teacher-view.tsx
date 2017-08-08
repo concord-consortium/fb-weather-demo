@@ -9,7 +9,6 @@ import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../component-style-map";
 import { PredictionType, IPrediction } from "../models/prediction";
-import { predictionStore } from "../stores/prediction-store";
 import { weatherStationStore } from "../stores/weather-station-store";
 import { simulationStore } from "../stores/simulation-store";
 import { ISimulation } from "../models/simulation";
@@ -108,7 +107,7 @@ export class TeacherView extends React.Component<
   renderPredictions() {
     const weatherStation = weatherStationStore.selected;
     if(weatherStation) {
-      const predictions = predictionStore.teacherPredictions;
+      const predictions = simulationStore.predictions.teacherPredictions;
 
       const renderPrediction = (prediction:IPrediction, index:number) => {
         const style = index % 2 === 0 ? styles.predictionItemEven :  styles.predictionItemOdd;

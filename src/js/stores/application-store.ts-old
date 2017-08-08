@@ -9,9 +9,9 @@ export const ApplicationStore = types.model(
   {
     // simulationList: types.array(types.reference(Simulation)),
     simulations: SimulationStore,
-    presences: PresenceStore,
-    weatherStations: WeatherStationStore,
-    predictions: PredictionStore,
+    // presences: PresenceStore,
+    // weatherStations: WeatherStationStore,
+    // predictions: PredictionStore,
     get simulation() {
       return simulationStore.selected;
     },

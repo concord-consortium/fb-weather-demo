@@ -48,9 +48,3 @@ export const PresenceStore = types.model(
 );
 
 export type IPresenceStore = typeof PresenceStore.Type;
-
-export const presenceStore = PresenceStore.create({presences: {}});
-
-
-Firebasify(presenceStore, "Presences", ()=> presenceStore.getCurrentPresence());
-

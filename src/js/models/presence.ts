@@ -11,7 +11,7 @@ export const presenceId = () => {
 export const Presence = types.model("Presence",
 {
   username: types.optional(types.string, () => "anonymous"),
-  id: types.optional(types.identifier(types.string), ()=>uuid()),
+  id: types.optional(types.identifier(types.string), ()=> presenceId()),
   start: types.optional(types.Date, () => new Date()),
   weatherStation: types.maybe(types.reference(WeatherStation))
 },{
