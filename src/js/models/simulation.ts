@@ -12,7 +12,7 @@ import * as moment from 'moment';
 export const Simulation = types.model('Simulation', {
   name: types.string,
   id: types.optional(types.identifier(types.string), () => uuid()),
-  scenario: types.reference(WeatherScenario),
+  scenario: WeatherScenario, // TBD: Maybe a ref later on?
   presences: PresenceStore,
   predictions: PredictionStore,
   stations: WeatherStationStore,
@@ -46,11 +46,7 @@ export const Simulation = types.model('Simulation', {
       snapshot.stations = {stations:[]};
     }
     return snapshot;
-  },
-  // postProcessSnapshot(snapshot:any) {
-  //   debugger;
-  //   return snapshot;
-  // }
+  }
 
 });
 export type ISimulation = typeof Simulation.Type;
