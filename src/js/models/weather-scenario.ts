@@ -29,9 +29,9 @@ export const theWeatherScenario = WeatherScenario.create({
   eventUrl: gWeatherEventUrl,
   mapConfig: {
     id: "LakeMichigan1",
+    lat: 42.3179394544685,
+    long: -87.12158203125001,
     name: "Lake Michigan",
-    lat: 41.3,
-    long: -85.8,
     zoom: 7
   },
   stations: [
