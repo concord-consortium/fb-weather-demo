@@ -35,7 +35,7 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
       <MuiThemeProvider>
         <div>
           <div style={{ fontSize: "9pt", color: "gray" }}>
-            <Link to="/sessions">
+            <Link to="/simulations">
               {simulationStore.simulationName}
             </Link>
           </div>

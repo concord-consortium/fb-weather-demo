@@ -9,7 +9,7 @@ import { TeacherView } from "./components/teacher-view";
 import { WeatherStationView } from "./components/weather-station-view";
 import { ClassView } from "./components/class-view";
 import { ChooseView } from "./components/choose-view";
-import { ChooseSessionView } from "./components/choose-session-view";
+import { ChooseSimulationView } from "./components/choose-simulation-view";
 import { SetupView } from "./components/setup-view";
 import { simulationStore } from "./stores/simulation-store";
 
@@ -19,29 +19,29 @@ const log = function(msg: string) {
   console.log(msg);
 };
 
-const updateSession = function(nextSession: string) {
-  if (nextSession && nextSession !== gFirebase.session) {
-    if(simulationStore.selectByName(nextSession)) {
+const updateSession = function(nextSimulation: string) {
+  if (nextSimulation && nextSimulation !== gFirebase.session) {
+    if(simulationStore.selectByName(nextSimulation)) {
       const logString = `
         ================================================
-        Changed state path to: ${nextSession}
+        Changed Simulation path to: ${nextSimulation}
         ================================================
       `;
       log(logString);
     }
     else {
-      hashHistory.push('/sessions/choose');
+      hashHistory.push('/simulations/choose');
     }
   }
 };
 
-const sessionChanged = function(
+const simulationChanged = function(
   prevState: any,
   nextState: any,
   replace: any,
   callback: Function | undefined
 ) {
-  updateSession(nextState.params.sessionName);
+  updateSession(nextState.params.simulationName);
   if (callback) {
     callback();
   }
@@ -52,7 +52,7 @@ const onEnter = function(
   replace: any,
   callback: Function | undefined
 ) {
-  updateSession(nextState.params.sessionName);
+  updateSession(nextState.params.simulationName);
   if (callback) {
     callback();
   }
@@ -63,14 +63,14 @@ ReactDOM.render(
     <Route
       path="/"
       component={AppView}
-      onChange={sessionChanged}
+      onChange={simulationChanged}
       onEnter={onEnter}
     >
-      <IndexRedirect to="/sessions" />
-      <Route path="/sessions">
+      <IndexRedirect to="/simulations" />
+      <Route path="/simulations">
         <IndexRedirect to="choose" />
-        <Route path="choose" component={ChooseSessionView} />
-        <Route path="/sessions/:sessionName">
+        <Route path="choose" component={ChooseSimulationView} />
+        <Route path="/simulations/:simulationName">
           <IndexRedirect to="show/choose" />
           <Route path="show">
             <IndexRedirect to="choose" />

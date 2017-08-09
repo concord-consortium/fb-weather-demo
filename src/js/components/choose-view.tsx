@@ -7,7 +7,7 @@ import { Link } from "react-router";
 const _ = require("lodash");
 
 interface routeParams {
-  sessionName: string;
+  simulationName: string;
 }
 
 export interface ChooseViewProps {
@@ -26,8 +26,8 @@ export class ChooseView extends React.Component<
   }
 
   linkTo(relativePath: string) {
-    const session = this.props.params.sessionName;
-    const pathString: string = `/sessions/${session}/${relativePath}`;
+    const simulationName = this.props.params.simulationName;
+    const pathString: string = `/simulations/${simulationName}/${relativePath}`;
     return <Link to={pathString} />;
   }
 

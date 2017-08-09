@@ -17,14 +17,14 @@ import { simulationStore } from "../stores/simulation-store";
 const _ = require("lodash");
 
 interface routeParams {
-  sessionName: string;
+  simulationName: string;
 }
 
 interface router {
   push: Function;
 }
 
-export interface ChooseSessionViewProps {
+export interface ChooseSimulationViewProps {
   params: routeParams;
   router: router;
 }
@@ -36,23 +36,23 @@ enum DialogType {
   Rename
 }
 
-export interface ChooseSessionViewState {
+export interface ChooseSimulationViewState {
   nowShowing: DialogType;
-  newSessionName: string;
-  oldSessionName: string;
+  newSimulationName: string;
+  oldSimulationName: string;
 }
 
 @observer
-export class ChooseSessionView extends React.Component<
-  ChooseSessionViewProps,
-  ChooseSessionViewState
+export class ChooseSimulationView extends React.Component<
+  ChooseSimulationViewProps,
+  ChooseSimulationViewState
 > {
-  constructor(props: ChooseSessionViewProps, ctx: any) {
+  constructor(props: ChooseSimulationViewProps, ctx: any) {
     super(props, ctx);
     this.state = {
       nowShowing: DialogType.None,
-      newSessionName: "(untitled)",
-      oldSessionName: "(untitled)"
+      newSimulationName: "(untitled)",
+      oldSimulationName: "(untitled)"
     };
   }
 
@@ -64,28 +64,28 @@ export class ChooseSessionView extends React.Component<
     );
   }
 
-  rightIconMenu(sessionName: string) {
+  rightIconMenu(simulationName: string) {
     const copy = function() {
       this.setState({
         nowShowing: DialogType.Copy,
-        oldSessionName: sessionName,
-        newSessionName: `copy of ${sessionName}`
+        oldSimulationName: simulationName,
+        newSimulationName: `copy of ${simulationName}`
       });
     }.bind(this);
 
     const rm = function() {
       this.setState({
         nowShowing: DialogType.Delete,
-        oldSessionName: sessionName,
-        newSessionName: sessionName
+        oldSimulationName: simulationName,
+        newSimulationName: simulationName
       });
     }.bind(this);
 
     const rename = function() {
       this.setState({
         nowShowing: DialogType.Rename,
-        oldSessionName: sessionName,
-        newSessionName: sessionName
+        oldSimulationName: simulationName,
+        newSimulationName: simulationName
       });
     }.bind(this);
 
@@ -105,15 +105,15 @@ export class ChooseSessionView extends React.Component<
   handleClose() {
     if (this.state.nowShowing === DialogType.Copy) {
       simulationStore.copySimulation(
-        this.state.oldSessionName,
-        this.state.newSessionName
+        this.state.oldSimulationName,
+        this.state.newSimulationName
       );
     }
     if (this.state.nowShowing === DialogType.Rename) {
-      simulationStore.renameSimulation(this.state.newSessionName);
+      simulationStore.renameSimulation(this.state.newSimulationName);
     }
     if (this.state.nowShowing === DialogType.Delete) {
-      simulationStore.deleteSimulation(this.state.newSessionName);
+      simulationStore.deleteSimulation(this.state.newSimulationName);
     }
     this.setState({ nowShowing: DialogType.None });
   }
@@ -125,7 +125,7 @@ export class ChooseSessionView extends React.Component<
   render() {
     const names = simulationStore.simulationList;
     const visList = _.map(names, (name: string) => {
-      const pathString: string = `sessions/${name}`;
+      const pathString: string = `simulations/${name}`;
       return (
         <ListItem
           key={name}
@@ -157,7 +157,7 @@ export class ChooseSessionView extends React.Component<
     return (
       <Card>
         <Tabs>
-          <Tab label="Choose Session">
+          <Tab label="Choose Simulation">
             <List>
               {visList}
             </List>
@@ -165,7 +165,7 @@ export class ChooseSessionView extends React.Component<
         </Tabs>
 
         <Dialog
-          title="Copy Session"
+          title="Copy Simulation"
           actions={dialogActions}
           modal={true}
           open={showingCopy}
@@ -174,9 +174,9 @@ export class ChooseSessionView extends React.Component<
           <TextField
             id="copySessionName"
             ref="copySessionName"
-            value={this.state.newSessionName}
+            value={this.state.newSimulationName}
             onChange={(event: any) =>
-              this.setState({ newSessionName: event.target.value })}
+              this.setState({ newSimulationName: event.target.value })}
           />
         </Dialog>
 
@@ -190,9 +190,9 @@ export class ChooseSessionView extends React.Component<
           <TextField
             id="renameSessionName"
             ref="renameSessionName"
-            value={this.state.newSessionName}
+            value={this.state.newSimulationName}
             onChange={(event: any) =>
-              this.setState({ newSessionName: event.target.value })}
+              this.setState({ newSimulationName: event.target.value })}
           />
         </Dialog>
 
@@ -204,7 +204,7 @@ export class ChooseSessionView extends React.Component<
           onRequestClose={handleClose}
         >
           <div>
-            Are you sure you want to delete "{this.state.newSessionName}"?
+            Are you sure you want to delete "{this.state.newSimulationName}"?
           </div>
         </Dialog>
       </Card>
