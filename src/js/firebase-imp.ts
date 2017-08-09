@@ -2,6 +2,7 @@ const firebase = require("firebase");
 const _ = require("lodash");
 
 import { v1 as uuid } from "uuid";
+import { Promise } from "es6-promise";
 
 const DEFAULT_SESSION = "default";
 const DEFAULT_VERSION_STRING = "1.2.wip2";
@@ -61,6 +62,7 @@ export class FirebaseImp {
   sessionsListRef: FirebaseRef;
   dataRef: FirebaseRef;
   pendingCallbacks: Function[];
+  postConnect: Promise<FirebaseImp>;
 
   constructor() {
     this._session = `${DEFAULT_SESSION}`;
@@ -86,10 +88,7 @@ export class FirebaseImp {
     };
     this.config = configs.new;
     this.listeners = [];
-
-    this.initFirebase(() => {
-      // TBD: notify that Firebase is ready
-    });
+    this.initFirebase();
   }
 
   log(msg: string) {
@@ -100,20 +99,23 @@ export class FirebaseImp {
     console.error(err);
   }
 
-  initFirebase(callback: Function) {
+  initFirebase() {
     firebase.initializeApp(this.config);
     const finishAuth = this.finishAuth.bind(this);
     const reqAuth = this.reqAuth.bind(this);
     const log = this.log.bind(this);
+    const fireBaseImp = this;
     let auth = firebase.auth();
-    auth.onAuthStateChanged(function(user: FirebaseUser) {
-      if (user) {
-        log(user.displayName + " authenticated");
-        finishAuth({ result: { user: user } });
-        callback();
-      } else {
-        reqAuth();
-      }
+    this.postConnect = new Promise(function(resolve:Function, reject:Function) {
+      auth.onAuthStateChanged(function(user: FirebaseUser) {
+        if (user) {
+          log(user.displayName + " authenticated");
+          finishAuth({ result: { user: user } });
+          resolve();
+        } else {
+          reqAuth();
+        }
+      });
     });
   }
 

@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import { AppView } from "./components/app-view";
 import { Router, Route, hashHistory, IndexRedirect } from "react-router";
 import * as injectTapEventPlugin from "react-tap-event-plugin";
-import { gFirebase } from "./firebase-imp";
+import { gFirebase, FirebaseImp } from "./firebase-imp";
 
 import { TeacherView } from "./components/teacher-view";
 import { WeatherStationView } from "./components/weather-station-view";
@@ -58,31 +58,33 @@ const onEnter = function(
   }
 };
 
-ReactDOM.render(
-  <Router history={hashHistory}>
-    <Route
-      path="/"
-      component={AppView}
-      onChange={simulationChanged}
-      onEnter={onEnter}
-    >
-      <IndexRedirect to="/simulations" />
-      <Route path="/simulations">
-        <IndexRedirect to="choose" />
-        <Route path="choose" component={ChooseSimulationView} />
-        <Route path="/simulations/:simulationName">
-          <IndexRedirect to="show/choose" />
-          <Route path="show">
-            <IndexRedirect to="choose" />
-            <Route path="student" component={WeatherStationView} />
-            <Route path="teacher" component={TeacherView} />
-            <Route path="classroom" component={ClassView} />
-            <Route path="setup" component={SetupView} />
-            <Route path="choose" component={ChooseView} />
+gFirebase.postConnect.then( (imp:FirebaseImp)=> {
+  ReactDOM.render(
+    <Router history={hashHistory}>
+      <Route
+        path="/"
+        component={AppView}
+        onChange={simulationChanged}
+        onEnter={onEnter}
+      >
+        <IndexRedirect to="/simulations" />
+        <Route path="/simulations">
+          <IndexRedirect to="choose" />
+          <Route path="choose" component={ChooseSimulationView} />
+          <Route path="/simulations/:simulationName">
+            <IndexRedirect to="show/choose" />
+            <Route path="show">
+              <IndexRedirect to="choose" />
+              <Route path="student" component={WeatherStationView} />
+              <Route path="teacher" component={TeacherView} />
+              <Route path="classroom" component={ClassView} />
+              <Route path="setup" component={SetupView} />
+              <Route path="choose" component={ChooseView} />
+            </Route>
           </Route>
         </Route>
       </Route>
-    </Route>
-  </Router>,
-  document.getElementById("App")
-);
+    </Router>,
+    document.getElementById("App")
+  );
+});

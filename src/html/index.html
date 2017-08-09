@@ -7,14 +7,20 @@
     <style type="text/css">
       @import url("weather.css");
       @import url("fonts.css");
+      @import url("loading.css");
     </style>
 
   </head>
   <body>
     <div id="App">
-      <p>
-        If you can see this, React is <strong>not</strong> working right.
-      </p>
+      <div id="waiting">
+        <div class="big"> Please wait … </div>
+        <div id="bounce">
+          <div class="a"></div>
+          <div class="b"></div>
+          <div class=""></div>
+        </div>
+      </div>
     </div>
     <script src="./vendor.js" language="javascript"></script>
     <script src="./app.js" language="javascript"></script>
