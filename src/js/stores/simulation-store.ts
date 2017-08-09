@@ -19,9 +19,7 @@ const createStations = function (stations:IStationSpec[]) {
       name: s.name,
       imageUrl: s.imageUrl,
       id: s.id,
-      callsign: s.id,
-      lat: s.lat,
-      long: s.long
+      callsign: s.id
     };
     return WeatherStation.create(spec);
   });
