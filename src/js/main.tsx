@@ -21,13 +21,17 @@ const log = function(msg: string) {
 
 const updateSession = function(nextSession: string) {
   if (nextSession && nextSession !== gFirebase.session) {
-    simulationStore.selectByName(nextSession);
-    const logString = `
-      ================================================
-      Changed state path to: ${nextSession}
-      ================================================
-    `;
-    log(logString);
+    if(simulationStore.selectByName(nextSession)) {
+      const logString = `
+        ================================================
+        Changed state path to: ${nextSession}
+        ================================================
+      `;
+      log(logString);
+    }
+    else {
+      hashHistory.push('/sessions/choose');
+    }
   }
 };
 

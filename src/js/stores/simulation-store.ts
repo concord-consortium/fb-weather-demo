@@ -86,10 +86,9 @@ export const SimulationStore = types.model(
       const found = _.find(this.simulations.toJSON(), finder);
       if(found) {
         this.selected = found.id;
+        return found;
       }
-      else {
-        this.addSimulation(name, theWeatherScenario);
-      }
+      return false;
     },
     deselect(){
       this.selected=null;
