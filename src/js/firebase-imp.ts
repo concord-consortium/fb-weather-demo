@@ -5,7 +5,7 @@ import { v1 as uuid } from "uuid";
 import { Promise } from "es6-promise";
 
 const DEFAULT_SESSION = "default";
-const DEFAULT_VERSION_STRING = "1.2.wip2";
+const DEFAULT_VERSION_STRING = "1.2.wipn2";
 const DEFAULT_ACTIVITY = "default";
 
 interface FirebaseUser {
@@ -59,7 +59,6 @@ export class FirebaseImp {
   config: FireBaseConfig;
   connectionStatus: FirebaseRef;
   baseRef: FirebaseRef;
-  sessionsListRef: FirebaseRef;
   dataRef: FirebaseRef;
   pendingCallbacks: Function[];
   postConnect: Promise<FirebaseImp>;
@@ -137,7 +136,6 @@ export class FirebaseImp {
 
   finishAuth(result: { user: FirebaseUser }) {
     this.user = result.user;
-    this.setSessionsListRef();
     this.setDataRef();
     this.log("logged in");
     let callback: Function;
@@ -152,32 +150,7 @@ export class FirebaseImp {
     return DEFAULT_VERSION_STRING.replace(/\./g, "_");
   }
 
-  get sessionsListPath() {
-    return `${this.basePath}/session_list`;
-  }
 
-  getNamedSessionPath(name: string): string {
-    const basePath = DEFAULT_VERSION_STRING.replace(/\./g, "_");
-    return `/${this.basePath}/sessions/${name}`;
-  }
-  get sessionPath(): string {
-    return this.getNamedSessionPath(this.session);
-  }
-
-  setSessionsListRef() {
-    if (firebase.database()) {
-      this.sessionsListRef = firebase.database().ref(this.sessionsListPath);
-      this.sessionsListRef.on(
-        "value",
-        function(data: any) {
-          this.sessionNames = _.map(data.val(), "name");
-          for (let listener of this.listeners) {
-            listener.setSessionList(this.sessionNames);
-          }
-        }.bind(this)
-      );
-    }
-  }
 
   setDataRef() {
     const fn = function() {
@@ -187,36 +160,13 @@ export class FirebaseImp {
   }
 
   try(fn: Function) {
-    if (firebase.database() && this.sessionsListRef) {
+    if (firebase.database()) {
       fn.bind(this)();
     } else {
       this.pendingCallbacks.push(fn);
     }
   }
 
-  set session(sessionName: string) {
-    const fn = function() {
-      const self: FirebaseImp = this;
-      this.sessionsListRef.once("value").then(function(data: FirebaseData) {
-        const sessionNames = _.map(data.val(), "name");
-        if (!_.includes(sessionNames, sessionName)) {
-          self.sessionsListRef.push({ name: sessionName });
-        }
-        self._session = sessionName;
-        self.setDataRef();
-        for (let listener of self.listeners) {
-          listener.setSessionPath(self._session);
-        }
-        self.log(`
-          =========================================
-          CHANGED SESSION TO :  ${sessionName}
-          =========================================
-        `);
-      });
-    };
-    fn.bind(this);
-    this.try(fn);
-  }
 
   get session() {
     return this._session;
@@ -248,7 +198,7 @@ export class FirebaseImp {
         this.log("couldn't disable previous data handler");
       }
     }
-    this.dataRef = firebase.database().ref(this.sessionPath);
+    this.dataRef = firebase.database().ref(this.basePath);
     // this.load();
     const setData = this.loadDataFromFirebase.bind(this);
     const log = this.log.bind(this);
@@ -305,32 +255,48 @@ export class FirebaseImp {
      }
   }
 
-  copySession(oldName: string, newName: string) {
-    const oldRef = firebase.database().ref(this.getNamedSessionPath(oldName));
-    const newRef = firebase.database().ref(this.getNamedSessionPath(newName));
-    oldRef.once("value").then(function(snap: FirebaseData) {
-      const value = snap.val();
-      value.presence = {}; // ugly but we need to remove presense data...
-      newRef.set(value);
-    });
-    this.sessionsListRef.push({ name: newName });
-  }
+  // TODO: We don't do this anymore. Maybe we will for simulations …
+  //      Or we might do something better
+  //
+  // copySession(oldName: string, newName: string) {
+  //   const oldRef = firebase.database().ref(this.getNamedSessionPath(oldName));
+  //   const newRef = firebase.database().ref(this.getNamedSessionPath(newName));
+  //   oldRef.once("value").then(function(snap: FirebaseData) {
+  //     const value = snap.val();
+  //     value.presence = {}; // ugly but we need to remove presense data...
+  //     newRef.set(value);
+  //   });
+  //   this.sessionsListRef.push({ name: newName });
+  // }
 
-  removeSession(oldName: string) {
-    const oldRef = firebase.database().ref(oldName);
-    const sessionsListRef = this.sessionsListRef;
-    sessionsListRef.once("value").then(function(snap: FirebaseData) {
-      const sessionNames = snap.val();
-      snap.forEach(function(childSnap: FirebaseData) {
-        const key = childSnap.key;
-        const name = childSnap.val().name;
-        if (name === oldName) {
-          sessionsListRef.child(key).remove();
-          oldRef.remove();
-        }
-      });
-    });
-  }
+
+  // TODO: We don't do this anymore. Maybe we will for simulations …
+  //      Or we might do something better
+  //
+  // set session(sessionName: string) {
+  //   const fn = function() {
+  //     const self: FirebaseImp = this;
+  //     this.sessionsListRef.once("value").then(function(data: FirebaseData) {
+  //       const sessionNames = _.map(data.val(), "name");
+  //       if (!_.includes(sessionNames, sessionName)) {
+  //         self.sessionsListRef.push({ name: sessionName });
+  //       }
+  //       self._session = sessionName;
+  //       self.setDataRef();
+  //       for (let listener of self.listeners) {
+  //         listener.setSessionPath(self._session);
+  //       }
+  //       self.log(`
+  //         =========================================
+  //         CHANGED SESSION TO :  ${sessionName}
+  //         =========================================
+  //       `);
+  //     });
+  //   };
+  //   fn.bind(this);
+  //   this.try(fn);
+  // }
+
 }
 
 export const gFirebase = new FirebaseImp();
