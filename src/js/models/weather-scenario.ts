@@ -1,6 +1,7 @@
 import { types } from "mobx-state-tree";
 import { MapConfig } from "./map-config";
 import { WeatherStation } from "./weather-station";
+import { gWeatherEventUrl } from "./weather-event";
 
 export const StationSpec = types.model({
   id: types.identifier(types.string),
@@ -24,8 +25,8 @@ export type IWeatherScenario = typeof WeatherScenario.Type;
 
 export const theWeatherScenario = WeatherScenario.create({
   id: "michigan6",
-  name: "Lake Michigan (6 stations)",
-  eventUrl: "https://github.com/concord-consortium/weather-events/blob/master/events/lake-michigan.json",
+  name: "Lake Michigan - April 2017 (6 stations)",
+  eventUrl: gWeatherEventUrl,
   mapConfig: {
     id: "LakeMichigan1",
     name: "Lake Michigan",

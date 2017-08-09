@@ -79,18 +79,18 @@ class WeatherEvent {
 }
 
 // use Github API until we sort out deployment
-const gEventUrl =
+export const gWeatherEventUrl =
   "https://api.github.com/repos/concord-consortium/weather-events/contents/events/lake-michigan.json";
-export const gWeatherEvent = new WeatherEvent(gEventUrl);
+export const gWeatherEvent = new WeatherEvent(gWeatherEventUrl);
 
 // testing...
-gWeatherEvent.stationData('KASW')
-.then((stationData: any) => {
-  if (stationData) {
-    const count = stationData.rows && stationData.rows.length;
-    console.log(`${stationData.id}: loaded ${count} records`);
-  }
-})
-.catch((err: any) => {
-  console.log(`KASW: No station data received: "${err}"`);
-});
+// gWeatherEvent.stationData('KASW')
+// .then((stationData: any) => {
+//   if (stationData) {
+//     const count = stationData.rows && stationData.rows.length;
+//     console.log(`${stationData.id}: loaded ${count} records`);
+//   }
+// })
+// .catch((err: any) => {
+//   console.log(`KASW: No station data received: "${err}"`);
+// });
