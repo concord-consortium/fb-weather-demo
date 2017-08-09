@@ -21,8 +21,8 @@ export const Simulation = types.model('Simulation', {
   stations: types.optional(WeatherStationStore, () => WeatherStationStore.create()),
   settings: types.optional(SimulationSettings,  () => SimulationSettings.create()),
   isPlaying: types.optional(types.boolean, false),
-  simulationTime: types.optional(types.maybe(types.Date), theWeatherScenario.startTime),
-  simulationSpeed: types.optional(types.number,1),
+  simulationTime: types.maybe(types.Date),
+  simulationSpeed: types.optional(types.number, 1),
 
   get timeString() {
     // formatting rules see: https://momentjs.com/
@@ -33,6 +33,7 @@ export const Simulation = types.model('Simulation', {
   }
 }, {
 }, {
+  // Load data from gWeatherData when we have it...
   afterCreate() {
     const stations = _.map(this.scenario.stations, (spec: IStationSpec) => {
                         return WeatherStation.create({

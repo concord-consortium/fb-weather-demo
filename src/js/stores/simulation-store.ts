@@ -48,8 +48,8 @@ export const SimulationStore = types.model(
     addSimulation(name:string, scenario:IWeatherScenario) {
       const simulation = Simulation.create({
         name: name,
-        scenario: scenario,
-        simulationTime: scenario.startTime
+        scenario: scenario
+        // simulationTime: will be added when weather event data is loaded …
       });
       this.simulations.put(simulation);
       return simulation;
