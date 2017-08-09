@@ -2,7 +2,6 @@
   "compilerOptions": {
     "outDir": "./dist",
     "sourceMap": true,
-    // TODO:  Change this when things start to compile
     "noImplicitAny": true,
     "noUnusedLocals": false,
     "module": "commonjs",
@@ -14,7 +13,6 @@
     "allowJs": true
   },
   "include": [
-    "./src/js/missing-typings.d.ts",
     "./src/js/main.tsx"
   ]
 }

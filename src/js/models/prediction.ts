@@ -11,7 +11,7 @@ export enum PredictionType {
   eWindDirection = 'windDirection'
 }
 
-export const Prediction = types.model({
+export const Prediction = types.model("Prediction", {
   id: types.optional(types.identifier(types.string), () => uuid()),
   station: types.maybe(types.reference(WeatherStation)),  // shouldn't really be maybe
   type: types.enumeration('PredictionType', [

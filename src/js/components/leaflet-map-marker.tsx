@@ -36,7 +36,7 @@ export class LeafletMapMarker extends React.Component<
 
   get actualTemp() {
     const weatherStation = this.props.weatherStation;
-    return weatherStation.temp;
+    return weatherStation.temperature;
   }
 
   get diffTemp() {

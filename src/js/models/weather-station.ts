@@ -1,4 +1,5 @@
 import { types, destroy } from "mobx-state-tree";
+import { WeatherStationState } from "./weather-station-state";
 
 // TBD we need to change this data def.
 const WeatherDatum = types.model("Datum", {
@@ -17,19 +18,28 @@ interface WeatherUpdateProps {
 
 export const WeatherStation = types.model("WeatherStation",
 {
+  // properties
   name: types.string,
   imageUrl: types.string,
   id: types.identifier(types.string),
   callsign: types.string,
   lat: types.maybe(types.number),
   long: types.maybe(types.number),
-  get temp() {
-    return 3; //TODO ???
+
+  get temperature() {
+    return this.state && this.state.temperature;
   }
 },{
+  // volatile
+  state: null as any as WeatherStationState | null
+},{
+  // actions
   setLocation(location: { lat: number, long: number }) {
     this.lat = location.lat;
     this.long = location.long;
+  },
+  setState(state: WeatherStationState) {
+    this.state = state;
   },
   update(props:WeatherUpdateProps) {
     if(props.name !== undefined) {
