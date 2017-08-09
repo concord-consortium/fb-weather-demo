@@ -59,6 +59,11 @@ export const theWeatherScenario = WeatherScenario.create({
     {
       id: "KIGQ", name: "Lansing, IL",
       imageUrl: "https://c1.staticflickr.com/4/3349/3409762367_a139af5b6e_b.jpg"
+    },
+    {
+      id: "KIKK", name: "Kankakee, IL",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/" +
+                  "Kankakee_County_Courthouse.jpg/250px-Kankakee_County_Courthouse.jpg"
     }
   ]
 

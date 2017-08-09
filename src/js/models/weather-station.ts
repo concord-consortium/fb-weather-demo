@@ -21,12 +21,16 @@ export const WeatherStation = types.model("WeatherStation",
   imageUrl: types.string,
   id: types.identifier(types.string),
   callsign: types.string,
-  lat: types.number,
-  long: types.number,
+  lat: types.maybe(types.number),
+  long: types.maybe(types.number),
   get temp() {
     return 3; //TODO ???
   }
 },{
+  setLocation(location: { lat: number, long: number }) {
+    this.lat = location.lat;
+    this.long = location.long;
+  },
   update(props:WeatherUpdateProps) {
     if(props.name !== undefined) {
       this.name = props.name;

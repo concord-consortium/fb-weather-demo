@@ -6,7 +6,6 @@ import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { PredictionType, Prediction, IPrediction } from "../models/prediction";
 
-import { weatherStationStore } from "../stores/weather-station-store";
 import { simulationStore } from "../stores/simulation-store";
 
 

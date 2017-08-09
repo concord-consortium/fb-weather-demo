@@ -3,7 +3,6 @@ import { Tabs, Tab } from "material-ui/Tabs";
 import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { SimPrefs } from "../sim-prefs";
 import { LeafletMapView } from "./leaflet-map-view";
-import { weatherStationStore } from "../stores/weather-station-store";
 import { simulationStore } from "../stores/simulation-store";
 
 export interface ClassViewProps {
@@ -36,7 +35,7 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
               <LeafletMapView
                 mapConfig={simulationStore.mapConfig}
                 interaction={false}
-                weatherStations={weatherStationStore.stations}
+                weatherStations={simulationStore.stations.stations}
                 width={800}
                 height={600}
               />

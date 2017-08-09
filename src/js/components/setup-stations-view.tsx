@@ -9,7 +9,7 @@ import { GridList, GridTile } from "material-ui/GridList";
 import SelectField from "material-ui/SelectField";
 import { ComponentStyleMap } from "../component-style-map";
 import { IWeatherStation } from "../models/weather-station";
-import { weatherStationStore } from "../stores/weather-station-store";
+import { simulationStore } from "../stores/simulation-store";
 
 const _ = require("lodash");
 
@@ -96,7 +96,7 @@ export class SetupStationsView extends React.Component<
   constructor(props: SetupStationProps, ctx: any) {
     super(props, ctx);
 
-    this.state = stationToState(weatherStationStore.selected);
+    this.state = stationToState(simulationStore.stations.selected);
   }
 
   readData() {}
@@ -209,7 +209,7 @@ export class SetupStationsView extends React.Component<
             onTouchTap={() => {
               {
                 this.updateWeatherStation();
-                weatherStationStore.deselect();
+                simulationStore.stations.deselect();
               }
             }}
           />
@@ -218,7 +218,7 @@ export class SetupStationsView extends React.Component<
             secondary={true}
             onTouchTap={() => {
               this.updateWeatherStation();
-              weatherStationStore.deselect();
+              simulationStore.stations.deselect();
               weatherStation.delete();
             }}
           />
@@ -228,7 +228,7 @@ export class SetupStationsView extends React.Component<
   }
 
   renderAddButton() {
-    if (weatherStationStore.selected) {
+    if (simulationStore.stations.selected) {
       return;
     }
     return (
@@ -237,7 +237,7 @@ export class SetupStationsView extends React.Component<
           label="Add weather station"
           primary={true}
           onTouchTap={() => {
-            const station = weatherStationStore.addStation();
+            const station = simulationStore.stations.addStation();
             this.updateWeatherStation(station);
           }}
         />
@@ -245,9 +245,9 @@ export class SetupStationsView extends React.Component<
     );
   }
   render() {
-    const weatherStations = weatherStationStore.stations;
+    const weatherStations = simulationStore.stations.stations;
     const setStation = (selected:IWeatherStation ) => {
-      weatherStationStore.select(selected);
+      simulationStore.stations.select(selected);
     };
     return (
       <div className="configDataView">
@@ -270,7 +270,7 @@ export class SetupStationsView extends React.Component<
                 }
                 onTouchTap={() => {
                   this.updateWeatherStation(base);
-                  weatherStationStore.select(base);
+                  simulationStore.stations.select(base);
                 }}
                 titleBackground="linear-gradient(to top, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
               >

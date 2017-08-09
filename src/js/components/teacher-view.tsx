@@ -9,7 +9,6 @@ import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../component-style-map";
 import { PredictionType, IPrediction } from "../models/prediction";
-import { weatherStationStore } from "../stores/weather-station-store";
 import { simulationStore } from "../stores/simulation-store";
 import { ISimulation } from "../models/simulation";
 
@@ -105,7 +104,7 @@ export class TeacherView extends React.Component<
   }
 
   renderPredictions() {
-    const weatherStation = weatherStationStore.selected;
+    const weatherStation = simulationStore.stations.selected;
     if(weatherStation) {
       const predictions = simulationStore.predictions.teacherPredictions;
 
@@ -152,7 +151,7 @@ export class TeacherView extends React.Component<
 
     const simulationType = simulationStore.settings && simulationStore.settings.simulationType;
     const enabledPredictions = simulationStore.settings && simulationStore.settings.enabledPredictions;
-    
+
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
@@ -178,7 +177,7 @@ export class TeacherView extends React.Component<
                   <LeafletMapView
                     mapConfig={simulationStore.mapConfig}
                     interaction={false}
-                    weatherStations={weatherStationStore.stations}
+                    weatherStations={simulationStore.stations.stations}
                     width={600}
                     height={400}
                   />

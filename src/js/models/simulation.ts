@@ -1,12 +1,14 @@
 import { types } from "mobx-state-tree";
 import { SimulationSettings, ISimulationSettings } from "./simulation-settings";
-import { WeatherScenario, IWeatherScenario } from "./weather-scenario";
+import { gWeatherEvent } from "./weather-event";
+import { WeatherScenario, IWeatherScenario, IStationSpec } from "./weather-scenario";
 import { WeatherStation } from "./weather-station";
 import { PresenceStore } from "../stores/presence-store";
 import { WeatherStationStore } from "../stores/weather-station-store";
 import { PredictionStore } from "../stores/prediction-store";
 import { v1 as uuid } from "uuid";
 
+import * as _ from "lodash";
 import * as moment from 'moment';
 
 export const Simulation = types.model('Simulation', {
@@ -29,6 +31,33 @@ export const Simulation = types.model('Simulation', {
   }
 }, {
 }, {
+  afterCreate() {
+    const stations = _.map(this.scenario.stations, (spec: IStationSpec) => {
+                        return WeatherStation.create({
+                                  name: spec.name,
+                                  imageUrl: spec.imageUrl,
+                                  id: spec.id,
+                                  callsign: spec.id
+                                });
+                      });
+    stations.forEach((station) => {
+      gWeatherEvent.stationData(station.id)
+        .then((stationData: any) => {
+          station.setLocation({ lat: stationData.lat, long: stationData.long });
+
+          if (!this.simulationTime) {
+            this.setSimulationTime(gWeatherEvent.startTime);
+          }
+        })
+        .catch((err: any) => {
+          console.log(`Error initializing weather stations: ${err}`);
+        });
+    });
+    this.stations.addStations(stations);
+  },
+  setSimulationTime(time: Date) {
+    this.simulationTime = time;
+  },
   play() {
     this.isPlaying = true;
   },
@@ -39,14 +68,13 @@ export const Simulation = types.model('Simulation', {
     this.settings.setSetting(key, value);
   },
   preProcessSnapshot(snapshot:any) {
-    if (!!!snapshot.predictions) {
+    if (!snapshot.predictions) {
       snapshot.predictions = {predictions: []};
     }
-    if (!!!snapshot.stations) {
+    if (!snapshot.stations) {
       snapshot.stations = {stations:[]};
     }
     return snapshot;
   }
-
 });
 export type ISimulation = typeof Simulation.Type;

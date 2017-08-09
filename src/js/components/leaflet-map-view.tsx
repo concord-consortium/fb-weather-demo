@@ -6,7 +6,6 @@ import { LeafletMapMarker } from "./leaflet-map-marker";
 
 import { MapConfig, IMapConfig } from "../models/map-config";
 import { IWeatherStation } from "../models/weather-station";
-import { weatherStationStore } from "../stores/weather-station-store";
 import { simulationStore } from "../stores/simulation-store";
 
 interface LeafletMapProps {
@@ -70,7 +69,7 @@ export class LeafletMapView extends React.Component<
         >
           {baseMap}
           {this.props.weatherStations.map(b => {
-              const selected = b === weatherStationStore.selected;
+              const selected = b === simulationStore.stations.selected;
               return <LeafletMapMarker weatherStation={b} key={b.id} selected={selected}/>;
             }
           )}

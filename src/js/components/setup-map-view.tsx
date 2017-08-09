@@ -9,7 +9,7 @@ import { Card } from "material-ui/Card";
 import { LeafletMapView } from "./leaflet-map-view";
 import { MapConfig } from "../models/map-config";
 import { mapConfigStore } from "../stores/map-config-store";
-import { weatherStationStore } from "../stores/weather-station-store";
+import { simulationStore } from "../stores/simulation-store";
 import { IMapConfig } from "../models/map-config";
 
 const _ = require("lodash");
@@ -89,7 +89,7 @@ export class SetupMapView extends React.Component<
           <LeafletMapView
             mapConfig={mapConfigStore.selected}
             interaction={true}
-            weatherStations={weatherStationStore.stations}
+            weatherStations={simulationStore.stations.stations}
             width={600}
             height={400}
             update={(lat, long, zoom) => {
@@ -149,7 +149,7 @@ export class SetupMapView extends React.Component<
                   <LeafletMapView
                     mapConfig={map}
                     interaction={false}
-                    weatherStations={weatherStationStore.stations}
+                    weatherStations={simulationStore.stations.stations}
                     width={600}
                     height={400}
                   />

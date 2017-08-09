@@ -1,7 +1,6 @@
 import { types } from "mobx-state-tree";
 import { Prediction, IPrediction } from "../models/prediction";
 import { IWeatherStation } from "../models/weather-station";
-import { weatherStationStore } from "../stores/weather-station-store";
 import { Firebasify } from "../middlewares/firebase-decorator";
 import { simulationStore } from "../stores/simulation-store";
 
@@ -16,7 +15,7 @@ export const PredictionStore = types.model("PredictionStore", {
     return prediction;
   },
   get teacherPredictions(): IPrediction {
-    const station = weatherStationStore.selected;
+    const station = simulationStore.stations.selected;
     let predictions = [];
     if (station) {
       predictions = this.predictions.filter((p:IPrediction) => p.station === station).reverse();

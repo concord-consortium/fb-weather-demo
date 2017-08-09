@@ -6,7 +6,6 @@ import { DivIcon } from "leaflet";
 import { PredictionType } from "../models/prediction";
 import { simulationStore } from "../stores/simulation-store";
 import { IWeatherStation } from "../models/weather-station";
-import { weatherStationStore } from "../stores/weather-station-store";
 
 interface LeafletMapMarkerProps {
   weatherStation: IWeatherStation;
@@ -84,10 +83,14 @@ export class LeafletMapMarker extends React.Component<
   render() {
     const weatherStation = this.props.weatherStation;
     const handleClick = function(evt:any) {
-      weatherStationStore.select(weatherStation);
+      simulationStore.stations.select(weatherStation);
     };
 
-    const center = { lat: this.props.weatherStation.lat, lng: this.props.weatherStation.long };
+    if ((weatherStation.lat == null) || (weatherStation.long == null)) {
+      return null;
+    }
+
+    const center = { lat: weatherStation.lat, lng: weatherStation.long };
     const key = this.props.weatherStation.id;
     let classes ="divIcon";
     const selected = this.props.selected;
