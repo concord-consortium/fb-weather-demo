@@ -39,12 +39,13 @@ export const Simulation = types.model('Simulation', {
                         return WeatherStation.create({
                                   name: spec.name,
                                   imageUrl: spec.imageUrl,
-                                  id: spec.id,
+                                  id: uuid(),
                                   callsign: spec.id
                                 });
                       });
     stations.forEach((station) => {
-      gWeatherEvent.stationData(station.id)
+      const lookupId = station.callsign;
+      gWeatherEvent.stationData(lookupId)
         .then((stationData: any) => {
           station.setLocation({ lat: stationData.lat, long: stationData.long });
 
@@ -74,8 +75,8 @@ export const Simulation = types.model('Simulation', {
     if (!snapshot.predictions) {
       snapshot.predictions = {predictions: []};
     }
-    if (!snapshot.stations) {
-      snapshot.stations = {stations:[]};
+    if (!snapshot.stationMap) {
+      snapshot.stationMap = {stationMap: {}};
     }
     return snapshot;
   }

@@ -69,7 +69,7 @@ export class LeafletMapView extends React.Component<
         >
           {baseMap}
           {this.props.weatherStations.map(b => {
-              const selected = b === simulationStore.stations.selected;
+              const selected = b.id === simulationStore.stations.selected.id;
               return <LeafletMapMarker weatherStation={b} key={b.id} selected={selected}/>;
             }
           )}
