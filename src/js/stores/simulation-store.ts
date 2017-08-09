@@ -3,11 +3,6 @@ import { v1 as uuid } from "uuid";
 import { Firebasify } from "../middlewares/firebase-decorator";
 import { Simulation, ISimulation } from "../models/simulation";
 import { IWeatherScenario } from "../models/weather-scenario";
-import { PresenceStore } from "./presence-store";
-import { PredictionStore } from "./prediction-store";
-import { SimulationSettings } from "../models/simulation-settings";
-import { WeatherStation } from "../models/weather-station";
-import { WeatherStationStore } from "../stores/weather-station-store";
 import { StationSpec, IStationSpec, theWeatherScenario } from "../models/weather-scenario";
 const _ = require("lodash");
 
@@ -51,25 +46,12 @@ export const SimulationStore = types.model(
   },
   {
     addSimulation(name:string, scenario:IWeatherScenario) {
-      const predictionStore = PredictionStore.create();
-      const presenceStore = PresenceStore.create();
-      const settings = SimulationSettings.create();
-      const weatherStationStore = WeatherStationStore.create();
       const simulation = Simulation.create({
         name: name,
-        id: uuid(),
         scenario: scenario,
-        presences: presenceStore,
-        predictions: predictionStore,
-        stations: weatherStationStore,
-        isPlaying: false,
-        simulationTime: scenario.startTime,
-        simulationSpeed: 1,
-        settings: settings
+        simulationTime: scenario.startTime
       });
-
       this.simulations.put(simulation);
-      this.selected = simulation.id;
       return simulation;
     },
     select(simulation:ISimulation) {

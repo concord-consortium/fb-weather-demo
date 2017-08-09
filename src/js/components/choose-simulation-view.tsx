@@ -13,6 +13,8 @@ import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
 import { simulationStore } from "../stores/simulation-store";
+import { theWeatherScenario } from "../models/weather-scenario";
+import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from "material-ui/Toolbar";
 
 const _ = require("lodash");
 
@@ -33,7 +35,8 @@ enum DialogType {
   None = 0,
   Copy,
   Delete,
-  Rename
+  Rename,
+  New
 }
 
 export interface ChooseSimulationViewState {
@@ -115,6 +118,9 @@ export class ChooseSimulationView extends React.Component<
     if (this.state.nowShowing === DialogType.Delete) {
       simulationStore.deleteSimulation(this.state.newSimulationName);
     }
+    if (this.state.nowShowing === DialogType.New) {
+      simulationStore.addSimulation(this.state.newSimulationName, theWeatherScenario);
+    }
     this.setState({ nowShowing: DialogType.None });
   }
 
@@ -152,7 +158,15 @@ export class ChooseSimulationView extends React.Component<
     const showingCopy = this.state.nowShowing === DialogType.Copy;
     const showingDelete = this.state.nowShowing === DialogType.Delete;
     const showingRename = this.state.nowShowing === DialogType.Rename;
+    const showingNew = this.state.nowShowing === DialogType.New;
 
+
+    const onNew = function() {
+      this.setState({
+        nowShowing: DialogType.New,
+        newSimulationName: "untitlted"
+      });
+    }.bind(this);
     const handleClose = this.handleClose.bind(this);
     return (
       <Card>
@@ -161,9 +175,11 @@ export class ChooseSimulationView extends React.Component<
             <List>
               {visList}
             </List>
+            <Toolbar><ToolbarGroup>
+              <FlatButton primary={true} onTouchTap={onNew}> Add Simulation </FlatButton>
+            </ToolbarGroup></Toolbar>
           </Tab>
         </Tabs>
-
         <Dialog
           title="Copy Simulation"
           actions={dialogActions}
@@ -188,8 +204,8 @@ export class ChooseSimulationView extends React.Component<
           onRequestClose={handleClose}
         >
           <TextField
-            id="renameSessionName"
-            ref="renameSessionName"
+            id="renameSimulation"
+            ref="renameSimulation"
             value={this.state.newSimulationName}
             onChange={(event: any) =>
               this.setState({ newSimulationName: event.target.value })}
@@ -197,7 +213,7 @@ export class ChooseSimulationView extends React.Component<
         </Dialog>
 
         <Dialog
-          title="Delete Session"
+          title="Delete Simulation"
           actions={dialogActions}
           modal={true}
           open={showingDelete}
@@ -206,6 +222,21 @@ export class ChooseSimulationView extends React.Component<
           <div>
             Are you sure you want to delete "{this.state.newSimulationName}"?
           </div>
+        </Dialog>
+        <Dialog
+          title="New Simulation"
+          actions={dialogActions}
+          modal={true}
+          open={showingNew}
+          onRequestClose={handleClose}
+        >
+          <TextField
+            id="newSimulation"
+            ref="newSimulation"
+            value={this.state.newSimulationName}
+            onChange={(event: any) =>
+              this.setState({ newSimulationName: event.target.value })}
+          />
         </Dialog>
       </Card>
     );

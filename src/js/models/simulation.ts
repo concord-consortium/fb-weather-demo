@@ -1,6 +1,7 @@
 import { types } from "mobx-state-tree";
 import { SimulationSettings, ISimulationSettings } from "./simulation-settings";
 import { gWeatherEvent } from "./weather-event";
+import { theWeatherScenario } from "./weather-scenario";
 import { WeatherScenario, IWeatherScenario, IStationSpec } from "./weather-scenario";
 import { WeatherStation } from "./weather-station";
 import { PresenceStore } from "../stores/presence-store";
@@ -14,16 +15,17 @@ import * as moment from 'moment';
 export const Simulation = types.model('Simulation', {
   name: types.string,
   id: types.optional(types.identifier(types.string), () => uuid()),
-  scenario: WeatherScenario, // TBD: Maybe a ref later on?
-  presences: PresenceStore,
-  predictions: PredictionStore,
-  stations: WeatherStationStore,
-  isPlaying: types.boolean,
-  simulationTime: types.maybe(types.Date),
-  simulationSpeed: types.number,
-  settings: SimulationSettings,
+  scenario: types.optional(WeatherScenario, theWeatherScenario),
+  presences: types.optional(PresenceStore,      () => PresenceStore.create()),
+  predictions: types.optional(PredictionStore,  () => PredictionStore.create()),
+  stations: types.optional(WeatherStationStore, () => WeatherStationStore.create()),
+  settings: types.optional(SimulationSettings,  () => SimulationSettings.create()),
+  isPlaying: types.optional(types.boolean, false),
+  simulationTime: types.optional(types.maybe(types.Date), theWeatherScenario.startTime),
+  simulationSpeed: types.optional(types.number,1),
+
   get timeString() {
-    // https://momentjs.com/
+    // formatting rules see: https://momentjs.com/
     return moment(this.simulationTime).format('lll');
   },
   get mapConfig() {
