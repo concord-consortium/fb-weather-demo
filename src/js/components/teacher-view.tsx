@@ -141,7 +141,7 @@ export class TeacherView extends React.Component<
     const play = simulationStore.play;
     const pause = simulationStore.stop;
     const time = simulationStore.timeString;
-    const disablePlay = !!this.interval;
+    const disablePlay = (simulationStore.selected && simulationStore.selected.isPlaying) ? true : false;
     const disablePause = !disablePlay;
     const handleChangeTab = (value: TeacherViewTab) => {
       this.setState({
