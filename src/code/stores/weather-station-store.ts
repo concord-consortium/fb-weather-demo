@@ -12,7 +12,7 @@ export const WeatherStationStore = types.model(
       return _.find(this.stations, (station: IWeatherStation) => station.callSign === callSign);
     },
 
-    get stations() {
+    get stations(): IWeatherStation[] {
       // because we can't iterate over the mobx maps..
       return this.stationMap.values();
     }

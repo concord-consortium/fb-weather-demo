@@ -26,7 +26,7 @@ export const WeatherStation = types.model("WeatherStation",
   lat: types.maybe(types.number),
   long: types.maybe(types.number),
 
-  get temperature() {
+  get temperature(): number | null {
     return this.state && this.state.temperature;
   }
 },{

@@ -1,6 +1,7 @@
 import { types } from "mobx-state-tree";
 import { SimulationControl } from "./simulation-control";
 import { SimulationSettings } from "./simulation-settings";
+import { IMapConfig } from "./map-config";
 import { gWeatherEvent } from "./weather-event";
 import { theWeatherScenario } from "./weather-scenario";
 import { WeatherScenario, IStationSpec } from "./weather-scenario";
@@ -24,17 +25,17 @@ export const Simulation = types.model('Simulation', {
   predictions: types.optional(PredictionStore,  () => PredictionStore.create()),
   stations: types.optional(WeatherStationStore, () => WeatherStationStore.create()),
 
-  get isPlaying() {
+  get isPlaying(): boolean {
     return this.control.isPlaying;
   },
-  get time() {
+  get time(): Date {
     return this.control.time;
   },
   get timeString() {
     // formatting rules see: https://momentjs.com/
     return moment(this.time).format('lll');
   },
-  get mapConfig() {
+  get mapConfig(): IMapConfig {
     return this.scenario && this.scenario.mapConfig;
   }
 }, {

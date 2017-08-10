@@ -5,7 +5,7 @@ import { simulationStore } from "../stores/simulation-store";
 
 export const PredictionStore = types.model("PredictionStore", {
   predictions: types.optional(types.array(Prediction), []),
-  get prediction(): IPrediction {
+  get prediction(): IPrediction | null {
     const station = simulationStore.presenceStation;
     let prediction = null;
     if (station) {
@@ -13,7 +13,7 @@ export const PredictionStore = types.model("PredictionStore", {
     }
     return prediction;
   },
-  get teacherPredictions(): IPrediction {
+  get teacherPredictions(): IPrediction[] {
     const station = simulationStore.selectedStation;
     let predictions = [];
     if (station) {
@@ -21,14 +21,14 @@ export const PredictionStore = types.model("PredictionStore", {
     }
     return predictions;
   },
-  get value(): number | null{
+  get value(): number | null {
     const prediction:IPrediction | null = this.prediction;
     if(prediction) {
       return prediction.predictedValue;
     }
     return null;
   },
-  get description(): string | null{
+  get description(): string | null {
     const prediction:IPrediction | null = this.prediction;
     if(prediction) {
       return prediction.description;
@@ -38,8 +38,8 @@ export const PredictionStore = types.model("PredictionStore", {
   predictionsFor(station:IWeatherStation):IPrediction[] {
     return this.predictions.filter((p:IPrediction)  => p.station === station).reverse();
   },
-  predictionFor(station:IWeatherStation):IPrediction|null {
-    return this.predictionsFor(station)[0];
+  predictionFor(station:IWeatherStation): IPrediction | null {
+    return this.predictionsFor(station)[0] || null;
   }
 },{
   setPrediction(station:IWeatherStation, prediction:IPrediction) {

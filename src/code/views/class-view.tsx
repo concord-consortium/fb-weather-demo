@@ -14,7 +14,7 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewState> {
 
   render() {
     const time = simulationStore.timeString,
-          weatherStations = simulationStore.stations && simulationStore.stations.stations;
+          weatherStations = (simulationStore.stations && simulationStore.stations.stations) || [];
     return (
       <Card className="ClassView">
         <Tabs>

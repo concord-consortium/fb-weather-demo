@@ -62,7 +62,7 @@ export class WeatherStationState {
     return timeInterval ? (simTime.getTime() - lowTime) / timeInterval : 0;
   }
 
-  interpolate(colIndex: number) {
+  interpolate(colIndex: number): number | null {
     const indices = this.indices,
           pctInterpolate = this.pctInterpolate;
     if (!indices || (pctInterpolate == null)) { return null; }

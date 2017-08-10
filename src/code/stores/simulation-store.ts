@@ -16,51 +16,52 @@ export const SimulationStore = types.model(
   {
     simulations: types.map(Simulation),
     selected: types.maybe(types.reference(Simulation)),
-    get simulationList() {
+
+    get simulationList(): ISimulation[] {
       return _.sortBy(_.map(this.simulations.values(), 'name'), 'name');
     },
     // Callthrough methods to selected simulation
-    get timeString() : string | null {
+    get timeString(): string | null {
       return this.selected && this.selected.timeString;
     },
-    get mapConfig() : IMapConfig | null {
+    get mapConfig(): IMapConfig | null {
       return this.selected && this.selected.mapConfig;
     },
-    get settings() : ISimulationSettings | null {
+    get settings(): ISimulationSettings | null {
       return this.selected && this.selected.settings;
     },
-    get predictions() : IPredictionStore | null {
+    get predictions(): IPredictionStore | null {
       return this.selected && this.selected.predictions;
     },
-    get presences() : IPresenceStore | null {
+    get presences(): IPresenceStore | null {
       return this.selected && this.selected.presences;
     },
-    get selectedPresence() : IPresence | null {
+    get selectedPresence(): IPresence | null {
       const presences = this.presences;
       return presences && presences.selected;
     },
-    get presenceStation() : IWeatherStation | null {
+    get presenceStation(): IWeatherStation | null {
       const selectedPresence = this.selectedPresence;
       return selectedPresence && selectedPresence.weatherStation;
     },
-    get stations() : IWeatherStationStore | null {
+    get stations(): IWeatherStationStore | null {
       return this.selected && this.selected.stations;
     },
-    get selectedStation() : IWeatherStation | null {
+    get selectedStation(): IWeatherStation | null {
       const stations = this.stations;
       return stations && stations.selected;
     },
-    get simulationTime() : Date | null {
+    get simulationTime(): Date | null {
       return this.selected && this.selected.time;
     },
-    get simulationName() : string | null {
+    get simulationName(): string | null {
       return this.selected && this.selected.name;
     }
   },{
 
   },
   {
-    addSimulation(name:string, scenario:IWeatherScenario) {
+    addSimulation(name:string, scenario:IWeatherScenario): ISimulation {
       const simulation = Simulation.create({
         name: name,
         scenario: scenario
@@ -74,7 +75,7 @@ export const SimulationStore = types.model(
     selectById(id:string) {
       this.selected=this.simulations.get(id).id;
     },
-    selectByName(name:string) {
+    selectByName(name:string): ISimulation | null {
       const finder = (i:ISimulation) => {
         console.log(i);
         return i.name === name;
@@ -84,7 +85,7 @@ export const SimulationStore = types.model(
         this.selected = found.id;
         return found;
       }
-      return false;
+      return null;
     },
     deselect(){
       this.selected=null;

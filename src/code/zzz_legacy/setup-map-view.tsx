@@ -133,7 +133,7 @@ export class SetupMapView extends React.Component<
 
   render() {
     const maps = mapConfigStore.mapConfigs,
-          weatherStations = simulationStore.stations && simulationStore.stations.stations;
+          weatherStations = (simulationStore.stations && simulationStore.stations.stations) || [];
     return (
       <div className="configDataView">
         <div style={styles.scrollContainer}>
@@ -151,7 +151,7 @@ export class SetupMapView extends React.Component<
                   <LeafletMapView
                     mapConfig={map}
                     interaction={false}
-                    weatherStations={weatherStations || []}
+                    weatherStations={weatherStations}
                     width={600}
                     height={400}
                   />

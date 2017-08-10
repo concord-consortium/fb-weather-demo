@@ -8,30 +8,31 @@ export const PresenceStore = types.model(
   {
     id: types.optional(types.identifier(types.string), () => uuid()),
     presences: types.optional(types.map(Presence), {}),
-    get weatherStation():null | IWeatherStation {
+    get weatherStation(): IWeatherStation | null {
       return this.selected && this.selected.weatherStation;
     }
   },{
-    selected: null
+    // volatile
+    selected: null as any as IPresence | null
   },{
     setStation(station:IWeatherStation | null) {
       if(this.selected) {
         this.selected.setStation(station);
       }
     },
-    addPresence(presence:IPresence) {
+    addPresence(presence:IPresence): IPresence {
       this.presences.put(presence);
       this.selected = presence;
       return presence;
     },
-    createPresence() {
+    createPresence(): IPresence {
       const presence = Presence.create( {
         id: presenceId(),
         start: new Date(),
         username: "anonymous",
         weatherStation: null
       });
-      this.addPresence(presence);
+      return this.addPresence(presence);
     },
     initPresence() {
       const id = presenceId();

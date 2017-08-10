@@ -149,7 +149,7 @@ export class TeacherView extends React.Component<
     };
 
     const enabledPredictions = simulationStore.settings && simulationStore.settings.enabledPredictions,
-          weatherStations = simulationStore.stations && simulationStore.stations.stations;
+          weatherStations = (simulationStore.stations && simulationStore.stations.stations) || [];
 
     return (
       <Card>
