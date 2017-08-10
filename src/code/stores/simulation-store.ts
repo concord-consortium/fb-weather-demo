@@ -104,14 +104,20 @@ export const SimulationStore = types.model(
         this.settings.setSetting(key, value);
       }
     },
-    stop() {
-      if(this.selected) { this.selected.stop(); }
+    rewind() {
+      if(this.selected) { this.selected.rewind(); }
     },
     play() {
       if(this.selected) { this.selected.play(); }
     },
-    rewind() {
-      if(this.selected) { this.selected.rewind(); }
+    stop() {
+      if(this.selected) { this.selected.stop(); }
+    },
+    stepForward() {
+      if(this.selected) { this.selected.stepForward(); }
+    },
+    stepBack() {
+      if(this.selected) { this.selected.stepBack(); }
     }
   }
 );

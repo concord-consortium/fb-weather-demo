@@ -86,6 +86,12 @@ export const Simulation = types.model('Simulation', {
   stop() {
     this.control.stop();
   },
+  stepForward() {
+    this.control.stepForward();
+  },
+  stepBack() {
+    this.control.stepBack();
+  },
 
   setPref(key: string, value: any) {
     this.settings.setSetting(key, value);

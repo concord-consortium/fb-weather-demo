@@ -186,10 +186,13 @@ export class TeacherView extends React.Component<
                 <CardActions>
                   <FloatingActionButton
                     iconClassName="icon-refresh"
+                    disabled={isPlaying}
                     onTouchTap={simulationStore.rewind}
                   />
                   <FloatingActionButton
                     iconClassName="icon-skip_previous"
+                    disabled={isPlaying}
+                    onTouchTap={simulationStore.stepBack}
                   />
                   <FloatingActionButton
                     iconClassName={playPauseIcon}
@@ -197,6 +200,8 @@ export class TeacherView extends React.Component<
                   />
                   <FloatingActionButton
                     iconClassName="icon-skip_next"
+                    disabled={isPlaying}
+                    onTouchTap={simulationStore.stepForward}
                   />
                   <DropDownMenu
                     style={styles.typeMenu}
