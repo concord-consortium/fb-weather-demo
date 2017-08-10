@@ -2,9 +2,8 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Tabs, Tab } from "material-ui/Tabs";
 import RaisedButton from "material-ui/RaisedButton";
-import { Card, CardActions, CardText } from "material-ui/Card";
+import { Card, CardActions } from "material-ui/Card";
 import { Link } from "react-router";
-const _ = require("lodash");
 
 interface routeParams {
   simulationName: string;

@@ -2,7 +2,6 @@ import * as React from "react";
 import { observer } from "mobx-react";
 
 import { Tabs, Tab } from "material-ui/Tabs";
-import RaisedButton from "material-ui/RaisedButton";
 import { Card } from "material-ui/Card";
 import { List, ListItem } from "material-ui/List";
 import IconMenu from "material-ui/IconMenu";
@@ -14,7 +13,7 @@ import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
 import { simulationStore } from "../stores/simulation-store";
 import { theWeatherScenario } from "../models/weather-scenario";
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from "material-ui/Toolbar";
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 
 const _ = require("lodash");
 

@@ -3,14 +3,10 @@ import { observer } from "mobx-react";
 import { Card, CardText, CardMedia, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
 import { WeatherStationConfigView } from "./weather-station-config-view";
-import { GridView } from "./grid-view";
 import { PredictionView } from "./prediction-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../stores/simulation-store";
-
-const dateFormat = require("dateformat");
-const div = React.DOM.div;
 
 export type StationTab = "configure" | "weather";
 

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { observable } from "mobx";
 import { observer } from "mobx-react";
 import { Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";

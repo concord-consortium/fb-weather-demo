@@ -1,10 +1,9 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import DevTools from "mobx-react-devtools";
+// import DevTools from "mobx-react-devtools";
 import { Link } from "react-router";
 import { simulationStore } from "../stores/simulation-store";
-import { ISimulation } from "../models/simulation";
 
 interface routeParams {
   blarg: string;

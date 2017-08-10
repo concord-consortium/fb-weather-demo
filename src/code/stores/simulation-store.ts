@@ -1,18 +1,15 @@
 import { types } from "mobx-state-tree";
-import { v1 as uuid } from "uuid";
 import { Firebasify } from "../middleware/firebase-decorator";
 import { Simulation, ISimulation } from "../models/simulation";
 import { IPresence } from "../models/presence";
 import { ISimulationSettings } from "../models/simulation-settings";
-import { IWeatherScenario, theWeatherScenario } from "../models/weather-scenario";
+import { IWeatherScenario } from "../models/weather-scenario";
 import { IWeatherStation } from "../models/weather-station";
 import { IMapConfig } from "../models/map-config";
 import { IPredictionStore } from "./prediction-store";
 import { IPresenceStore } from "./presence-store";
 import { IWeatherStationStore } from "./weather-station-store";
 const _ = require("lodash");
-
-let debugCounter = 0;
 
 export const SimulationStore = types.model(
   "SimulationStore",

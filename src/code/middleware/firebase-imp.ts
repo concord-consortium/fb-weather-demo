@@ -1,7 +1,4 @@
 const firebase = require("firebase");
-const _ = require("lodash");
-
-import { v1 as uuid } from "uuid";
 import { Promise } from "es6-promise";
 
 const DEFAULT_SESSION = "default";
@@ -103,7 +100,6 @@ export class FirebaseImp {
     const finishAuth = this.finishAuth.bind(this);
     const reqAuth = this.reqAuth.bind(this);
     const log = this.log.bind(this);
-    const fireBaseImp = this;
     let auth = firebase.auth();
     this.postConnect = new Promise(function(resolve:Function, reject:Function) {
       auth.onAuthStateChanged(function(user: FirebaseUser) {
@@ -119,7 +115,7 @@ export class FirebaseImp {
   }
 
   reqAuth() {
-    const provider = new firebase.auth.GoogleAuthProvider();
+    // const provider = new firebase.auth.GoogleAuthProvider();
     firebase
       .auth()
       //.signInWithRedirect(provider)

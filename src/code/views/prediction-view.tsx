@@ -4,11 +4,9 @@ import TextField from "material-ui/TextField";
 import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../utilities/component-style-map";
-import { PredictionType, Prediction, IPrediction } from "../models/prediction";
+import { PredictionType, Prediction } from "../models/prediction";
 import { simulationStore } from "../stores/simulation-store";
 import * as moment from 'moment';
-
-const _ = require("lodash");
 
 interface IControlLabels {
   question: string | null;     // null indicates skip the control entirely
@@ -143,8 +141,7 @@ export class PredictionView
                             type="number"
                           />,
           optValueControl = isNumericPrediction ? valueControl : null,
-          descriptionPrompt = isEnabled && cSpec ? cSpec.description : "",
-          simulationTime = simulationStore.simulationTime;
+          descriptionPrompt = isEnabled && cSpec ? cSpec.description : "";
     return (
       <CardText style={styles.prediction}>
         {this.predictionPrompt()}

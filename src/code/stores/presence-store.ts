@@ -1,5 +1,4 @@
 import { types } from "mobx-state-tree";
-import { Firebasify } from "../middleware/firebase-decorator";
 import { Presence, IPresence, presenceId } from "../models/presence";
 import { IWeatherStation } from "../models/weather-station";
 import { v1 as uuid } from "uuid";

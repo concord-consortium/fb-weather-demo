@@ -1,5 +1,4 @@
 import { types } from "mobx-state-tree";
-import { v1 as uuid } from "uuid";
 
 interface IMapConfigUpdate {
   name?: string;
@@ -18,7 +17,7 @@ export const MapConfig = types.model(
   },
   { },
   {
-    update(params:any) {
+    update(params: IMapConfigUpdate) {
       if(params.name) { this.name = params.name; }
       if(params.lat)  { this.lat = params.lat; }
       if(params.long) { this.long = params.long; }

@@ -10,7 +10,6 @@ import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { PredictionType, IPrediction } from "../models/prediction";
 import { simulationStore } from "../stores/simulation-store";
-import { ISimulation } from "../models/simulation";
 
 const _ = require("lodash");
 

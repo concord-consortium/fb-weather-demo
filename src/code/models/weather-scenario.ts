@@ -1,6 +1,5 @@
 import { types } from "mobx-state-tree";
 import { MapConfig } from "./map-config";
-import { WeatherStation } from "./weather-station";
 import { gWeatherEventUrl } from "./weather-event";
 
 export const StationSpec = types.model({

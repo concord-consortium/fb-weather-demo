@@ -1,18 +1,13 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Card, CardText, CardTitle } from "material-ui/Card";
-import MenuItem from "material-ui/MenuItem";
-import SelectField from "material-ui/SelectField";
+import { CardText } from "material-ui/Card";
 import Toggle from "material-ui/Toggle";
-import { ISimulation } from "../models/simulation";
 import { simulationStore } from "../stores/simulation-store";
 
 export type TeacherViewTab = "control" | "configure";
 
 export interface TeacherOptionsViewProps {}
 export interface TeacherOptionsViewState {}
-
-const _ = require("lodash");
 
 @observer
 export class TeacherOptionsView extends React.Component<
@@ -50,9 +45,9 @@ export class TeacherOptionsView extends React.Component<
   }
 
   render() {
-    const gridNames = ["default", "classGrid"];
-    const gridName = /* dataStore.prefs.gridName || */ "default";
-    const simulationId = simulationStore.selected ? simulationStore.selected : 0;
+    // const gridNames = ["default", "classGrid"];
+    // const gridName = /* dataStore.prefs.gridName || */ "default";
+    // const simulationId = simulationStore.selected ? simulationStore.selected : 0;
     const styles = {
       block: {
         maxWidth: 250

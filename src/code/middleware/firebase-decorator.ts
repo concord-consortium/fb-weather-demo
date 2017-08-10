@@ -1,15 +1,13 @@
-import { types, onSnapshot, applySnapshot } from "mobx-state-tree";
+import { onSnapshot, applySnapshot } from "mobx-state-tree";
 import { gFirebase } from "./firebase-imp";
 
 const _ = require("lodash");
-
-let maxStart = 0;
 
 export const Firebasify = (model:any, relativeDataPath:string, callback?:Function) => {
   let isFirstTime = true;
   const firebaseListener = {
     setState(newData:any) {
-      const dotPath = relativeDataPath.replace(/\//g,".");
+      // const dotPath = relativeDataPath.replace(/\//g,".");
       const myData = _.get(newData,relativeDataPath);
       if(myData !== undefined){
         // console.log(`Calling applySnapshot for ${relativeDataPath}`);

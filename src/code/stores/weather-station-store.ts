@@ -1,6 +1,4 @@
 import { types } from "mobx-state-tree";
-import { v1 as uuid } from "uuid";
-import { Firebasify } from "../middleware/firebase-decorator";
 import { WeatherStation, IWeatherStation } from "../models/weather-station";
 import * as _ from "lodash";
 

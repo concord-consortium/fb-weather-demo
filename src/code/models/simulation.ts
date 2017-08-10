@@ -1,9 +1,9 @@
 import { types } from "mobx-state-tree";
-import { SimulationControl, ISimulationControl } from "./simulation-control";
-import { SimulationSettings, ISimulationSettings } from "./simulation-settings";
+import { SimulationControl } from "./simulation-control";
+import { SimulationSettings } from "./simulation-settings";
 import { gWeatherEvent } from "./weather-event";
 import { theWeatherScenario } from "./weather-scenario";
-import { WeatherScenario, IWeatherScenario, IStationSpec } from "./weather-scenario";
+import { WeatherScenario, IStationSpec } from "./weather-scenario";
 import { WeatherStation, IWeatherStation } from "./weather-station";
 import { WeatherStationState } from "./weather-station-state";
 import { PresenceStore } from "../stores/presence-store";

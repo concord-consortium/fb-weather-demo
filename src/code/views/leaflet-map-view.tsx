@@ -1,10 +1,9 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Map, TileLayer, Marker } from "react-leaflet";
-import { DivIcon } from "leaflet";
+import { Map, TileLayer } from "react-leaflet";
 import { LeafletMapMarker } from "./leaflet-map-marker";
 
-import { MapConfig, IMapConfig } from "../models/map-config";
+import { IMapConfig } from "../models/map-config";
 import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../stores/simulation-store";
 
