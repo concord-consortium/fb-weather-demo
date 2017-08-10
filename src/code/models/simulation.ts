@@ -32,8 +32,12 @@ export const Simulation = types.model('Simulation', {
     return this.control.time;
   },
   get timeString() {
+    let m = moment(this.time);
+    if (this.scenario.utcOffset) {
+      m = m.utcOffset(this.scenario.utcOffset);
+    }
     // formatting rules see: https://momentjs.com/
-    return moment(this.time).format('lll');
+    return m.format('lll');
   },
   get mapConfig(): IMapConfig {
     return this.scenario && this.scenario.mapConfig;
@@ -64,8 +68,12 @@ export const Simulation = types.model('Simulation', {
             station.setLocation({ lat: stationData.lat, long: stationData.long });
           }
 
+          const startTime = this.scenario._startTime || gWeatherEvent.startTime;
+          if (!this.control.startTime) {
+            this.control.setStartTime(startTime);
+          }
           if (!this.time) {
-            this.setTime(gWeatherEvent.startTime);
+            this.setTime(startTime);
           }
 
           station.setState(new WeatherStationState(stationData, this.control));
@@ -79,6 +87,9 @@ export const Simulation = types.model('Simulation', {
   // SimulationControl wrappers
   setTime(time: Date) {
     this.control.setTime(time);
+  },
+  rewind() {
+    this.control.rewind();
   },
   play() {
     this.control.play();

@@ -5,6 +5,7 @@ export const SimulationControl = types.model(
   "SimulationControl",
   {
     // properties
+    startTime: types.maybe(types.Date),
     isPlaying: types.optional(types.boolean, false),
     time: types.maybe(types.Date),
     timeStep: types.optional(types.number, 60), // minutes per time step
@@ -16,8 +17,16 @@ export const SimulationControl = types.model(
     }
   }, {
     // actions
+    setStartTime(newTime: Date) {
+      this.startTime = newTime;
+    },
     setTime(newTime: Date) {
       this.time = newTime;
+    },
+    rewind() {
+      if (this.startTime) {
+        this.time = this.startTime;
+      }
     },
     play() {
       this.isPlaying = true;

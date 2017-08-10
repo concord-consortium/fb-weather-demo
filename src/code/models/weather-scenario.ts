@@ -2,6 +2,15 @@ import { types } from "mobx-state-tree";
 import { MapConfig } from "./map-config";
 import { gWeatherEventUrl } from "./weather-event";
 
+export const TimeSpec = types.model({
+  year: types.number,
+  month: types.number,
+  day: types.number,
+  hour: types.optional(types.number, 0),
+  minute: types.optional(types.number, 0)
+});
+export type ITimeSpec = typeof TimeSpec.Type;
+
 export const StationSpec = types.model({
   id: types.identifier(types.string),
   name: types.string,
@@ -13,12 +22,21 @@ export const WeatherScenario = types.model('WeatherScenario', {
   id: types.identifier(types.string),
   name: types.string,
   eventUrl: types.string,
+  startTime: types.maybe(TimeSpec),
+  endTime: types.maybe(TimeSpec),
+  utcOffset: types.maybe(types.number),
   stations: types.array(StationSpec),
-  mapConfig: MapConfig,
-  startTime: types.maybe(types.Date),
-  endTime: types.maybe(types.Date)
+  mapConfig: MapConfig
 }, {
-
+  // volatile
+  _startTime: null as any as Date | null
+}, {
+  afterCreate() {
+    if (this.startTime) {
+      const s = this.startTime;
+      this._startTime = new Date(Date.UTC(s.year, s.month - 1, s.day, s.hour, s.minute));
+    }
+  }
 });
 export type IWeatherScenario = typeof WeatherScenario.Type;
 
@@ -26,6 +44,14 @@ export const theWeatherScenario = WeatherScenario.create({
   id: "michigan6",
   name: "Lake Michigan - April 2017 (6 stations)",
   eventUrl: gWeatherEventUrl,
+  startTime: {
+    year: 2017,
+    month: 3,
+    day: 31,
+    hour: 18,
+    minute: 0
+  },
+  utcOffset: -5,  // central time zone
   mapConfig: {
     id: "LakeMichigan1",
     lat: 42.3179394544685,
