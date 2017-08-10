@@ -59,32 +59,34 @@ const onEnter = function(
 };
 
 gFirebase.postConnect.then( (imp:FirebaseImp)=> {
-  ReactDOM.render(
-    <Router history={hashHistory}>
-      <Route
-        path="/"
-        component={AppView}
-        onChange={simulationChanged}
-        onEnter={onEnter}
-      >
-        <IndexRedirect to="/simulations" />
-        <Route path="/simulations">
-          <IndexRedirect to="choose" />
-          <Route path="choose" component={ChooseSimulationView} />
-          <Route path="/simulations/:simulationName">
-            <IndexRedirect to="show/choose" />
-            <Route path="show">
-              <IndexRedirect to="choose" />
-              <Route path="student" component={WeatherStationView} />
-              <Route path="teacher" component={TeacherView} />
-              <Route path="classroom" component={ClassView} />
-              {/* <Route path="setup" component={SetupView} /> */}
-              <Route path="choose" component={ChooseView} />
+  imp.dataRef.once('value').then((snapshot:any) => {
+    ReactDOM.render(
+      <Router history={hashHistory}>
+        <Route
+          path="/"
+          component={AppView}
+          onChange={simulationChanged}
+          onEnter={onEnter}
+        >
+          <IndexRedirect to="/simulations" />
+          <Route path="/simulations">
+            <IndexRedirect to="choose" />
+            <Route path="choose" component={ChooseSimulationView} />
+            <Route path="/simulations/:simulationName">
+              <IndexRedirect to="show/choose" />
+              <Route path="show">
+                <IndexRedirect to="choose" />
+                <Route path="student" component={WeatherStationView} />
+                <Route path="teacher" component={TeacherView} />
+                <Route path="classroom" component={ClassView} />
+                {/* <Route path="setup" component={SetupView} /> */}
+                <Route path="choose" component={ChooseView} />
+              </Route>
             </Route>
           </Route>
         </Route>
-      </Route>
-    </Router>,
-    document.getElementById("App")
-  );
+      </Router>,
+      document.getElementById("App")
+    );
+  });
 });

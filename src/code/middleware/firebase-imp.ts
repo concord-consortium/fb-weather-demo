@@ -101,12 +101,13 @@ export class FirebaseImp {
     const reqAuth = this.reqAuth.bind(this);
     const log = this.log.bind(this);
     let auth = firebase.auth();
+    const imp = this;
     this.postConnect = new Promise(function(resolve:Function, reject:Function) {
       auth.onAuthStateChanged(function(user: FirebaseUser) {
         if (user) {
           log(user.displayName + " authenticated");
           finishAuth({ result: { user: user } });
-          resolve();
+          resolve(imp);
         } else {
           reqAuth();
         }
