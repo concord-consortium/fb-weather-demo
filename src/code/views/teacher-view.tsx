@@ -136,12 +136,11 @@ export class TeacherView extends React.Component<
   }
 
   render() {
-    const rewind = simulationStore.rewind;
-    const play = simulationStore.play;
-    const pause = simulationStore.stop;
-    const time = simulationStore.timeString;
-    const disablePlay = (simulationStore.selected && simulationStore.selected.isPlaying) ? true : false;
-    const disablePause = !disablePlay;
+    const isPlaying = !!(simulationStore.selected && simulationStore.selected.isPlaying),
+          playPauseIcon = isPlaying ? "icon-pause_circle_filled" : "icon-play_circle_filled",
+          playPauseAction = isPlaying ? simulationStore.stop : simulationStore.play,
+          time = simulationStore.timeString;
+
     const handleChangeTab = (value: TeacherViewTab) => {
       this.setState({
         tab: value
@@ -187,20 +186,14 @@ export class TeacherView extends React.Component<
                 <CardActions>
                   <FloatingActionButton
                     iconClassName="icon-refresh"
-                    onTouchTap={rewind}
+                    onTouchTap={simulationStore.rewind}
                   />
                   <FloatingActionButton
                     iconClassName="icon-skip_previous"
                   />
                   <FloatingActionButton
-                    iconClassName="icon-play_circle_filled"
-                    disabled={disablePlay}
-                    onTouchTap={play}
-                  />
-                  <FloatingActionButton
-                    iconClassName="icon-pause_circle_filled"
-                    disabled={disablePause}
-                    onTouchTap={pause}
+                    iconClassName={playPauseIcon}
+                    onTouchTap={playPauseAction}
                   />
                   <FloatingActionButton
                     iconClassName="icon-skip_next"
