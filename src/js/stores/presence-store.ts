@@ -15,7 +15,7 @@ export const PresenceStore = types.model(
   },{
     selected: null
   },{
-    setStation(station:IWeatherStation) {
+    setStation(station:IWeatherStation | null) {
       if(this.selected) {
         this.selected.setStation(station);
       }
@@ -34,7 +34,7 @@ export const PresenceStore = types.model(
       });
       this.addPresence(presence);
     },
-    getCurrentPresence() {
+    initPresence() {
       const id = presenceId();
       const existing = this.presences.get(id);
       if(existing) {

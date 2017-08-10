@@ -18,7 +18,7 @@ const div = React.DOM.div;
 export interface SetupStationProps {}
 export interface SetupStationState {
   weatherStation?: IWeatherStation;
-  callsign?: string;
+  callSign?: string;
   name?: string;
   imageUrl?: string;
   lat?: string;
@@ -72,7 +72,7 @@ function stationToState(weatherStation?: IWeatherStation | null) {
   return weatherStation
           ? {
             weatherStation,
-            callsign: weatherStation.callsign,
+            callSign: weatherStation.callSign,
             name: weatherStation.name,
             imageUrl: weatherStation.imageUrl,
             lat: String(weatherStation.lat),
@@ -80,7 +80,7 @@ function stationToState(weatherStation?: IWeatherStation | null) {
           }
           : {
             weatherStation: undefined,
-            callsign: undefined,
+            callSign: undefined,
             name: undefined,
             imageUrl: undefined,
             lat: undefined,
@@ -96,7 +96,7 @@ export class SetupStationsView extends React.Component<
   constructor(props: SetupStationProps, ctx: any) {
     super(props, ctx);
 
-    this.state = stationToState(simulationStore.stations.selected);
+    this.state = stationToState(simulationStore.selectedStation);
   }
 
   readData() {}
@@ -139,7 +139,7 @@ export class SetupStationsView extends React.Component<
   }
 
   renderEditor() {
-    const { weatherStation, callsign, name, imageUrl, lat, long } = this.state;
+    const { weatherStation, callSign, name, imageUrl, lat, long } = this.state;
 
     if (!weatherStation) {
       return null;
@@ -148,13 +148,13 @@ export class SetupStationsView extends React.Component<
     return (
       <div className="editBase" style={styles.config}>
         <TextField
-          value={callsign}
+          value={callSign}
           style={styles.textField}
           floatingLabelText="station call sign"
-          onChange={(e, v) => { this.updateStateValue('callsign', v); }}
+          onChange={(e, v) => { this.updateStateValue('callSign', v); }}
           onKeyDown={ this.handleKeyDown }
           onBlur={(e) => {
-            this.updateRemoteString('callsign', (e.target as HTMLTextAreaElement).value);
+            this.updateRemoteString('callSign', (e.target as HTMLTextAreaElement).value);
           }}
         />
         <TextField
@@ -209,7 +209,9 @@ export class SetupStationsView extends React.Component<
             onTouchTap={() => {
               {
                 this.updateWeatherStation();
-                simulationStore.stations.deselect();
+                if (simulationStore.stations) {
+                  simulationStore.stations.deselect();
+                }
               }
             }}
           />
@@ -218,7 +220,9 @@ export class SetupStationsView extends React.Component<
             secondary={true}
             onTouchTap={() => {
               this.updateWeatherStation();
-              simulationStore.stations.deselect();
+              if (simulationStore.stations) {
+                simulationStore.stations.deselect();
+              }
               weatherStation.delete();
             }}
           />
@@ -228,26 +232,28 @@ export class SetupStationsView extends React.Component<
   }
 
   renderAddButton() {
-    if (simulationStore.stations.selected) {
-      return;
-    }
+    if (!simulationStore.selectedStation) { return null; }
     return (
       <div style={styles.buttonRow}>
         <FlatButton
           label="Add weather station"
           primary={true}
           onTouchTap={() => {
-            const station = simulationStore.stations.addStation();
-            this.updateWeatherStation(station);
+            {/* const simulationStations = simulationStore.stations,
+                  station = simulationStations && simulationStations.addStation();
+            this.updateWeatherStation(station); */}
           }}
         />
       </div>
     );
   }
   render() {
-    const weatherStations = simulationStore.stations.stations;
+    const simulationStations = simulationStore.stations,
+          weatherStations = simulationStations && simulationStations.stations;
     const setStation = (selected:IWeatherStation ) => {
-      simulationStore.stations.select(selected);
+      if (simulationStations) {
+        simulationStations.select(selected);
+      }
     };
     return (
       <div className="configDataView">
@@ -261,7 +267,7 @@ export class SetupStationsView extends React.Component<
                 title={
                   <div style={{ width: "100%", height: "100%" }}>
                     <div>
-                      {base.callsign}
+                      {base.callSign}
                     </div>
                     <div className="foo">
                       {base.name}
@@ -270,7 +276,9 @@ export class SetupStationsView extends React.Component<
                 }
                 onTouchTap={() => {
                   this.updateWeatherStation(base);
-                  simulationStore.stations.select(base);
+                  if (simulationStations) {
+                    simulationStations.select(base);
+                  }
                 }}
                 titleBackground="linear-gradient(to top, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
               >

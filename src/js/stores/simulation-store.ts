@@ -2,8 +2,14 @@ import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 import { Firebasify } from "../middlewares/firebase-decorator";
 import { Simulation, ISimulation } from "../models/simulation";
-import { IWeatherScenario } from "../models/weather-scenario";
-import { StationSpec, IStationSpec, theWeatherScenario } from "../models/weather-scenario";
+import { IPresence } from "../models/presence";
+import { ISimulationSettings } from "../models/simulation-settings";
+import { IWeatherScenario, theWeatherScenario } from "../models/weather-scenario";
+import { IWeatherStation } from "../models/weather-station";
+import { IMapConfig } from "../models/map-config";
+import { IPredictionStore } from "./prediction-store";
+import { IPresenceStore } from "./presence-store";
+import { IWeatherStationStore } from "./weather-station-store";
 const _ = require("lodash");
 
 let debugCounter = 0;
@@ -14,31 +20,43 @@ export const SimulationStore = types.model(
     simulations: types.map(Simulation),
     selected: types.maybe(types.reference(Simulation)),
     get simulationList() {
-      return _.sortBy(_.map(this.simulations.toJSON(), 'name'), 'name');
+      return _.sortBy(_.map(this.simulations.values(), 'name'), 'name');
     },
     // Callthrough methods to selected simulation
-    get timeString() {
+    get timeString() : string | null {
       return this.selected && this.selected.timeString;
     },
-    get mapConfig() {
+    get mapConfig() : IMapConfig | null {
       return this.selected && this.selected.mapConfig;
     },
-    get settings() {
+    get settings() : ISimulationSettings | null {
       return this.selected && this.selected.settings;
     },
-    get predictions() {
+    get predictions() : IPredictionStore | null {
       return this.selected && this.selected.predictions;
     },
-    get presences() {
+    get presences() : IPresenceStore | null {
       return this.selected && this.selected.presences;
     },
-    get stations() {
+    get selectedPresence() : IPresence | null {
+      const presences = this.presences;
+      return presences && presences.selected;
+    },
+    get presenceStation() : IWeatherStation | null {
+      const selectedPresence = this.selectedPresence;
+      return selectedPresence && selectedPresence.weatherStation;
+    },
+    get stations() : IWeatherStationStore | null {
       return this.selected && this.selected.stations;
     },
-    get simulationTime() {
-      return this.selected && this.selected.simulationTime;
+    get selectedStation() : IWeatherStation | null {
+      const stations = this.stations;
+      return stations && stations.selected;
     },
-    get simulationName() {
+    get simulationTime() : Date | null {
+      return this.selected && this.selected.time;
+    },
+    get simulationName() : string | null {
       return this.selected && this.selected.name;
     }
   },{

@@ -5,9 +5,8 @@ import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
 import { ComponentStyleMap } from "../component-style-map";
 import { PredictionType, Prediction, IPrediction } from "../models/prediction";
-
 import { simulationStore } from "../stores/simulation-store";
-
+import * as moment from 'moment';
 
 const _ = require("lodash");
 
@@ -73,13 +72,16 @@ export class PredictionView
     this.state = { predictedValue: "", description: "" };
   }
 
-  predictionPrompt(type: string | null, simTime: Date, value?: number) {
-    if(simulationStore.settings && simulationStore.settings.showPredictions) {
-      const spec = type && controlsSpec[type],
-            timeStr = simulationStore.timeString,
+  predictionPrompt() {
+    const predictionType = simulationStore.settings && simulationStore.settings.enabledPredictions;
+    if (predictionType) {
+      const spec = predictionType && controlsSpec[predictionType],
+            timeStr = simulationStore.timeString || "",
+            station = simulationStore.presenceStation,
+            temperature = station && station.temperature,
             prompt = "At time %1 the temperature is %2 degrees."
                       .replace(/%1/, timeStr)
-                      .replace(/%2/, value != null ? String(value) : ""),
+                      .replace(/%2/, temperature != null ? String(temperature) : ""),
             question = (spec && spec.question) || "";
       return (
         <div style={styles.prompt}>
@@ -103,26 +105,30 @@ export class PredictionView
   }
 
   submitPrediction = (event: any) => {
-    const type = simulationStore.settings.showPredictions,
-          time = new Date(),
+    const predictionType = simulationStore.settings && simulationStore.settings.enabledPredictions,
           simulationTime = simulationStore.simulationTime,
-          predictedTime = simulationTime + 3,
+          predictions = simulationStore.predictions;
+
+    if (!predictionType || !simulationTime || !predictions) { return; }
+
+                          // default to 1 hour from current simulation time
+    const predictedTime = moment(simulationTime).add({ hours: 1 }).toDate(),
+          numValue = Number(this.state.predictedValue),
+          predictedValue = isNaN(numValue) ? null : numValue,
           prediction = Prediction.create({
-                          type: type,
-                          timeStamp: time,
+                          type: predictionType,
                           predictionTime: simulationTime,
                           predictedTime: predictedTime,
-                          predictedValue: type !== PredictionType.eDescription
-                                            ? this.state.predictedValue : null,
+                          predictedValue: predictionType !== PredictionType.eDescription
+                                            ? predictedValue : null,
                           description: this.state.description
                         });
-    simulationStore.predictions.addPrediction(prediction);
+    predictions.addPrediction(prediction);
   }
 
   render() {
-    const settings = simulationStore.settings;
-
-    const enabledPredictions = settings && settings.enabledPredictions,
+    const settings = simulationStore.settings,
+          enabledPredictions = settings && settings.enabledPredictions,
           isEnabled = enabledPredictions != null,
           isNumericPrediction = isEnabled && (enabledPredictions !== PredictionType.eDescription),
           cSpec = controlsSpec[enabledPredictions || ''],
@@ -141,7 +147,7 @@ export class PredictionView
           simulationTime = simulationStore.simulationTime;
     return (
       <CardText style={styles.prediction}>
-        {this.predictionPrompt(enabledPredictions, simulationTime, 6)}
+        {this.predictionPrompt()}
         {optValueControl}
         <TextField
           style={styles.textField}

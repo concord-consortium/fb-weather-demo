@@ -38,7 +38,8 @@ export class WeatherStationView extends React.Component<
   }
 
   setConfig(data: IWeatherStation) {
-    simulationStore.presences.setStation(data);
+    const presences = simulationStore.presences;
+    if (presences) { presences.setStation(data); }
   }
 
   render() {
@@ -49,10 +50,10 @@ export class WeatherStationView extends React.Component<
     let imgUrl = "img/farm.jpg";
     let time = simulationStore.timeString;
     let temp = 5; // TODO, we need to look this up...
-    const weatherStation = simulationStore.presences.weatherStation;
+    const weatherStation = simulationStore.presenceStation;
     if (weatherStation) {
       name = weatherStation.name;
-      callSign = weatherStation.callsign;
+      callSign = weatherStation.callSign;
       imgUrl = weatherStation.imageUrl;
     }
 

@@ -7,22 +7,22 @@ import * as _ from "lodash";
 export const WeatherStationStore = types.model(
   "WeatherStationStore",
   {
-    stationsMap: types.optional(types.map(WeatherStation), {}),
+    stationMap: types.optional(types.map(WeatherStation), {}),
     selected: types.maybe(types.reference(WeatherStation)),
 
     getStation(callSign: string) : IWeatherStation | undefined {
-      return _.find(this.stations, (station: IWeatherStation) => station.callsign === callSign);
+      return _.find(this.stations, (station: IWeatherStation) => station.callSign === callSign);
     },
 
     get stations() {
-      // because we cant itterate over the mobx maps..
-      return _.map(this.stationsMap.toJSON(), (s) => s);
+      // because we can't iterate over the mobx maps..
+      return this.stationMap.values();
     }
   },
   {
     preProcessSnapshot(snapshot: any) {
       if (snapshot.selected) {
-        if (!snapshot.stationsMap[snapshot.selected]){
+        if (!snapshot.stationMap[snapshot.selected]){
           snapshot.selected = null;
         }
       }
@@ -30,12 +30,12 @@ export const WeatherStationStore = types.model(
     },
     addStations(stations: IWeatherStation[]) {
       stations.forEach((station) => {
-        let thisStation = this.getStation(station.callsign);
+        let thisStation = this.getStation(station.callSign);
         if (thisStation) {
           // copy properties from new station to existing one?
         }
         else {
-          this.stationsMap.put(station);
+          this.stationMap.put(station);
         }
       });
     },

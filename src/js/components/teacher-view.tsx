@@ -52,7 +52,7 @@ const styles:ComponentStyleMap = {
     marginTop: "1em",
     padding: "0.25em"
   },
-  callsign: {
+  callSign: {
     fontSize: "16pt",
     fontWeight: "bold"
   },
@@ -96,17 +96,17 @@ export class TeacherView extends React.Component<
   }
 
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
-    const simulation = simulationStore.selected;
-    if(simulation) {
+    const settings = simulationStore.settings;
+    if (settings) {
       console.log(`New prediction type: ${value}`);
-      simulationStore.settings.setSetting('enabledPredictions', value);
+      settings.setSetting('enabledPredictions', value);
     }
   }
 
   renderPredictions() {
-    const weatherStation = simulationStore.stations.selected;
+    const weatherStation = simulationStore.selectedStation;
     if(weatherStation) {
-      const predictions = simulationStore.predictions.teacherPredictions;
+      const predictions = simulationStore.predictions && simulationStore.predictions.teacherPredictions;
 
       const renderPrediction = (prediction:IPrediction, index:number) => {
         const style = index % 2 === 0 ? styles.predictionItemEven :  styles.predictionItemOdd;
@@ -125,7 +125,7 @@ export class TeacherView extends React.Component<
       return (
         <div>
           <img style={styles.image} src={weatherStation.imageUrl}/>
-          <div style={styles.callsign}>{weatherStation.callsign}</div>
+          <div style={styles.callSign}>{weatherStation.callSign}</div>
           <div style={styles.stationName}>{weatherStation.name}</div>
           <div style={styles.predictionContainer}>
               {_.map(predictions,renderPrediction) }
@@ -149,8 +149,8 @@ export class TeacherView extends React.Component<
       });
     };
 
-    const simulationType = simulationStore.settings && simulationStore.settings.simulationType;
-    const enabledPredictions = simulationStore.settings && simulationStore.settings.enabledPredictions;
+    const enabledPredictions = simulationStore.settings && simulationStore.settings.enabledPredictions,
+          weatherStations = simulationStore.stations && simulationStore.stations.stations;
 
     return (
       <Card>
@@ -177,7 +177,7 @@ export class TeacherView extends React.Component<
                   <LeafletMapView
                     mapConfig={simulationStore.mapConfig}
                     interaction={false}
-                    weatherStations={simulationStore.stations.stations}
+                    weatherStations={weatherStations}
                     width={600}
                     height={400}
                   />

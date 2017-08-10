@@ -5,7 +5,7 @@ import { v1 as uuid } from "uuid";
 import { Promise } from "es6-promise";
 
 const DEFAULT_SESSION = "default";
-const DEFAULT_VERSION_STRING = "1.2.wip3";
+const DEFAULT_VERSION_STRING = "1.2.wip2";
 const DEFAULT_ACTIVITY = "default";
 
 interface FirebaseUser {

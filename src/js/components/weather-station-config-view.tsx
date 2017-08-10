@@ -4,6 +4,7 @@ import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import { ComponentStyleMap } from "../component-style-map";
+import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../stores/simulation-store";
 
 const _ = require("lodash");
@@ -26,26 +27,26 @@ export class WeatherStationConfigView extends React.Component<
     super(props, ctx);
   }
 
-  setBasestation(evt: any, index: number, station: any) {
-    simulationStore.presences.setStation(station);
+  setStation = (evt: any, index: number, value: any) => {
+    const presences = simulationStore.presences,
+          stations = simulationStore.stations,
+          station = (stations && stations.getStation(value)) || null;
+    if (presences) { presences.setStation(station); }
   }
 
-  renderBaseOptions() {
-    const stations = simulationStore.stations;
-    const results = [];
-    let base = null;
-    for (let i = 0; i < stations.length; i++) {
-      base = stations[i];
-      results.push(
-        <MenuItem key={base.id} value={base.id} primaryText={`${base.callsign} ${base.name}`} />
-      );
-    }
-    return results;
+  renderStationList() {
+    const simulationStations = simulationStore.stations;
+    if (!simulationStations) { return null; }
+
+    return simulationStations.stations.map((station: IWeatherStation) => {
+      return <MenuItem key={station.callSign} value={station.callSign}
+                        primaryText={`[${station.callSign}] ${station.name}`} />;
+    });
   }
 
   render() {
-    const weatherStation = simulationStore.presences.weatherStation;
-    const weatherStationId = weatherStation && weatherStation.id;
+    const weatherStation = simulationStore.presenceStation;
+    const weatherStationId = weatherStation && weatherStation.callSign;
 
     const styles: ComponentStyleMap = {
       config: {
@@ -69,9 +70,9 @@ export class WeatherStationConfigView extends React.Component<
           floatingLabelText="Choose your location"
           value={weatherStationId}
           autoWidth={true}
-          onChange={this.setBasestation.bind(this)}
+          onChange={this.setStation}
         >
-          {this.renderBaseOptions()}
+          {this.renderStationList()}
         </SelectField>
       </div>
     );

@@ -74,7 +74,8 @@ export class SetupMapView extends React.Component<
   }
 
   renderEditor() {
-    const mapConfig = mapConfigStore.selected;
+    const mapConfig = mapConfigStore.selected,
+          weatherStations = simulationStore.stations && simulationStore.stations.stations;
     if (mapConfig) {
       return (
         <div style={styles.config}>
@@ -89,7 +90,7 @@ export class SetupMapView extends React.Component<
           <LeafletMapView
             mapConfig={mapConfigStore.selected}
             interaction={true}
-            weatherStations={simulationStore.stations.stations}
+            weatherStations={weatherStations}
             width={600}
             height={400}
             update={(lat, long, zoom) => {
@@ -131,7 +132,8 @@ export class SetupMapView extends React.Component<
   }
 
   render() {
-    const maps = mapConfigStore.mapConfigs;
+    const maps = mapConfigStore.mapConfigs,
+          weatherStations = simulationStore.stations && simulationStore.stations.stations;
     return (
       <div className="configDataView">
         <div style={styles.scrollContainer}>
@@ -149,7 +151,7 @@ export class SetupMapView extends React.Component<
                   <LeafletMapView
                     mapConfig={map}
                     interaction={false}
-                    weatherStations={simulationStore.stations.stations}
+                    weatherStations={weatherStations || []}
                     width={600}
                     height={400}
                   />

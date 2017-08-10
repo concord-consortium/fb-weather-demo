@@ -23,7 +23,6 @@ export const Simulation = types.model('Simulation', {
   presences: types.optional(PresenceStore,      () => PresenceStore.create()),
   predictions: types.optional(PredictionStore,  () => PredictionStore.create()),
   stations: types.optional(WeatherStationStore, () => WeatherStationStore.create()),
-  isInitialized: types.optional(types.boolean, false),
 
   get isPlaying() {
     return this.control.isPlaying;
@@ -41,22 +40,24 @@ export const Simulation = types.model('Simulation', {
 }, {
 }, {
   afterCreate() {
-    if (!this.isInitialized) {
+    this.presences.initPresence();
+
+    if (_.size(this.stations.stations) === 0) {
       // create stations from scenario
-      const stations = _.map(this.scenario.stations, (spec: IStationSpec) => {
+      const stations = this.scenario.stations.map((spec: IStationSpec) => {
                           return WeatherStation.create({
                                     name: spec.name,
                                     imageUrl: spec.imageUrl,
                                     id: uuid(),
-                                    callsign: spec.id
+                                    callSign: spec.id
                                   });
                         });
       this.stations.addStations(stations);
-      this.isInitialized = true;
     }
 
+    // initialize stations from WeatherEvent
     this.stations.stations.forEach((station: IWeatherStation) => {
-      gWeatherEvent.stationData(station.callsign)
+      gWeatherEvent.stationData(station.callSign)
         .then((stationData: any) => {
           if ((station.lat == null) || (station.long == null)) {
             station.setLocation({ lat: stationData.lat, long: stationData.long });
@@ -87,15 +88,6 @@ export const Simulation = types.model('Simulation', {
 
   setPref(key: string, value: any) {
     this.settings.setSetting(key, value);
-  },
-  preProcessSnapshot(snapshot:any) {
-    if (!snapshot.predictions) {
-      snapshot.predictions = {predictions: []};
-    }
-    if (!snapshot.stationMap) {
-      snapshot.stationMap = {stationMap: {}};
-    }
-    return snapshot;
   }
 });
 export type ISimulation = typeof Simulation.Type;

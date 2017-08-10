@@ -15,6 +15,7 @@ interface LeafletMapMarkerProps {
 interface LeafletMapMarkerState {}
 const precision = 0;
 
+@observer
 export class LeafletMapMarker extends React.Component<
   LeafletMapMarkerProps,
   LeafletMapMarkerState
@@ -25,7 +26,8 @@ export class LeafletMapMarker extends React.Component<
 
   get prediction() {
     const weatherStation = this.props.weatherStation;
-    const prediction = simulationStore.predictions.predictionFor(weatherStation);
+    const predictions = simulationStore.predictions,
+          prediction = predictions && predictions.predictionFor(weatherStation);
     return prediction;
   }
 
@@ -47,7 +49,8 @@ export class LeafletMapMarker extends React.Component<
   }
 
   predictedTempDiv() {
-    if(simulationStore.settings.showPrediction && this.prediction) {
+    const showPredictions = simulationStore.settings && simulationStore.settings.showPredictions;
+    if(showPredictions && this.prediction) {
       if ((this.predictedTemp != null) && !isNaN(this.predictedTemp)) {
         const predictedTempString = this.predictedTemp.toFixed(precision);
         return `<span class="predictTemp">${predictedTempString}°</span> /`;
@@ -57,7 +60,8 @@ export class LeafletMapMarker extends React.Component<
   }
 
   actualTempDiv() {
-    if (simulationStore.settings.showTempValues && this.actualTemp) {
+    const showTempValues = simulationStore.settings && simulationStore.settings.showTempValues;
+    if (showTempValues && (this.actualTemp != null)) {
       const actualTempString = this.actualTemp.toFixed(precision);
       return `<span class="actualTemp">${actualTempString}°</span>`;
     }
@@ -65,17 +69,21 @@ export class LeafletMapMarker extends React.Component<
   }
 
   diffTempDiv() {
-    if (simulationStore.settings.showDeltaTemp && this.diffTemp) {
-      let difTempString = this.diffTemp.toFixed(precision);
-      difTempString = this.diffTemp < 0 ? difTempString : `+${difTempString}`;
-      return `<div class="difTemp">${difTempString}&#8457</div>`;
+    const showDeltaTemp = simulationStore.settings && simulationStore.settings.showDeltaTemp;
+    if (showDeltaTemp && (this.diffTemp != null)) {
+      let diffTempString = this.diffTemp.toFixed(precision);
+      diffTempString = diffTempString === "0"
+                        ? diffTempString
+                        : (this.diffTemp < 0 ? diffTempString : `+${diffTempString}`);
+      return `<div class="diffTemp">${diffTempString}&#8457</div>`;
     }
     return "";
   }
 
   callsignDiv() {
-    if (simulationStore.settings.showStationNames) {
-      return `<div>${this.props.weatherStation.callsign}</div>`;
+    const showStationNames = simulationStore.settings && simulationStore.settings.showStationNames;
+    if (showStationNames) {
+      return `<div>${this.props.weatherStation.callSign}</div>`;
     }
     return "";
   }
@@ -83,7 +91,10 @@ export class LeafletMapMarker extends React.Component<
   render() {
     const weatherStation = this.props.weatherStation;
     const handleClick = function(evt:any) {
-      simulationStore.stations.select(weatherStation);
+      const simulationStations = simulationStore.stations;
+      if (simulationStations) {
+        simulationStations.select(weatherStation);
+      }
     };
 
     if ((weatherStation.lat == null) || (weatherStation.long == null)) {

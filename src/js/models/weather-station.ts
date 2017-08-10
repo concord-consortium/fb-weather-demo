@@ -11,7 +11,7 @@ type IWeatherDatum = typeof WeatherDatum.Type;
 interface WeatherUpdateProps {
   name?: string;
   imageUrl?: string;
-  callsign?: string;
+  callSign?: string;
   lat?: number;
   long?: number;
 }
@@ -22,7 +22,7 @@ export const WeatherStation = types.model("WeatherStation",
   name: types.string,
   imageUrl: types.string,
   id: types.identifier(types.string),
-  callsign: types.string,
+  callSign: types.string,
   lat: types.maybe(types.number),
   long: types.maybe(types.number),
 
@@ -48,8 +48,8 @@ export const WeatherStation = types.model("WeatherStation",
     if(props.imageUrl !== undefined) {
       this.imageUrl = props.imageUrl;
     }
-    if(props.callsign !== undefined) {
-      this.callsign = props.callsign;
+    if(props.callSign !== undefined) {
+      this.callSign = props.callSign;
     }
     if(props.lat !== undefined) {
       this.lat = props.lat;

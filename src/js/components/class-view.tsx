@@ -17,7 +17,8 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
   }
 
   render() {
-    const time = simulationStore.timeString;
+    const time = simulationStore.timeString,
+          weatherStations = simulationStore.stations && simulationStore.stations.stations;
     return (
       <Card className="ClassView">
         <Tabs>
@@ -35,7 +36,7 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
               <LeafletMapView
                 mapConfig={simulationStore.mapConfig}
                 interaction={false}
-                weatherStations={simulationStore.stations.stations}
+                weatherStations={weatherStations}
                 width={800}
                 height={600}
               />

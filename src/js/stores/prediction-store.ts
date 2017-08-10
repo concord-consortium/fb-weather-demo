@@ -7,7 +7,7 @@ import { simulationStore } from "../stores/simulation-store";
 export const PredictionStore = types.model("PredictionStore", {
   predictions: types.optional(types.array(Prediction), []),
   get prediction(): IPrediction {
-    const station = simulationStore.presences.selected.weatherStation;
+    const station = simulationStore.presenceStation;
     let prediction = null;
     if (station) {
       prediction = this.predictions.filter((p:IPrediction) => p.station === station)[0];
@@ -15,7 +15,7 @@ export const PredictionStore = types.model("PredictionStore", {
     return prediction;
   },
   get teacherPredictions(): IPrediction {
-    const station = simulationStore.stations.selected;
+    const station = simulationStore.selectedStation;
     let predictions = [];
     if (station) {
       predictions = this.predictions.filter((p:IPrediction) => p.station === station).reverse();
@@ -46,9 +46,13 @@ export const PredictionStore = types.model("PredictionStore", {
   setPrediction(station:IWeatherStation, prediction:IPrediction) {
     prediction.station = station;
   },
-  addPrediction(prediction:IPrediction, station:IWeatherStation) {
-    prediction.timeStamp = new Date();
-    prediction.station = station;
-    this.predictions.push(prediction);
+  addPrediction(prediction:IPrediction) {
+    const station = simulationStore.presenceStation;
+    if (station) {
+      prediction.setStation(station);
+      this.predictions.push(prediction);
+    }
   }
 });
+
+export type IPredictionStore = typeof PredictionStore.Type;
