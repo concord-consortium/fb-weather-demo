@@ -3,7 +3,7 @@ import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
 import { observer } from "mobx-react";
 import { CardText, CardActions } from "material-ui/Card";
-import { ComponentStyleMap } from "../component-style-map";
+import { ComponentStyleMap } from "../utilities/component-style-map";
 import { PredictionType, Prediction, IPrediction } from "../models/prediction";
 import { simulationStore } from "../stores/simulation-store";
 import * as moment from 'moment';

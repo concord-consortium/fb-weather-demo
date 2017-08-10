@@ -7,7 +7,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
-import { ComponentStyleMap } from "../component-style-map";
+import { ComponentStyleMap } from "../utilities/component-style-map";
 import { PredictionType, IPrediction } from "../models/prediction";
 import { simulationStore } from "../stores/simulation-store";
 import { ISimulation } from "../models/simulation";

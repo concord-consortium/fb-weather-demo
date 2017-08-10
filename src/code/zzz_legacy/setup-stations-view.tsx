@@ -7,7 +7,7 @@ import FlatButton from "material-ui/FlatButton";
 import * as Dropzone from "react-dropzone";
 import { GridList, GridTile } from "material-ui/GridList";
 import SelectField from "material-ui/SelectField";
-import { ComponentStyleMap } from "../component-style-map";
+import { ComponentStyleMap } from "../utilities/component-style-map";
 import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../stores/simulation-store";
 

@@ -5,8 +5,7 @@ import { Tab, Tabs } from "material-ui/Tabs";
 import { WeatherStationConfigView } from "./weather-station-config-view";
 import { GridView } from "./grid-view";
 import { PredictionView } from "./prediction-view";
-import { SimPrefs } from "../sim-prefs";
-import { ComponentStyleMap } from "../component-style-map";
+import { ComponentStyleMap } from "../utilities/component-style-map";
 import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../stores/simulation-store";
 
@@ -16,7 +15,6 @@ const div = React.DOM.div;
 export type StationTab = "configure" | "weather";
 
 export interface WeatherStationProps {
-  prefs: SimPrefs;
 }
 
 export interface WeatherStationState {

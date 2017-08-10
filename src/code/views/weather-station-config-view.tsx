@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
-import { ComponentStyleMap } from "../component-style-map";
+import { ComponentStyleMap } from "../utilities/component-style-map";
 import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../stores/simulation-store";
 

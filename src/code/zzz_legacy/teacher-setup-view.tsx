@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ComponentStyleMap } from "../component-style-map";
+import { ComponentStyleMap } from "../utilities/component-style-map";
 import { Tab, Tabs } from "material-ui/Tabs";
 import { TeacherSetupStationsView } from "./teacher-setup-stations-view";
 import { TeacherSetupGridView } from "./teacher-setup-grid-view";

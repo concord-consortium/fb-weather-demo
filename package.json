@@ -8,7 +8,7 @@
     "lint:fix": "tslint --project . --fix && eslint --fix src",
     "pretest": "npm run lint",
     "start": "webpack-dev-server",
-    "test": "jest",
+    "test": "jest tests",
     "watch": "webpack --watch"
   },
   "author": "npaessel@concord.org",

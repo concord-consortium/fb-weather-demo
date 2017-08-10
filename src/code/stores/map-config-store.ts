@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { Firebasify } from "../middlewares/firebase-decorator";
+import { Firebasify } from "../middleware/firebase-decorator";
 import { MapConfig, IMapConfig } from "../models/map-config";
 import { IWeatherStation } from "../models/weather-station";
 

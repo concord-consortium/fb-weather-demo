@@ -13,6 +13,9 @@
     "allowJs": true
   },
   "include": [
-    "./src/js/main.tsx"
+    "./src/code/main.tsx"
+  ],
+  "exclude": [
+    "./src/code/zzz_legacy/*"
   ]
 }

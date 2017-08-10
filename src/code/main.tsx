@@ -1,16 +1,16 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { AppView } from "./components/app-view";
+import { AppView } from "./views/app-view";
 import { Router, Route, hashHistory, IndexRedirect } from "react-router";
 import * as injectTapEventPlugin from "react-tap-event-plugin";
-import { gFirebase, FirebaseImp } from "./firebase-imp";
+import { gFirebase, FirebaseImp } from "./middleware/firebase-imp";
 
-import { TeacherView } from "./components/teacher-view";
-import { WeatherStationView } from "./components/weather-station-view";
-import { ClassView } from "./components/class-view";
-import { ChooseView } from "./components/choose-view";
-import { ChooseSimulationView } from "./components/choose-simulation-view";
-import { SetupView } from "./components/setup-view";
+import { TeacherView } from "./views/teacher-view";
+import { WeatherStationView } from "./views/weather-station-view";
+import { ClassView } from "./views/class-view";
+import { ChooseView } from "./views/choose-view";
+import { ChooseSimulationView } from "./views/choose-simulation-view";
+// import { SetupView } from "./views/setup-view";
 import { simulationStore } from "./stores/simulation-store";
 
 injectTapEventPlugin();
@@ -78,7 +78,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
               <Route path="student" component={WeatherStationView} />
               <Route path="teacher" component={TeacherView} />
               <Route path="classroom" component={ClassView} />
-              <Route path="setup" component={SetupView} />
+              {/* <Route path="setup" component={SetupView} /> */}
               <Route path="choose" component={ChooseView} />
             </Route>
           </Route>

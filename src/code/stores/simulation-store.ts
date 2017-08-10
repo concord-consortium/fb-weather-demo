@@ -1,6 +1,6 @@
 import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
-import { Firebasify } from "../middlewares/firebase-decorator";
+import { Firebasify } from "../middleware/firebase-decorator";
 import { Simulation, ISimulation } from "../models/simulation";
 import { IPresence } from "../models/presence";
 import { ISimulationSettings } from "../models/simulation-settings";

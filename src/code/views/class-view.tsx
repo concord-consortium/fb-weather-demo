@@ -1,17 +1,13 @@
 import * as React from "react";
 import { Tabs, Tab } from "material-ui/Tabs";
 import { Card, CardMedia, CardTitle } from "material-ui/Card";
-import { SimPrefs } from "../sim-prefs";
 import { LeafletMapView } from "./leaflet-map-view";
 import { simulationStore } from "../stores/simulation-store";
 
-export interface ClassViewProps {
-  frame: number;
-  prefs: SimPrefs;
-}
+export interface ClassViewProps {}
+export interface ClassViewState {}
 
-export interface ClassViewstate {}
-export class ClassView extends React.Component<ClassViewProps, ClassViewstate> {
+export class ClassView extends React.Component<ClassViewProps, ClassViewState> {
   constructor(props: ClassViewProps, ctx: any) {
     super(props);
   }
