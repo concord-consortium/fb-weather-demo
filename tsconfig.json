@@ -2,9 +2,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "sourceMap": true,
-    // TODO:  Change this when things start to compile
     "noImplicitAny": true,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
@@ -14,7 +13,9 @@
     "allowJs": true
   },
   "include": [
-    "./src/js/missing-typings.d.ts",
-    "./src/js/main.tsx"
+    "./src/code/main.tsx"
+  ],
+  "exclude": [
+    "./src/code/zzz_legacy/*"
   ]
 }

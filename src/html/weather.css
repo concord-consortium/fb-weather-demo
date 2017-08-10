@@ -61,7 +61,7 @@ table.GridView td.set {
 .actualTemp {
   color: hsla(100,0%,20%,1);
 }
-.difTemp {
+.diffTemp {
   display: flex;
   flex-direction: column;
   justify-content: center;
