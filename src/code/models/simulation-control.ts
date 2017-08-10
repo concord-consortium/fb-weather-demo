@@ -16,7 +16,14 @@ export const SimulationControl = types.model(
       return moment(this.time);
     }
   }, {
+    timer: null
+  }, {
     // actions
+    afterCreate() {
+      if (this.isPlaying) {
+        this.play();
+      }
+    },
     setStartTime(newTime: Date) {
       this.startTime = newTime;
     },
@@ -30,8 +37,14 @@ export const SimulationControl = types.model(
     },
     play() {
       this.isPlaying = true;
+      // by default we update the simulation by 30 min every half second
+      this.timer = setInterval(() => {
+        this.advanceTime({ minutes: 30 });
+      }, 500);
     },
     stop() {
+      clearInterval(this.timer);
+      this.timer = null;
       this.isPlaying = false;
     },
     stepForward() {
