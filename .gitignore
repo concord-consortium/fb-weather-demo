@@ -5,3 +5,4 @@ dist
 *.xlsm
 .vscode
 .DS_Store
+yarn-error.log
