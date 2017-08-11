@@ -2,6 +2,12 @@ import { computed } from "mobx";
 import { ISimulationControl } from "./simulation-control";
 import * as _ from "lodash";
 
+export const kDefaultPrecision = {
+              temperature: 0,
+              windSpeed: 1,
+              windDirection: 0
+            };
+
 export class WeatherStationState {
   simulation: ISimulationControl;
   stationData: any;
@@ -68,8 +74,42 @@ export class WeatherStationState {
     if (!indices || (pctInterpolate == null)) { return null; }
 
     const lowValue = this.stationData.rows[indices.low][colIndex],
-          highValue = this.stationData.rows[indices.high][colIndex];
-    return lowValue + pctInterpolate * (highValue - lowValue);
+          highValue = this.stationData.rows[indices.high][colIndex],
+          isLowNum = isFinite(lowValue),
+          isHighNum = isFinite(highValue);
+    if (isLowNum && isHighNum) {
+      return lowValue + pctInterpolate * (highValue - lowValue);
+    }
+    if (isLowNum) { return lowValue; }
+    if (isHighNum) { return highValue; }
+    return null;
+  }
+
+  interpolateAngles(colIndex: number): number | null {
+    const indices = this.indices,
+          pctInterpolate = this.pctInterpolate;
+    if (!indices || (pctInterpolate == null)) { return null; }
+
+    let lowValue = this.stationData.rows[indices.low][colIndex],
+        highValue = this.stationData.rows[indices.high][colIndex],
+        isLowNum = isFinite(lowValue),
+        isHighNum = isFinite(highValue);
+    if (isLowNum) { lowValue %= 360; }
+    if (isHighNum) { highValue %= 360; }
+    if (isLowNum && isHighNum) {
+      let diffValue = highValue - lowValue;
+      // map to +/- 180
+      if (diffValue < -180) { diffValue += 360; }
+      if (diffValue > 180) { diffValue -= 360; }
+      let result = lowValue + pctInterpolate * diffValue;
+      if (result < 0) { result += 360; }
+      if (result > 360) { result -= 360; }
+      console.log(`lo: ${lowValue}, hi: ${highValue}, result: ${result}`);
+      return result;
+    }
+    if (isLowNum) { return lowValue; }
+    if (isHighNum) { return highValue; }
+    return null;
   }
 
   @computed
@@ -77,14 +117,30 @@ export class WeatherStationState {
     return this.interpolate(this.colIndices.temperature);
   }
 
+  strTemperature(precision = kDefaultPrecision.temperature) {
+    const t = this.temperature,
+          s = t && isFinite(t) ? t.toFixed(precision) : "";
+    return s === "-0" ? "0" : s;
+  }
+
   @computed
   get windSpeed() {
     return this.interpolate(this.colIndices.windSpeed);
   }
 
+  strWindSpeed(precision = kDefaultPrecision.windSpeed) {
+    const s = this.windSpeed;
+    return s && isFinite(s) ? s.toFixed(precision) : "";
+  }
+
   @computed
   get windDirection() {
-    return this.interpolate(this.colIndices.windDirection);
+    return this.interpolateAngles(this.colIndices.windDirection);
+  }
+
+  strWindDirection(precision = kDefaultPrecision.windDirection) {
+    const d = this.windDirection;
+    return d && isFinite(d) ? d.toFixed(precision) : "";
   }
 
   @computed
@@ -95,6 +151,11 @@ export class WeatherStationState {
   @computed
   get dewPointTemperature() {
     return this.interpolate(this.colIndices.dewPointTemperature);
+  }
+
+  strDewPointTemperature(precision = kDefaultPrecision.temperature) {
+    const t = this.dewPointTemperature;
+    return t && isFinite(t) ? t.toFixed(precision) : "";
   }
 
   @computed

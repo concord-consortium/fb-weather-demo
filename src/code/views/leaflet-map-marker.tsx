@@ -4,7 +4,7 @@ import { Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
 import { PredictionType } from "../models/prediction";
 import { simulationStore } from "../stores/simulation-store";
-import { IWeatherStation } from "../models/weather-station";
+import { IWeatherStation, kDefaultPrecision } from "../models/weather-station";
 
 interface LeafletMapMarkerProps {
   weatherStation: IWeatherStation;
@@ -12,7 +12,6 @@ interface LeafletMapMarkerProps {
 }
 
 interface LeafletMapMarkerState {}
-const precision = 0;
 
 @observer
 export class LeafletMapMarker extends React.Component<
@@ -47,11 +46,19 @@ export class LeafletMapMarker extends React.Component<
     return null;
   }
 
+  get windSpeed() {
+    return this.props.weatherStation.windSpeed;
+  }
+
+  get windDirection() {
+    return this.props.weatherStation.windDirection;
+  }
+
   predictedTempDiv() {
     const showPredictions = simulationStore.settings && simulationStore.settings.showPredictions;
     if(showPredictions && this.prediction) {
-      if ((this.predictedTemp != null) && !isNaN(this.predictedTemp)) {
-        const predictedTempString = this.predictedTemp.toFixed(precision);
+      if ((this.predictedTemp != null) && isFinite(this.predictedTemp)) {
+        const predictedTempString = this.predictedTemp.toFixed(kDefaultPrecision.temperature);
         return `<span class="predictTemp">${predictedTempString}°</span> /`;
       }
     }
@@ -60,8 +67,8 @@ export class LeafletMapMarker extends React.Component<
 
   actualTempDiv() {
     const showTempValues = simulationStore.settings && simulationStore.settings.showTempValues;
-    if (showTempValues && (this.actualTemp != null)) {
-      const actualTempString = this.actualTemp.toFixed(precision);
+    if (showTempValues && (this.actualTemp != null) && isFinite(this.actualTemp)) {
+      const actualTempString = this.actualTemp.toFixed(kDefaultPrecision.temperature);
       return `<span class="actualTemp">${actualTempString}°</span>`;
     }
     return "";
@@ -69,12 +76,33 @@ export class LeafletMapMarker extends React.Component<
 
   diffTempDiv() {
     const showDeltaTemp = simulationStore.settings && simulationStore.settings.showDeltaTemp;
-    if (showDeltaTemp && (this.diffTemp != null)) {
-      let diffTempString = this.diffTemp.toFixed(precision);
+    if (showDeltaTemp && (this.diffTemp != null) && isFinite(this.diffTemp)) {
+      let diffTempString = this.diffTemp.toFixed(kDefaultPrecision.temperature);
       diffTempString = diffTempString === "0"
                         ? diffTempString
                         : (this.diffTemp < 0 ? diffTempString : `+${diffTempString}`);
       return `<div class="diffTemp">${diffTempString}&#8457</div>`;
+    }
+    return "";
+  }
+
+  windSpeedDiv() {
+    const showWindValues = true; //simulationStore.settings && simulationStore.settings.showWindValues;
+    if (showWindValues && (this.windSpeed != null) && isFinite(this.windSpeed)) {
+      const windSpeedStr = this.windSpeed.toFixed(kDefaultPrecision.windSpeed);
+      return `<span class="windSpeed">${windSpeedStr}</span>`;
+    }
+    return "";
+  }
+
+  windDirectionDiv() {
+    const showWindValues = true; //simulationStore.settings && simulationStore.settings.showWindValues;
+    if (showWindValues && (this.windDirection != null)) {
+      const classes = `"windDirection"`,
+            rotation = this.windDirection + 90,
+            style = `"transform: rotate(${rotation}deg); display: inline-block; font-size: 16px"`,
+            arrowChar = this.windDirection ? "\u279B" : "\xA0";
+      return `<span class=${classes} style=${style}>${arrowChar}</span>`;
     }
     return "";
   }
@@ -103,7 +131,13 @@ export class LeafletMapMarker extends React.Component<
     const center = { lat: weatherStation.lat, lng: weatherStation.long };
     const key = this.props.weatherStation.id;
     let classes ="divIcon";
-    const selected = this.props.selected;
+    const selected = this.props.selected,
+          divPredictedTemp = this.predictedTempDiv(),
+          divActualTemp = this.actualTempDiv(),
+          divDiffTemp = this.diffTempDiv(),
+          divWindSpeed = this.windSpeedDiv(),
+          divWindDirection = this.windDirectionDiv(),
+          iconHeight = divDiffTemp ? 68 : 54;
 
     if(selected) {
       classes = `${classes} selected`;
@@ -113,13 +147,17 @@ export class LeafletMapMarker extends React.Component<
       html: `
         <div class "divIconContent" >
           <div>
-            ${this.predictedTempDiv()}
-            ${this.actualTempDiv()}
+            ${divPredictedTemp}
+            ${divActualTemp}
           </div>
-          ${this.diffTempDiv()}
+          ${divDiffTemp}
+          <div style="margin-top:-2px; margin-bottom:-2px">
+            ${divWindSpeed}
+            ${divWindDirection}
+          </div>
           ${this.callsignDiv()}
         </div>`,
-      iconSize: [50, 50],
+      iconSize: [50, iconHeight],
       className: classes
     });
 

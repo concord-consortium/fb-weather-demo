@@ -1,5 +1,7 @@
 import { types, destroy } from "mobx-state-tree";
-import { WeatherStationState } from "./weather-station-state";
+import { WeatherStationState, kDefaultPrecision } from "./weather-station-state";
+
+export { kDefaultPrecision };
 
 // TBD we need to change this data def.
 const WeatherDatum = types.model("Datum", {
@@ -28,6 +30,26 @@ export const WeatherStation = types.model("WeatherStation",
 
   get temperature(): number | null {
     return this.state && this.state.temperature;
+  },
+
+  strTemperature(precision = kDefaultPrecision.temperature): string {
+    return this.state && this.state.strTemperature();
+  },
+
+  get windSpeed(): number | null {
+    return this.state && this.state.windSpeed;
+  },
+
+  strWindSpeed(precision = kDefaultPrecision.windSpeed): string {
+    return this.state && this.state.strWindSpeed();
+  },
+
+  get windDirection(): number | null {
+    return this.state && this.state.windDirection;
+  },
+
+  strWindDirection(precision = kDefaultPrecision.windDirection): string {
+    return this.state && this.state.strWindDirection();
   }
 },{
   // volatile

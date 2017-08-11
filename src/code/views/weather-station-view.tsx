@@ -43,8 +43,17 @@ export class WeatherStationView extends React.Component<
     let callSign = "";
     let imgUrl = "img/farm.jpg";
     let time = simulationStore.timeString;
-    let temp = 5; // TODO, we need to look this up...
-    const weatherStation = simulationStore.presenceStation;
+    const weatherStation = simulationStore.presenceStation,
+          tempStr = weatherStation && weatherStation.strTemperature(),
+          unitTempStr = tempStr ? tempStr + "°" : tempStr,
+          windSpeed = weatherStation && weatherStation.windSpeed,
+          isNonZeroSpeed = windSpeed && isFinite(windSpeed),
+          windSpeedStr = weatherStation && weatherStation.strWindSpeed(),
+          windDirection = weatherStation && weatherStation.windDirection,
+          arrowRotation = (windDirection != null) && isFinite(windDirection)
+                            ? windDirection + 90 : null,
+          arrowChar = isNonZeroSpeed && windDirection ? "\u279B" : "\xA0";
+
     if (weatherStation) {
       name = weatherStation.name;
       callSign = weatherStation.callSign;
@@ -67,9 +76,13 @@ export class WeatherStationView extends React.Component<
         fontSize: "9pt",
         fontWeight: "bold"
       },
-      temp: {
-        fontSize: "4rem",
+      stats: {
+        display: "flex",
+        fontSize: "3rem",
         color: "hsla(0, 0%, 100%, 0.9)"
+      },
+      temp: {
+        minWidth: '5em'
       },
       time: {
         color: "hsla(0, 0%, 80%, 0.9)"
@@ -101,10 +114,22 @@ export class WeatherStationView extends React.Component<
             <CardMedia
               overlay={
                 <div>
-                  <CardTitle
-                    titleStyle={styles.temp}
-                    title={`Temp: ${temp}°`}
-                  />
+                  <CardTitle>
+                    <div style={styles.stats}>
+                      <div style={styles.temp}>
+                        {`Temp: ${unitTempStr}`}
+                      </div>
+                      <div style={styles.wind}>
+                        <span>
+                          {`Wind: ${windSpeedStr}\xA0`}
+                        </span>
+                        <span style={{ transform: `rotate(${arrowRotation}deg`,
+                                        display: 'inline-block'}}>
+                          {arrowChar}
+                        </span>
+                      </div>
+                    </div>
+                  </CardTitle>
                   <CardText style={styles.time}>
                     {time}
                   </CardText>
