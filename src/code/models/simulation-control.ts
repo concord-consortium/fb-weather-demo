@@ -36,15 +36,19 @@ export const SimulationControl = types.model(
       }
     },
     play() {
-      this.isPlaying = true;
-      // by default we update the simulation by 30 min every half second
-      this.timer = setInterval(() => {
-        this.advanceTime({ minutes: 30 });
-      }, 500);
+      if (!this.isPlaying) {
+        this._clearTimer();
+
+        // by default we update the simulation by 30 min every half second
+        this.timer = setInterval(() => {
+          this.advanceTime({ minutes: 30 });
+        }, 500);
+
+        this.isPlaying = true;
+      }
     },
     stop() {
-      clearInterval(this.timer);
-      this.timer = null;
+      this._clearTimer();
       this.isPlaying = false;
     },
     stepForward() {
@@ -54,6 +58,13 @@ export const SimulationControl = types.model(
     stepBack() {
       const m = this.moment.subtract({ minutes: this.timeStep });
       this.setTime(m.toDate());
+    },
+
+    _clearTimer() {
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
     },
 
     // interval from moment.js, e.g. { minutes: 10 }
