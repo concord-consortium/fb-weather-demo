@@ -150,11 +150,11 @@ export class TeacherView extends React.Component<
     const enabledPredictions = simulationStore.settings && simulationStore.settings.enabledPredictions,
           weatherStations = (simulationStore.stations && simulationStore.stations.stations) || [],
           menuOptions = [
-            <MenuItem value={null} primaryText="Disable Predictions" />,
-            <MenuItem value={PredictionType.eDescription} primaryText="Enable Descriptive Predictions" />,
-            <MenuItem value={PredictionType.eTemperature} primaryText="Enable Temperature Predictions" />,
-            <MenuItem value={PredictionType.eWindSpeed} primaryText="Enable Wind Speed Predictions" />,
-            <MenuItem value={PredictionType.eWindDirection} primaryText="Enable Wind Direction Predictions" />
+            <MenuItem key={0} value={null} primaryText="Disable Predictions" />,
+            <MenuItem key={1} value={PredictionType.eDescription} primaryText="Enable Descriptive Predictions" />,
+            <MenuItem key={2} value={PredictionType.eTemperature} primaryText="Enable Temperature Predictions" />,
+            <MenuItem key={3} value={PredictionType.eWindSpeed} primaryText="Enable Wind Speed Predictions" />,
+            <MenuItem key={4} value={PredictionType.eWindDirection} primaryText="Enable Wind Direction Predictions" />
           ].filter((item) => {
             const settings = simulationStore.settings,
                   showTempValues = settings && settings.showTempValues,

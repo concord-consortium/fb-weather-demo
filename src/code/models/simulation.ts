@@ -107,10 +107,6 @@ export const Simulation = types.model('Simulation', {
   },
   stepBack() {
     this.control.stepBack();
-  },
-
-  setPref(key: string, value: any) {
-    this.settings.setSetting(key, value);
   }
 });
 export type ISimulation = typeof Simulation.Type;

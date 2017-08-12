@@ -14,8 +14,7 @@ const _ = require("lodash");
 export const SimulationStore = types.model(
   "SimulationStore",
   {
-    simulations: types.map(Simulation),
-    selected: types.maybe(types.reference(Simulation)),
+    simulations: types.optional(types.map(Simulation), {}),
 
     get simulationList(): ISimulation[] {
       return _.sortBy(_.map(this.simulations.values(), 'name'), 'name');
@@ -62,7 +61,7 @@ export const SimulationStore = types.model(
       return (this.selected && this.selected.formatTime(time)) || "";
     }
   },{
-
+    selected: null as any as ISimulation | null
   },
   {
     addSimulation(name:string, scenario:IWeatherScenario): ISimulation {
@@ -80,16 +79,8 @@ export const SimulationStore = types.model(
       this.selected=this.simulations.get(id).id;
     },
     selectByName(name:string): ISimulation | null {
-      const finder = (i:ISimulation) => {
-        console.log(i);
-        return i.name === name;
-      };
-      const found = _.find(this.simulations.toJSON(), finder);
-      if(found) {
-        this.selected = found.id;
-        return found;
-      }
-      return null;
+      const found = _.find(this.simulations.values(), (s: ISimulation) => s.name === name);
+      return found ? this.selected = found : null;
     },
     deselect(){
       this.selected=null;
@@ -102,11 +93,6 @@ export const SimulationStore = types.model(
     },
     copySimulation(oldName:string, newName:string) {
       alert("copySimulation: Nothing happening at the moment");
-    },
-     setPref(key: string, value: any) {
-      if(this.settings) {
-        this.settings.setSetting(key, value);
-      }
     },
     rewind() {
       if(this.selected) { this.selected.rewind(); }
@@ -127,10 +113,7 @@ export const SimulationStore = types.model(
 );
 export type ISimulationStore = typeof SimulationStore.Type;
 
-export const simulationStore = SimulationStore.create({
-  simulations: {},
-  selected: null
-});
+export const simulationStore = SimulationStore.create();
 
 Firebasify(simulationStore,"Simulations");
 
