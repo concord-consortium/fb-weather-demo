@@ -42,7 +42,7 @@ export type IWeatherScenario = typeof WeatherScenario.Type;
 
 export const theWeatherScenario = WeatherScenario.create({
   id: "michigan6",
-  name: "Lake Michigan - April 2017 (6 stations)",
+  name: "Lake Michigan - April 2017 (8 stations)",
   eventUrl: gWeatherEventUrl,
   startTime: {
     year: 2017,
@@ -89,6 +89,10 @@ export const theWeatherScenario = WeatherScenario.create({
       id: "KIKK", name: "Kankakee, IL",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/" +
                   "Kankakee_County_Courthouse.jpg/250px-Kankakee_County_Courthouse.jpg"
+    },
+    {
+      id: "KVPZ", name: "Valparaiso, IN",
+      imageUrl: "http://www.preserveindiana.com/images/valpo/valpschl.jpg"
     }
   ]
 });
