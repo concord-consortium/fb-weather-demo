@@ -97,7 +97,6 @@ export class TeacherView extends React.Component<
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
     const settings = simulationStore.settings;
     if (settings) {
-      console.log(`New prediction type: ${value}`);
       settings.setSetting('enabledPredictions', value);
     }
   }

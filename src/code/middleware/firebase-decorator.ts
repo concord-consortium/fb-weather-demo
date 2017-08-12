@@ -10,7 +10,6 @@ export const Firebasify = (model:any, relativeDataPath:string, callback?:Functio
       // const dotPath = relativeDataPath.replace(/\//g,".");
       const myData = _.get(newData,relativeDataPath);
       if(myData !== undefined){
-        // console.log(`Calling applySnapshot for ${relativeDataPath}`);
         applySnapshot(model, myData);
       }
       if(isFirstTime) {
@@ -29,7 +28,6 @@ export const Firebasify = (model:any, relativeDataPath:string, callback?:Functio
   gFirebase.addListener(firebaseListener);
 
   onSnapshot(model, (newSnapshot:any) => {
-    // console.log(`Calling saveToRelativePath for ${relativeDataPath}`);
     gFirebase.saveToRelativePath(newSnapshot, relativeDataPath);
   });
 };

@@ -32,7 +32,6 @@ class WeatherEvent {
                                         return name.toLowerCase() === "time";
                                       });
                     if (timeIndex && station.rows) {
-                      console.log("Process time values");
                       _.forEach(station.rows, (row) => {
                         const timeStr = row[timeIndex],
                               // seems like weather station times are UTC?

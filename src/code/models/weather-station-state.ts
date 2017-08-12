@@ -104,7 +104,6 @@ export class WeatherStationState {
       let result = lowValue + pctInterpolate * diffValue;
       if (result < 0) { result += 360; }
       if (result > 360) { result -= 360; }
-      console.log(`lo: ${lowValue}, hi: ${highValue}, result: ${result}`);
       return result;
     }
     if (isLowNum) { return lowValue; }
