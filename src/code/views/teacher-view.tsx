@@ -148,7 +148,26 @@ export class TeacherView extends React.Component<
     };
 
     const enabledPredictions = simulationStore.settings && simulationStore.settings.enabledPredictions,
-          weatherStations = (simulationStore.stations && simulationStore.stations.stations) || [];
+          weatherStations = (simulationStore.stations && simulationStore.stations.stations) || [],
+          menuOptions = [
+            <MenuItem value={null} primaryText="Disable Predictions" />,
+            <MenuItem value={PredictionType.eDescription} primaryText="Enable Descriptive Predictions" />,
+            <MenuItem value={PredictionType.eTemperature} primaryText="Enable Temperature Predictions" />,
+            <MenuItem value={PredictionType.eWindSpeed} primaryText="Enable Wind Speed Predictions" />,
+            <MenuItem value={PredictionType.eWindDirection} primaryText="Enable Wind Direction Predictions" />
+          ].filter((item) => {
+            const settings = simulationStore.settings,
+                  showTempValues = settings && settings.showTempValues,
+                  showWindValues = settings && settings.showWindValues;
+            if (!showTempValues && (item.props.value === PredictionType.eTemperature)) {
+              return false;
+            }
+            if (!showWindValues && ((item.props.value === PredictionType.eWindSpeed) ||
+                                    item.props.value === PredictionType.eWindDirection)) {
+              return false;
+            }
+            return true;
+          });
 
     return (
       <Card>
@@ -208,9 +227,7 @@ export class TeacherView extends React.Component<
                     value={enabledPredictions}
                     autoWidth={true}
                     onChange={this.handlePredictionTypeChange}>
-                    <MenuItem value={null} primaryText="Disable Predictions" />
-                    <MenuItem value={PredictionType.eDescription} primaryText="Enable Descriptive Predictions" />
-                    <MenuItem value={PredictionType.eTemperature} primaryText="Enable Temperature Predictions" />
+                    {menuOptions}
                   </DropDownMenu>
                 </CardActions>
               </div>

@@ -42,8 +42,8 @@ export class WeatherStationView extends React.Component<
     let name = "";
     let callSign = "";
     let imgUrl = "img/farm.jpg";
-    let time = simulationStore.timeString;
-    const weatherStation = simulationStore.presenceStation,
+    const time = simulationStore.timeString,
+          weatherStation = simulationStore.presenceStation,
           tempStr = weatherStation && weatherStation.strTemperature(),
           unitTempStr = tempStr ? tempStr + "°" : tempStr,
           windSpeed = weatherStation && weatherStation.windSpeed,
@@ -94,6 +94,30 @@ export class WeatherStationView extends React.Component<
       });
     };
 
+    const settings = simulationStore.settings,
+          showTemperature = settings && settings.showTempValues,
+          showWindValues = settings && settings.showWindValues;
+
+    function renderTemperature() {
+      return showTemperature
+              ? `Temp: ${unitTempStr}`
+              : null;
+    }
+
+    function renderWindValues() {
+      return showWindValues
+              ? [
+                  <span>
+                    {`Wind: ${windSpeedStr}\xA0`}
+                  </span>,
+                  <span style={{ transform: `rotate(${arrowRotation}deg`,
+                                  display: 'inline-block'}}>
+                    {arrowChar}
+                  </span>
+              ]
+              : null;
+    }
+
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
@@ -117,16 +141,10 @@ export class WeatherStationView extends React.Component<
                   <CardTitle>
                     <div style={styles.stats}>
                       <div style={styles.temp}>
-                        {`Temp: ${unitTempStr}`}
+                        {renderTemperature()}
                       </div>
                       <div style={styles.wind}>
-                        <span>
-                          {`Wind: ${windSpeedStr}\xA0`}
-                        </span>
-                        <span style={{ transform: `rotate(${arrowRotation}deg`,
-                                        display: 'inline-block'}}>
-                          {arrowChar}
-                        </span>
+                        {renderWindValues()}
                       </div>
                     </div>
                   </CardTitle>

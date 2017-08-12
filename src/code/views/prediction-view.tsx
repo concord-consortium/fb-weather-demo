@@ -9,23 +9,30 @@ import { simulationStore } from "../stores/simulation-store";
 import * as moment from 'moment';
 
 interface IControlLabels {
-  question: string | null;     // null indicates skip the control entirely
-  prediction: string | null;   // null indicates skip the control entirely
-  description: string | null;  // null indicates skip the control entirely
+  prompt: string | null;      // null indicates skip the control entirely
+  question: string | null;    // null indicates skip the control entirely
+  prediction: string | null;  // null indicates skip the control entirely
+  description: string | null; // null indicates skip the control entirely
 }
 
 const controlsSpec: { [id: string]: IControlLabels } = {
-  description: { question: "What do you think will happen in the next hour?",
+  description: { prompt: "Given what you see happening at %sTime%,",
+                  question: "what do you think will be happening at %pTime%?",
                   prediction: null, description: "Description" },
-  temperature: { question: "What do you think the temperature will be in 60 minutes?",
+  temperature: { prompt: "At %sTime% the temperature is %sValue%°.",
+                  question: "What do you think the temperature will be at %pTime%?",
                   prediction: "Predicted Temperature", description: "Rationale" },
-  humidity: { question: "What do you think the humidity will be in 60 minutes?",
-                prediction: "Predicted Humidity", description: "Rationale" },
-  precipitation: { question: "What do you think the precipitation will be in 60 minutes?",
+  humidity: { prompt: "At %sTime% the humidity is %sValue%.",
+              question: "What do you think the humidity will be at %pTime%?",
+              prediction: "Predicted Humidity", description: "Rationale" },
+  precipitation: { prompt: "At %sTime% the precipitation is %sValue%.",
+                    question: "What do you think the precipitation will be at %pTime%?",
                     prediction: "Predicted Precipitation", description: "Rationale" },
-  windSpeed: { question: "What do you think the wind speed will be in 60 minutes?",
+  windSpeed: { prompt: "At %sTime% the wind speed is %sValue%.",
+                question: "What do you think the wind speed will be at %pTime%?",
                 prediction: "Predicted Wind Speed", description: "Rationale" },
-  windDirection: { question: "What do you think the wind direction will be in 60 minutes?",
+  windDirection: { prompt: "At %sTime% the wind direction is %sValue%.",
+                    question: "What do you think the wind direction will be at %pTime%?",
                     prediction: "Predicted Wind Direction", description: "Rationale" }
 };
 
@@ -71,21 +78,50 @@ export class PredictionView
   }
 
   predictionPrompt() {
-    const predictionType = simulationStore.settings && simulationStore.settings.enabledPredictions;
+    const settings = simulationStore.settings,
+          station = simulationStore.presenceStation,
+          predictionType = settings && settings.enabledPredictions,
+          predictionInterval = (settings && settings.predictionInterval) || 60;
+
+    function getCurrentValue() {
+      if (!station) { return ""; }
+      switch(predictionType) {
+        case PredictionType.eDescription:
+          break;
+        case PredictionType.eTemperature:
+          return station.strTemperature();
+        case PredictionType.eHumidity:
+          break;
+        case PredictionType.ePrecipitation:
+          break;
+        case PredictionType.eWindSpeed:
+          return station.strWindSpeed();
+        case PredictionType.eWindDirection:
+          return station.strWindDirection();
+      }
+      return "";
+    }
+
     if (predictionType) {
       const spec = predictionType && controlsSpec[predictionType],
-            timeStr = simulationStore.timeString || "",
-            station = simulationStore.presenceStation,
-            temperature = station && station.temperature,
-            prompt = "At time %1 the temperature is %2 degrees."
-                      .replace(/%1/, timeStr)
-                      .replace(/%2/, temperature != null ? String(temperature) : ""),
-            question = (spec && spec.question) || "";
+            simulationTime = simulationStore.simulationTime,
+            simulationTimeStr = simulationStore.timeString,
+            predictionTime = simulationTime && moment(simulationTime)
+                                                .add({ minutes: predictionInterval })
+                                                .toDate(),
+            predictionTimeStr = simulationStore.formatTime(predictionTime),
+            sValue = getCurrentValue(),
+            prompt = spec && spec.prompt && spec.prompt
+                      .replace(/%sTime%/, simulationTimeStr)
+                      .replace(/%sValue%/, sValue),
+            question = spec && spec.question && spec.question
+                        .replace(/%pTime%/, predictionTimeStr);
       return (
         <div style={styles.prompt}>
           <div>{prompt}</div>
           <div>{question}</div>
-        </div>);
+        </div>
+      );
     }
     return (
       <div style={styles.prompt}>

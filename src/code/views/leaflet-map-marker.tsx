@@ -87,7 +87,7 @@ export class LeafletMapMarker extends React.Component<
   }
 
   windSpeedDiv() {
-    const showWindValues = true; //simulationStore.settings && simulationStore.settings.showWindValues;
+    const showWindValues = simulationStore.settings && simulationStore.settings.showWindValues;
     if (showWindValues && (this.windSpeed != null) && isFinite(this.windSpeed)) {
       const windSpeedStr = this.windSpeed.toFixed(kDefaultPrecision.windSpeed);
       return `<span class="windSpeed">${windSpeedStr}</span>`;
@@ -96,7 +96,7 @@ export class LeafletMapMarker extends React.Component<
   }
 
   windDirectionDiv() {
-    const showWindValues = true; //simulationStore.settings && simulationStore.settings.showWindValues;
+    const showWindValues = simulationStore.settings && simulationStore.settings.showWindValues;
     if (showWindValues && (this.windDirection != null)) {
       const classes = `"windDirection"`,
             rotation = this.windDirection + 90,
@@ -137,7 +137,8 @@ export class LeafletMapMarker extends React.Component<
           divDiffTemp = this.diffTempDiv(),
           divWindSpeed = this.windSpeedDiv(),
           divWindDirection = this.windDirectionDiv(),
-          iconHeight = divDiffTemp ? 68 : 54;
+          iconHeight = 40 + (divDiffTemp ? 14 : 0)
+                          + (divWindSpeed || divWindDirection ? 14 : 0);
 
     if(selected) {
       classes = `${classes} selected`;

@@ -21,8 +21,8 @@ export const SimulationStore = types.model(
       return _.sortBy(_.map(this.simulations.values(), 'name'), 'name');
     },
     // Callthrough methods to selected simulation
-    get timeString(): string | null {
-      return this.selected && this.selected.timeString;
+    get timeString(): string {
+      return (this.selected && this.selected.timeString) || "";
     },
     get mapConfig(): IMapConfig | null {
       return this.selected && this.selected.mapConfig;
@@ -56,6 +56,10 @@ export const SimulationStore = types.model(
     },
     get simulationName(): string | null {
       return this.selected && this.selected.name;
+    },
+
+    formatTime(time: Date | null): string {
+      return (this.selected && this.selected.formatTime(time)) || "";
     }
   },{
 

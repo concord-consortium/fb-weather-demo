@@ -31,16 +31,21 @@ export const Simulation = types.model('Simulation', {
   get time(): Date {
     return this.control.time;
   },
-  get timeString() {
-    let m = moment(this.time);
+  get timeString(): string {
+    return this.formatTime(this.time);
+  },
+  get mapConfig(): IMapConfig {
+    return this.scenario && this.scenario.mapConfig;
+  },
+
+  formatTime(time: Date | null): string {
+    if (time == null) { return ""; }
+    let m = moment(time);
     if (this.scenario.utcOffset) {
       m = m.utcOffset(this.scenario.utcOffset);
     }
     // formatting rules see: https://momentjs.com/
     return m.format('lll');
-  },
-  get mapConfig(): IMapConfig {
-    return this.scenario && this.scenario.mapConfig;
   }
 }, {
 }, {

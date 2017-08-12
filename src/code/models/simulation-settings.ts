@@ -1,5 +1,6 @@
 import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
+import { PredictionType } from "../models/prediction";
 
 export const SimulationSettings = types.model('SimulationSettings', {
   id: types.optional(types.identifier(types.string), () => uuid()),
@@ -7,10 +8,11 @@ export const SimulationSettings = types.model('SimulationSettings', {
   showTempColors: types.optional(types.boolean, false),
   showTempValues: types.optional(types.boolean, true),
   showDeltaTemp: types.optional(types.boolean, false),
+  showWindValues: types.optional(types.boolean, true),
   showStationNames: types.optional(types.boolean, true),
   showPredictions: types.optional(types.boolean, true),
   enabledPredictions: types.maybe(types.string),  // null disables predictions
-  mapConfig: types.maybe(types.string)
+  predictionInterval: types.optional(types.number, 60)  // minutes
 }, {
 
   setSetting(key: string, value: any) {
@@ -18,10 +20,12 @@ export const SimulationSettings = types.model('SimulationSettings', {
       case 'showBaseMap': this.setShowBaseMap(value as boolean); break;
       case 'showTempColors': this.setShowTempColors(value as boolean); break;
       case 'showTempValues': this.setShowTempValues(value as boolean); break;
+      case 'showWindValues': this.setShowWindValues(value as boolean); break;
       case 'showDeltaTemp': this.setShowDeltaTemp(value as boolean); break;
       case 'showStationNames': this.setShowStationNames(value as boolean); break;
       case 'showPredictions': this.setShowPredictions(value as boolean); break;
       case 'enabledPredictions': this.setEnabledPredictions(value as string); break;
+      case 'predictionInterval': this.setPredictionInterval(value as number); break;
       default:
         console.log(`Invalid setting name: '${key}'`);
     }
@@ -37,10 +41,21 @@ export const SimulationSettings = types.model('SimulationSettings', {
 
   setShowTempValues(showTempValues: boolean) {
     this.showTempValues = showTempValues;
+    if (!showTempValues && (this.enabledPredictions === PredictionType.eTemperature)) {
+      this.enabledPredictions = null;
+    }
   },
 
   setShowDeltaTemp(showDeltaTemp: boolean) {
     this.showDeltaTemp = showDeltaTemp;
+  },
+
+  setShowWindValues(showWindValues: boolean) {
+    this.showWindValues = showWindValues;
+    if (!showWindValues && ((this.enabledPredictions === PredictionType.eWindSpeed) ||
+                            (this.enabledPredictions === PredictionType.eWindDirection))) {
+      this.enabledPredictions = null;
+    }
   },
 
   setShowStationNames(showStationNames: boolean) {
@@ -54,10 +69,9 @@ export const SimulationSettings = types.model('SimulationSettings', {
   setEnabledPredictions(enabledPredictions: string) {
     this.enabledPredictions = enabledPredictions;
   },
-  postProcessSnapshot(snapshot:any) {
-    snapshot.selected = null;
-    return snapshot;
-  }
 
+  setPredictionInterval(predictionInterval: number) {
+    this.predictionInterval = predictionInterval;
+  }
 });
 export type ISimulationSettings = typeof SimulationSettings.Type;
