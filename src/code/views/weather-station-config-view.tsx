@@ -8,26 +8,24 @@ import { simulationStore } from "../stores/simulation-store";
 
 export interface WeatherStationConfigState {}
 export interface WeatherStationConfigProps {
-  change(key: any): void;
-  x: number;
-  y: number;
-  name: string;
+  station?: IWeatherStation | null;
+  onChangeStation(station: IWeatherStation | null): void;
 }
 
 @observer
 export class WeatherStationConfigView extends React.Component<
-  WeatherStationConfigProps,
-  WeatherStationConfigState
-> {
+                                                WeatherStationConfigProps,
+                                                WeatherStationConfigState> {
   constructor(props: WeatherStationConfigProps, ctx: any) {
     super(props, ctx);
   }
 
   setStation = (evt: any, index: number, value: any) => {
-    const presences = simulationStore.presences,
-          stations = simulationStore.stations,
+    const stations = simulationStore.stations,
           station = (stations && stations.getStation(value)) || null;
-    if (presences) { presences.setStation(station); }
+    if (this.props.onChangeStation) {
+      this.props.onChangeStation(station);
+    }
   }
 
   renderStationList() {
@@ -41,7 +39,7 @@ export class WeatherStationConfigView extends React.Component<
   }
 
   render() {
-    const weatherStation = simulationStore.presenceStation;
+    const weatherStation = this.props.station || simulationStore.presenceStation;
     const weatherStationId = weatherStation && weatherStation.callSign;
 
     const styles: ComponentStyleMap = {

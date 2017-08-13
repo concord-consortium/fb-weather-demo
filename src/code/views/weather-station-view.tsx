@@ -12,38 +12,41 @@ export type StationTab = "configure" | "weather";
 
 export interface WeatherStationProps {
 }
-
 export interface WeatherStationState {
   tab: StationTab;
+  station?: IWeatherStation | null;
 }
 
 @observer
 export class WeatherStationView extends React.Component<
-  WeatherStationProps,
-  WeatherStationState
-> {
-  pending: any;
-
+                                          WeatherStationProps,
+                                          WeatherStationState> {
   constructor(props: WeatherStationProps, context: any) {
     super(props);
+
+    const station = simulationStore.presenceStation;
     this.state = {
-      tab: "configure"
+      tab: station ? "weather" : "configure",
+      station
     };
   }
 
-  setConfig(data: IWeatherStation) {
+  handleChangeStation = (station: IWeatherStation | null) => {
     const presences = simulationStore.presences;
-    if (presences) { presences.setStation(data); }
+    if (presences) {
+      presences.setStation(station);
+      if (station) {
+        this.setState({ tab: "weather", station });
+      }
+    }
   }
 
   render() {
-    let x = 0;
-    let y = 0;
     let name = "";
     let callSign = "";
     let imgUrl = "img/farm.jpg";
     const time = simulationStore.timeString,
-          weatherStation = simulationStore.presenceStation,
+          weatherStation = this.state.station || simulationStore.presenceStation,
           tempStr = weatherStation && weatherStation.strTemperature(),
           unitTempStr = tempStr ? tempStr + "°" : tempStr,
           windSpeed = weatherStation && weatherStation.windSpeed,
@@ -60,8 +63,9 @@ export class WeatherStationView extends React.Component<
       imgUrl = weatherStation.imageUrl;
     }
 
-    const change = this.setConfig.bind(this);
     const styles: ComponentStyleMap = {
+      card: {
+      },
       info: {
         display: "flex",
         flexDirection: "row",
@@ -69,12 +73,19 @@ export class WeatherStationView extends React.Component<
         alignItems: "flex-start"
       },
       callSign: {
-        fontSize: "14pt",
+        fontSize: "16pt",
         fontWeight: "bold"
       },
       name: {
-        fontSize: "9pt",
+        fontSize: "16pt",
         fontWeight: "bold"
+      },
+      media: {
+      },
+      image: {
+        height: 600,
+        maxHeight: 600,
+        objectFit: 'contain'
       },
       stats: {
         display: "flex",
@@ -107,11 +118,11 @@ export class WeatherStationView extends React.Component<
     function renderWindValues() {
       return showWindValues
               ? [
-                  <span>
+                  <span key='speed'>
                     {`Wind: ${windSpeedStr}\xA0`}
                   </span>,
-                  <span style={{ transform: `rotate(${arrowRotation}deg`,
-                                  display: 'inline-block'}}>
+                  <span key='direction'
+                        style={{ transform: `rotate(${arrowRotation}deg`, display: 'inline-block'}}>
                     {arrowChar}
                   </span>
               ]
@@ -119,10 +130,10 @@ export class WeatherStationView extends React.Component<
     }
 
     return (
-      <Card>
+      <Card style={styles.card}>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
           <Tab label="Configure" value="configure">
-            <WeatherStationConfigView x={x} y={y} name={name} change={change} />
+            <WeatherStationConfigView station={weatherStation} onChangeStation={this.handleChangeStation} />
           </Tab>
           <Tab label="Weather" value="weather">
             <CardText>
@@ -135,7 +146,7 @@ export class WeatherStationView extends React.Component<
                 </div>
               </div>
             </CardText>
-            <CardMedia
+            <CardMedia style={styles.media}
               overlay={
                 <div>
                   <CardTitle>
@@ -152,9 +163,8 @@ export class WeatherStationView extends React.Component<
                     {time}
                   </CardText>
                 </div>
-              }
-            >
-              <img src={imgUrl} />
+              } >
+              <img style={styles.image} src={imgUrl} />
             </CardMedia>
           </Tab>
           <Tab label="Predict" value="predict">
