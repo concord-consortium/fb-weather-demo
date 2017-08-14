@@ -47,8 +47,8 @@ export class WeatherStationView extends React.Component<
     let imgUrl = "img/farm.jpg";
     const time = simulationStore.timeString,
           weatherStation = this.state.station || simulationStore.presenceStation,
-          tempStr = weatherStation && weatherStation.strTemperature(),
-          unitTempStr = tempStr ? tempStr + "°" : tempStr,
+          temperature = weatherStation && weatherStation.temperature,
+          unitTempStr = simulationStore.formatTemperature(temperature, { withDegreeUnit: true }),
           windSpeed = weatherStation && weatherStation.windSpeed,
           isNonZeroSpeed = windSpeed && isFinite(windSpeed),
           windSpeedStr = weatherStation && weatherStation.strWindSpeed(),
@@ -93,7 +93,7 @@ export class WeatherStationView extends React.Component<
         color: "hsla(0, 0%, 100%, 0.9)"
       },
       temp: {
-        minWidth: '5em'
+        minWidth: '6em'
       },
       time: {
         color: "hsla(0, 0%, 80%, 0.9)"

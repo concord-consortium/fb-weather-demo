@@ -19,7 +19,7 @@ const controlsSpec: { [id: string]: IControlLabels } = {
   description: { prompt: "Given what you see happening at %sTime%,",
                   question: "what do you think will be happening at %pTime%?",
                   prediction: null, description: "Description" },
-  temperature: { prompt: "At %sTime% the temperature is %sValue%°.",
+  temperature: { prompt: "At %sTime% the temperature is %sValue%.",
                   question: "What do you think the temperature will be at %pTime%?",
                   prediction: "Predicted Temperature", description: "Rationale" },
   humidity: { prompt: "At %sTime% the humidity is %sValue%.",
@@ -89,7 +89,7 @@ export class PredictionView
         case PredictionType.eDescription:
           break;
         case PredictionType.eTemperature:
-          return station.strTemperature();
+          return simulationStore.formatTemperature(station.temperature, { withDegreeUnit: true });
         case PredictionType.eHumidity:
           break;
         case PredictionType.ePrecipitation:

@@ -2,17 +2,40 @@ import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 import { PredictionType } from "../models/prediction";
 
+enum TempUnits {
+  Celsius = "C",
+  Fahrenheit = "F"
+}
+
+export type IFormatTempOptions = {
+  precision?: number,
+  withDegree?: boolean,
+  withDegreeUnit?: boolean
+};
+
 export const SimulationSettings = types.model('SimulationSettings', {
   id: types.optional(types.identifier(types.string), () => uuid()),
   showBaseMap: types.optional(types.boolean, true),
   showTempColors: types.optional(types.boolean, false),
   showTempValues: types.optional(types.boolean, true),
   showDeltaTemp: types.optional(types.boolean, false),
+  tempUnit: types.optional(types.enumeration("TempUnit",
+                                              [TempUnits.Celsius, TempUnits.Fahrenheit]),
+                                              TempUnits.Fahrenheit),
   showWindValues: types.optional(types.boolean, true),
   showStationNames: types.optional(types.boolean, true),
   showPredictions: types.optional(types.boolean, true),
   enabledPredictions: types.maybe(types.string),  // null disables predictions
-  predictionInterval: types.optional(types.number, 60)  // minutes
+  predictionInterval: types.optional(types.number, 60), // minutes
+
+  formatTemperature(temp: number, options?: IFormatTempOptions): string {
+    if ((temp == null) || !isFinite(temp)) { return ""; }
+    const t = this.tempUnit === TempUnits.Fahrenheit ? temp * 9 / 5 + 32 : temp,
+          o = options || {};
+    return t.toFixed(o.precision || 0)
+            + (o.withDegree ? "°" : "")
+            + (o.withDegreeUnit ? `°${this.tempUnit}` : "");
+  }
 }, {
 
   setSetting(key: string, value: any) {

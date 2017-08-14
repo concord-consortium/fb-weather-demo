@@ -32,10 +32,6 @@ export const WeatherStation = types.model("WeatherStation",
     return this.state && this.state.temperature;
   },
 
-  strTemperature(precision = kDefaultPrecision.temperature): string {
-    return this.state && this.state.strTemperature();
-  },
-
   get windSpeed(): number | null {
     return this.state && this.state.windSpeed;
   },

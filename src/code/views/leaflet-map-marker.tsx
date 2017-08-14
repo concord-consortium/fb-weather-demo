@@ -15,9 +15,8 @@ interface LeafletMapMarkerState {}
 
 @observer
 export class LeafletMapMarker extends React.Component<
-  LeafletMapMarkerProps,
-  LeafletMapMarkerState
-> {
+                                        LeafletMapMarkerProps,
+                                        LeafletMapMarkerState> {
   constructor(props: LeafletMapMarkerProps, ctx: any) {
     super(props, ctx);
   }
@@ -58,8 +57,8 @@ export class LeafletMapMarker extends React.Component<
     const showPredictions = simulationStore.settings && simulationStore.settings.showPredictions;
     if(showPredictions && this.prediction) {
       if ((this.predictedTemp != null) && isFinite(this.predictedTemp)) {
-        const predictedTempString = this.predictedTemp.toFixed(kDefaultPrecision.temperature);
-        return `<span class="predictTemp">${predictedTempString}°</span> /`;
+        const predictedTempString = simulationStore.formatTemperature(this.predictedTemp, { withDegree: true });
+        return `<span class="predictTemp">${predictedTempString}</span> /`;
       }
     }
     return "";
@@ -68,8 +67,8 @@ export class LeafletMapMarker extends React.Component<
   actualTempDiv() {
     const showTempValues = simulationStore.settings && simulationStore.settings.showTempValues;
     if (showTempValues && (this.actualTemp != null) && isFinite(this.actualTemp)) {
-      const actualTempString = this.actualTemp.toFixed(kDefaultPrecision.temperature);
-      return `<span class="actualTemp">${actualTempString}°</span>`;
+      const actualTempString = simulationStore.formatTemperature(this.actualTemp, { withDegree: true });
+      return `<span class="actualTemp">${actualTempString}</span>`;
     }
     return "";
   }
@@ -77,11 +76,8 @@ export class LeafletMapMarker extends React.Component<
   diffTempDiv() {
     const showDeltaTemp = simulationStore.settings && simulationStore.settings.showDeltaTemp;
     if (showDeltaTemp && (this.diffTemp != null) && isFinite(this.diffTemp)) {
-      let diffTempString = this.diffTemp.toFixed(kDefaultPrecision.temperature);
-      diffTempString = diffTempString === "0"
-                        ? diffTempString
-                        : (this.diffTemp < 0 ? diffTempString : `+${diffTempString}`);
-      return `<div class="diffTemp">${diffTempString}&#8457</div>`;
+      let diffTempString = simulationStore.formatTemperature(this.diffTemp, { withDegreeUnit: true });
+      return `<div class="diffTemp">${diffTempString}</div>`;
     }
     return "";
   }
