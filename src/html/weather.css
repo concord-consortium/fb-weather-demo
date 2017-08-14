@@ -71,6 +71,9 @@ table.GridView td.set {
   font-size: 0.8em;
   border-radius: 0.25em;
 }
+.windSpeedUnit {
+  font-size: .6em;
+}
 .divIconContent {
   font-size: 8pt;
 }

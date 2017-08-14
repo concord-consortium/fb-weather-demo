@@ -2,7 +2,7 @@ import { types } from "mobx-state-tree";
 import { Firebasify } from "../middleware/firebase-decorator";
 import { Simulation, ISimulation } from "../models/simulation";
 import { IPresence } from "../models/presence";
-import { ISimulationSettings, IFormatTempOptions } from "../models/simulation-settings";
+import { ISimulationSettings, IFormatTempOptions, IFormatWindSpeedOptions } from "../models/simulation-settings";
 import { IWeatherScenario } from "../models/weather-scenario";
 import { IWeatherStation } from "../models/weather-station";
 import { IMapConfig } from "../models/map-config";
@@ -62,6 +62,9 @@ export const SimulationStore = types.model(
     },
     formatTemperature(temp: number | null, options: IFormatTempOptions): string {
       return this.settings ? this.settings.formatTemperature(temp, options) : "";
+    },
+    formatWindSpeed(windSpeed: number | null, options: IFormatWindSpeedOptions): string {
+      return this.settings ? this.settings.formatWindSpeed(windSpeed, options) : "";
     }
   },{
     selected: null as any as ISimulation | null

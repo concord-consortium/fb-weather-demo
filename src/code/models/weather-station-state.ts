@@ -3,7 +3,6 @@ import { ISimulationControl } from "./simulation-control";
 import * as _ from "lodash";
 
 export const kDefaultPrecision = {
-              windSpeed: 1,
               windDirection: 0
             };
 
@@ -118,11 +117,6 @@ export class WeatherStationState {
   @computed
   get windSpeed() {
     return this.interpolate(this.colIndices.windSpeed);
-  }
-
-  strWindSpeed(precision = kDefaultPrecision.windSpeed) {
-    const s = this.windSpeed;
-    return s && isFinite(s) ? s.toFixed(precision) : "";
   }
 
   @computed

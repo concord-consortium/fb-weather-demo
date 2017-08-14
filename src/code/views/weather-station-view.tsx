@@ -51,7 +51,7 @@ export class WeatherStationView extends React.Component<
           unitTempStr = simulationStore.formatTemperature(temperature, { withDegreeUnit: true }),
           windSpeed = weatherStation && weatherStation.windSpeed,
           isNonZeroSpeed = windSpeed && isFinite(windSpeed),
-          windSpeedStr = weatherStation && weatherStation.strWindSpeed(),
+          windSpeedStr = simulationStore.formatWindSpeed(windSpeed, { withUnit: true }),
           windDirection = weatherStation && weatherStation.windDirection,
           arrowRotation = (windDirection != null) && isFinite(windDirection)
                             ? windDirection + 90 : null,

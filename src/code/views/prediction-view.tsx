@@ -95,7 +95,7 @@ export class PredictionView
         case PredictionType.ePrecipitation:
           break;
         case PredictionType.eWindSpeed:
-          return station.strWindSpeed();
+          return simulationStore.formatWindSpeed(station.windSpeed, { withUnit: true });
         case PredictionType.eWindDirection:
           return station.strWindDirection();
       }

@@ -7,10 +7,20 @@ enum TempUnits {
   Fahrenheit = "F"
 }
 
+enum WindSpeedUnits {
+  KPH = "kph",
+  MPH = "mph"
+}
+
 export type IFormatTempOptions = {
   precision?: number,
   withDegree?: boolean,
   withDegreeUnit?: boolean
+};
+
+export type IFormatWindSpeedOptions = {
+  precision?: number,
+  withUnit?: boolean
 };
 
 export const SimulationSettings = types.model('SimulationSettings', {
@@ -23,6 +33,9 @@ export const SimulationSettings = types.model('SimulationSettings', {
                                               [TempUnits.Celsius, TempUnits.Fahrenheit]),
                                               TempUnits.Fahrenheit),
   showWindValues: types.optional(types.boolean, true),
+  windSpeedUnit: types.optional(types.enumeration("WindUnit",
+                                              [WindSpeedUnits.KPH, WindSpeedUnits.MPH]),
+                                              WindSpeedUnits.MPH),
   showStationNames: types.optional(types.boolean, true),
   showPredictions: types.optional(types.boolean, true),
   enabledPredictions: types.maybe(types.string),  // null disables predictions
@@ -35,6 +48,13 @@ export const SimulationSettings = types.model('SimulationSettings', {
     return t.toFixed(o.precision || 0)
             + (o.withDegree ? "°" : "")
             + (o.withDegreeUnit ? `°${this.tempUnit}` : "");
+  },
+
+  formatWindSpeed(windSpeed: number, options?: IFormatWindSpeedOptions): string {
+    if ((windSpeed == null) || !isFinite(windSpeed)) { return ""; }
+    const w = this.windSpeedUnit === WindSpeedUnits.KPH ? windSpeed * 3.6 : windSpeed * 2.23694,
+          o = options || {};
+    return `${w.toFixed(o.precision || 0)}${o.withUnit ? ' ' + this.windSpeedUnit : ''}`;
   }
 }, {
 

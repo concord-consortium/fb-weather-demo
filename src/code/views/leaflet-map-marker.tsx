@@ -4,7 +4,7 @@ import { Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
 import { PredictionType } from "../models/prediction";
 import { simulationStore } from "../stores/simulation-store";
-import { IWeatherStation, kDefaultPrecision } from "../models/weather-station";
+import { IWeatherStation } from "../models/weather-station";
 
 interface LeafletMapMarkerProps {
   weatherStation: IWeatherStation;
@@ -83,10 +83,14 @@ export class LeafletMapMarker extends React.Component<
   }
 
   windSpeedDiv() {
-    const showWindValues = simulationStore.settings && simulationStore.settings.showWindValues;
+    const settings = simulationStore.settings,
+          showWindValues = settings && settings.showWindValues,
+          windSpeedUnit = (settings && settings.windSpeedUnit) || "";
     if (showWindValues && (this.windSpeed != null) && isFinite(this.windSpeed)) {
-      const windSpeedStr = this.windSpeed.toFixed(kDefaultPrecision.windSpeed);
-      return `<span class="windSpeed">${windSpeedStr}</span>`;
+      const windSpeedStr = simulationStore.formatWindSpeed(this.windSpeed, {withUnit: false }),
+            kFourPerEmSpace = '\u2005';
+      return `<span class="windSpeed">${windSpeedStr}</span>` +
+            `<span class="windSpeedUnit">${kFourPerEmSpace + windSpeedUnit}</span>`;
     }
     return "";
   }
@@ -154,7 +158,7 @@ export class LeafletMapMarker extends React.Component<
           </div>
           ${this.callsignDiv()}
         </div>`,
-      iconSize: [50, iconHeight],
+      iconSize: [54, iconHeight],
       className: classes
     });
 
