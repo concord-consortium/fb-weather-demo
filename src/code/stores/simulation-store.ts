@@ -3,7 +3,7 @@ import { Firebasify } from "../middleware/firebase-decorator";
 import { Simulation, ISimulation } from "../models/simulation";
 import { IPresence } from "../models/presence";
 import { ISimulationSettings, IFormatTempOptions, IFormatWindSpeedOptions } from "../models/simulation-settings";
-import { IWeatherScenario } from "../models/weather-scenario";
+import { IWeatherScenarioSpec } from "../models/weather-scenario-spec";
 import { IWeatherStation } from "../models/weather-station";
 import { IMapConfig } from "../models/map-config";
 import { IPredictionStore } from "./prediction-store";
@@ -17,7 +17,8 @@ export const SimulationStore = types.model(
     simulations: types.optional(types.map(Simulation), {}),
 
     get simulationList(): ISimulation[] {
-      return _.sortBy(_.map(this.simulations.values(), 'name'), 'name');
+      const names = _.map(this.simulations.values(), 'name');
+      return _.sortBy(names, (n: string) => n && n.toLowerCase());
     },
     // Callthrough methods to selected simulation
     get timeString(): string {
@@ -70,7 +71,7 @@ export const SimulationStore = types.model(
     selected: null as any as ISimulation | null
   },
   {
-    addSimulation(name:string, scenario:IWeatherScenario): ISimulation {
+    addSimulation(name:string, scenario:IWeatherScenarioSpec): ISimulation {
       const simulation = Simulation.create({
         name: name,
         scenario: scenario

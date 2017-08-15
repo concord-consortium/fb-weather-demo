@@ -3,8 +3,8 @@ import { SimulationControl } from "./simulation-control";
 import { SimulationSettings } from "./simulation-settings";
 import { IMapConfig } from "./map-config";
 import { gWeatherEvent } from "./weather-event";
-import { theWeatherScenario } from "./weather-scenario";
 import { WeatherScenario, IStationSpec } from "./weather-scenario";
+import { gWeatherScenarioSpec } from "./weather-scenario-spec";
 import { WeatherStation, IWeatherStation } from "./weather-station";
 import { WeatherStationState } from "./weather-station-state";
 import { PresenceStore } from "../stores/presence-store";
@@ -18,7 +18,7 @@ import * as moment from 'moment';
 export const Simulation = types.model('Simulation', {
   name: types.string,
   id: types.optional(types.identifier(types.string), () => uuid()),
-  scenario: types.optional(WeatherScenario, theWeatherScenario),
+  scenario: types.optional(WeatherScenario,     () => WeatherScenario.create(gWeatherScenarioSpec)),
   control: types.optional(SimulationControl,    () => SimulationControl.create()),
   settings: types.optional(SimulationSettings,  () => SimulationSettings.create()),
   presences: types.optional(PresenceStore,      () => PresenceStore.create()),
@@ -73,7 +73,7 @@ export const Simulation = types.model('Simulation', {
             station.setLocation({ lat: stationData.lat, long: stationData.long });
           }
 
-          const startTime = this.scenario._startTime || gWeatherEvent.startTime;
+          const startTime = this.scenario.startTime || gWeatherEvent.startTime;
           if (!this.control.startTime) {
             this.control.setStartTime(startTime);
           }

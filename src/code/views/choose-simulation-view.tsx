@@ -12,10 +12,9 @@ import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
 import { simulationStore } from "../stores/simulation-store";
-import { theWeatherScenario } from "../models/weather-scenario";
+import { gWeatherScenarioSpec } from "../models/weather-scenario-spec";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
-
-const _ = require("lodash");
+import * as _ from "lodash";
 
 interface routeParams {
   simulationName: string;
@@ -118,7 +117,7 @@ export class ChooseSimulationView extends React.Component<
       simulationStore.deleteSimulation(this.state.newSimulationName);
     }
     if (this.state.nowShowing === DialogType.New) {
-      simulationStore.addSimulation(this.state.newSimulationName, theWeatherScenario);
+      simulationStore.addSimulation(this.state.newSimulationName, gWeatherScenarioSpec);
     }
     this.setState({ nowShowing: DialogType.None });
   }
