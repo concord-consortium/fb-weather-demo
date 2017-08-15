@@ -8,8 +8,12 @@ export const WeatherStationStore = types.model(
     stationMap: types.optional(types.map(WeatherStation), {}),
     selected: types.maybe(types.reference(WeatherStation)),
 
-    getStation(callSign: string) : IWeatherStation | undefined {
+    getStation(callSign: string): IWeatherStation | undefined {
       return _.find(this.stations, (station: IWeatherStation) => station.callSign === callSign);
+    },
+
+    getStationByID(id: string): IWeatherStation | undefined {
+      return this.stationMap.get(id);
     },
 
     get stations(): IWeatherStation[] {
