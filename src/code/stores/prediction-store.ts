@@ -42,9 +42,6 @@ export const PredictionStore = types.model("PredictionStore", {
     return this.predictionsFor(station)[0] || null;
   }
 },{
-  setPrediction(station:IWeatherStation, prediction:IPrediction) {
-    prediction.station = station;
-  },
   addPrediction(prediction:IPrediction) {
     const station = simulationStore.presenceStation;
     if (station) {

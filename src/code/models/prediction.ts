@@ -1,6 +1,7 @@
 import { types } from "mobx-state-tree";
-import { WeatherStation, IWeatherStation } from "./weather-station";
 import { v1 as uuid } from "uuid";
+import { IWeatherStation } from "./weather-station";
+import { simulationStore } from "../stores/simulation-store";
 
 export enum PredictionType {
   eDescription = 'description',
@@ -13,7 +14,7 @@ export enum PredictionType {
 
 export const Prediction = types.model("Prediction", {
   id: types.optional(types.identifier(types.string), () => uuid()),
-  station: types.maybe(types.reference(WeatherStation)),
+  stationID: types.maybe(types.string),
   type: types.enumeration('PredictionType', [
                             PredictionType.eDescription,
                             PredictionType.eTemperature,
@@ -27,10 +28,15 @@ export const Prediction = types.model("Prediction", {
   predictedTime: types.Date,
   predictedValue: types.maybe(types.number),
   description: types.optional(types.string, ""),
-  imageUrl: types.maybe(types.string)
+  imageUrl: types.maybe(types.string),
+
+  get station(): IWeatherStation | null {
+    const stations = simulationStore.stations;
+    return (stations && stations.getStationByID(this.stationID)) || null;
+  }
 }, {
   setStation(station: IWeatherStation) {
-    this.station = station;
+    this.stationID = station ? station.id : null;
   }
 });
 export type IPrediction = typeof Prediction.Type;

@@ -6,7 +6,11 @@ export const WeatherStationStore = types.model(
   "WeatherStationStore",
   {
     stationMap: types.optional(types.map(WeatherStation), {}),
-    selected: types.maybe(types.reference(WeatherStation)),
+    selectedID: types.maybe(types.string),
+
+    get selected(): IWeatherStation | null {
+      return this.stationMap.get(this.selectedID) || null;
+    },
 
     getStation(callSign: string): IWeatherStation | undefined {
       return _.find(this.stations, (station: IWeatherStation) => station.callSign === callSign);
@@ -22,14 +26,6 @@ export const WeatherStationStore = types.model(
     }
   },
   {
-    preProcessSnapshot(snapshot: any) {
-      if (snapshot.selected) {
-        if (!snapshot.stationMap[snapshot.selected]){
-          snapshot.selected = null;
-        }
-      }
-      return snapshot;
-    },
     addStations(stations: IWeatherStation[]) {
       stations.forEach((station) => {
         let thisStation = this.getStation(station.callSign);
@@ -41,14 +37,11 @@ export const WeatherStationStore = types.model(
         }
       });
     },
-    select(station:IWeatherStation) {
-      // When converting weatherStations to a Map from an array
-      // this method of selected=station stopped working (?)
-      // now we have to specify the station id...
-      this.selected=station.id;
+    select(station: IWeatherStation) {
+      this.selectedID = station.id;
     },
     deselect(){
-      this.selected=null;
+      this.selected = null;
     }
   }
 );

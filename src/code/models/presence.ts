@@ -1,7 +1,8 @@
 import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
-import { IWeatherStation, WeatherStation } from "./weather-station";
+import { IWeatherStation } from "./weather-station";
 import { simulationStore } from "../stores/simulation-store";
+import { IWeatherStationStore } from "../stores/weather-station-store";
 
 export const presenceId = () => {
   const sessionID = localStorage.getItem("CCweatherSession") || uuid();
@@ -12,10 +13,15 @@ export const presenceId = () => {
 export const Presence = types.model("Presence",
 {
   // properties
-  username: types.optional(types.string, () => "anonymous"),
   id: types.optional(types.identifier(types.string), ()=> presenceId()),
+  username: types.optional(types.string, () => "anonymous"),
   start: types.optional(types.Date, () => new Date()),
-  weatherStation: types.maybe(types.reference(WeatherStation))
+  weatherStationID: types.maybe(types.string),
+
+  get weatherStation(): IWeatherStation | null {
+    const stations: IWeatherStationStore | null = simulationStore.stations;
+    return stations && stations.getStationByID(this.weatherStationID) || null;
+  }
 },{
   // volatile
 },{
@@ -24,17 +30,7 @@ export const Presence = types.model("Presence",
     this.username = name;
   },
   setStation(station:IWeatherStation | null) {
-    this.weatherStation = station;
-  },
-
-  // hooks
-  preProcessSnapshot(snapshot: any) {
-    const stations = simulationStore.stations,
-          weatherStation = stations && stations.getStationByID(snapshot.weatherStation);
-    if (stations && !weatherStation) {
-      snapshot.weatherStation = null;
-    }
-    return snapshot;
+    this.weatherStationID = station ? station.id : null;
   }
 });
 

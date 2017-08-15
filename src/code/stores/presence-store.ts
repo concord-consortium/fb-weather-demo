@@ -26,12 +26,7 @@ export const PresenceStore = types.model(
       return presence;
     },
     createPresence(): IPresence {
-      const presence = Presence.create( {
-        id: presenceId(),
-        start: new Date(),
-        username: "anonymous",
-        weatherStation: null
-      });
+      const presence = Presence.create();
       return this.addPresence(presence);
     },
     initPresence() {
