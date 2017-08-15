@@ -39,10 +39,8 @@ export class LeafletMapMarker extends React.Component<
   }
 
   get diffTemp() {
-    if(this.actualTemp && this.predictedTemp) {
-      return(this.actualTemp - this.predictedTemp);
-    }
-    return null;
+    return (this.predictedTemp != null) && (this.actualTemp != null)
+              ? this.predictedTemp - this.actualTemp : null;
   }
 
   get windSpeed() {
@@ -76,7 +74,8 @@ export class LeafletMapMarker extends React.Component<
   diffTempDiv() {
     const showDeltaTemp = simulationStore.settings && simulationStore.settings.showDeltaTemp;
     if (showDeltaTemp && (this.diffTemp != null) && isFinite(this.diffTemp)) {
-      let diffTempString = simulationStore.formatTemperature(this.diffTemp, { withDegreeUnit: true });
+      const options = { asDifference: true, withDegreeUnit: true },
+            diffTempString = simulationStore.formatTemperature(this.diffTemp, options);
       return `<div class="diffTemp">${diffTempString}</div>`;
     }
     return "";

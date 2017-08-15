@@ -33,6 +33,18 @@ export const Prediction = types.model("Prediction", {
   get station(): IWeatherStation | null {
     const stations = simulationStore.stations;
     return (stations && stations.getStationByID(this.stationID)) || null;
+  },
+
+  formatPredictedValue(options: any): string {
+    switch(this.type) {
+      case PredictionType.eTemperature:
+        return simulationStore.formatTemperature(this.predictedValue, options);
+      case PredictionType.eWindSpeed:
+        return simulationStore.formatWindSpeed(this.predictedValue, options);
+      case PredictionType.eWindDirection:
+        return simulationStore.formatWindDirection(this.predictedValue, options);
+    }
+    return "";
   }
 }, {
   setStation(station: IWeatherStation) {

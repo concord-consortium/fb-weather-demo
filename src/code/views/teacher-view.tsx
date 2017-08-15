@@ -107,12 +107,13 @@ export class TeacherView extends React.Component<
       const predictions = simulationStore.predictions && simulationStore.predictions.teacherPredictions;
 
       const renderPrediction = (prediction:IPrediction, index:number) => {
-        const style = index % 2 === 0 ? styles.predictionItemEven :  styles.predictionItemOdd;
+        const style = index % 2 === 0 ? styles.predictionItemEven :  styles.predictionItemOdd,
+              predictedValue = prediction && prediction.formatPredictedValue({ withDegreeUnit: true });
         const result =(
           <div style={style} key={index}>
              {/* <span style={styles.temp}>{prediction.timeStamp}</span> */}
             <span style={styles.label}>Temp:</span>
-            <span style={styles.temp}>{prediction.predictedValue}°</span>
+            <span style={styles.temp}>{"\xA0" + predictedValue}</span>
             <div style={styles.label}>Reasoning:</div>
             <div style={styles.rationale}>{prediction.description}</div>
           </div>);

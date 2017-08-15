@@ -64,8 +64,20 @@ export const SimulationStore = types.model(
     formatTemperature(temp: number | null, options: IFormatTempOptions): string {
       return this.settings ? this.settings.formatTemperature(temp, options) : "";
     },
+    parseTemperature(temp: string): number | null {
+      return this.settings && this.settings.parseTemperature(temp);
+    },
     formatWindSpeed(windSpeed: number | null, options: IFormatWindSpeedOptions): string {
       return this.settings ? this.settings.formatWindSpeed(windSpeed, options) : "";
+    },
+    parseWindSpeed(windSpeed: string): number | null {
+      return this.settings && this.settings.parseWindSpeed(windSpeed);
+    },
+    formatWindDirection(windSpeed: number | null, options: IFormatWindSpeedOptions): string {
+      return this.settings ? this.settings.formatWindDirection(windSpeed, options) : "";
+    },
+    parseWindDirection(windDirection: string): number | null {
+      return this.settings && this.settings.parseWindDirection(windDirection);
     }
   },{
     selected: null as any as ISimulation | null

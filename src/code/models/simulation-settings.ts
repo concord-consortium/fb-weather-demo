@@ -15,13 +15,17 @@ enum WindSpeedUnits {
 export type IFormatTempOptions = {
   precision?: number,
   withDegree?: boolean,
-  withDegreeUnit?: boolean
+  withDegreeUnit?: boolean,
+  asDifference?: boolean
 };
 
 export type IFormatWindSpeedOptions = {
   precision?: number,
   withUnit?: boolean
 };
+
+const kMetersPerSecToMPH = 2.23694,
+      kMetersPerSecToKPH = 3.6;
 
 export const SimulationSettings = types.model('SimulationSettings', {
   id: types.optional(types.identifier(types.string), () => uuid()),
@@ -43,18 +47,58 @@ export const SimulationSettings = types.model('SimulationSettings', {
 
   formatTemperature(temp: number, options?: IFormatTempOptions): string {
     if ((temp == null) || !isFinite(temp)) { return ""; }
-    const t = this.tempUnit === TempUnits.Fahrenheit ? temp * 9 / 5 + 32 : temp,
-          o = options || {};
-    return t.toFixed(o.precision || 0)
+    const o = options || {},
+          d = o.asDifference ? 0 : 32,
+          t = this.tempUnit === TempUnits.Fahrenheit ? temp * 9 / 5 + d : temp;
+    let s = t.toFixed(o.precision || 0);
+
+    // eliminate "-0"
+    if (s === "-0") { s = "0"; }
+    // format positive differences with '+'
+    if (o.asDifference && (s !== "0") && (s[0] !== '-')) {
+      s = '+' + s;
+    }
+    return s
             + (o.withDegree ? "°" : "")
             + (o.withDegreeUnit ? `°${this.tempUnit}` : "");
   },
 
+  parseTemperature(temp: string): number | null {
+    const t = parseFloat(temp);
+    if ((t == null) || !isFinite(t)) { return null; }
+    // convert to Celsius for internal storage
+    return this.tempUnit === TempUnits.Fahrenheit ? (t - 32) * 5 / 9 : t;
+  },
+
+  get windSpeedConversion() {
+    return this.windSpeedUnit === WindSpeedUnits.KPH
+            ? kMetersPerSecToKPH : kMetersPerSecToMPH;
+  },
+
   formatWindSpeed(windSpeed: number, options?: IFormatWindSpeedOptions): string {
     if ((windSpeed == null) || !isFinite(windSpeed)) { return ""; }
-    const w = this.windSpeedUnit === WindSpeedUnits.KPH ? windSpeed * 3.6 : windSpeed * 2.23694,
+    const w = windSpeed * this.windSpeedConversion,
           o = options || {};
     return `${w.toFixed(o.precision || 0)}${o.withUnit ? ' ' + this.windSpeedUnit : ''}`;
+  },
+
+  parseWindSpeed(windSpeed: string): number | null {
+    const w = parseFloat(windSpeed);
+    if ((w == null) || !isFinite(w)) { return null; }
+    return w / this.windSpeedConversion;
+  },
+
+  formatWindDirection(windDirection: number, options?: IFormatWindSpeedOptions): string {
+    if ((windDirection == null) || !isFinite(windDirection)) { return ""; }
+    const w = windDirection,
+          o = options || {};
+    return `${w.toFixed(o.precision || 0)}`;
+  },
+
+  parseWindDirection(windDirection: string): number | null {
+    const w = parseFloat(windDirection);
+    if ((w == null) || !isFinite(w)) { return null; }
+    return w;
   }
 }, {
 

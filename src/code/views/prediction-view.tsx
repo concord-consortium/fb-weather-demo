@@ -145,16 +145,30 @@ export class PredictionView
 
     if (!predictionType || !simulationTime || !predictions) { return; }
 
+    function parsePredictedValue(strValue: string) {
+      switch(predictionType) {
+        case PredictionType.eDescription:
+          break;
+        case PredictionType.eTemperature:
+          return simulationStore.parseTemperature(strValue);
+        case PredictionType.eHumidity:
+          break;
+        case PredictionType.ePrecipitation:
+          break;
+        case PredictionType.eWindSpeed:
+          return simulationStore.parseTemperature(strValue);
+        case PredictionType.eWindDirection:
+          return simulationStore.parseWindDirection(strValue);
+      }
+      return null;
+    }
                           // default to 1 hour from current simulation time
     const predictedTime = moment(simulationTime).add({ hours: 1 }).toDate(),
-          numValue = Number(this.state.predictedValue),
-          predictedValue = isNaN(numValue) ? null : numValue,
           prediction = Prediction.create({
                           type: predictionType,
                           predictionTime: simulationTime,
                           predictedTime: predictedTime,
-                          predictedValue: predictionType !== PredictionType.eDescription
-                                            ? predictedValue : null,
+                          predictedValue: parsePredictedValue(this.state.predictedValue),
                           description: this.state.description
                         });
     predictions.addPrediction(prediction);
