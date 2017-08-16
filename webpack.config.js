@@ -2,11 +2,12 @@
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
+const pkg = require("./package.json");
 
 module.exports = {
   entry: {
     app: ["./src/code/main.tsx"],
-    vendor: ["lodash", "react", "react-dom", "mobx", "mobx-react", "material-ui"]
+    vendor: Object.keys(pkg.dependencies).concat(["js-base64"])
   },
 
   output: {
@@ -17,7 +18,7 @@ module.exports = {
   devtool: "source-map",
 
   resolve: {
-    extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx"]
+    extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx", ".css"],
   },
 
   module: {
@@ -29,6 +30,8 @@ module.exports = {
       },
       // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
       { test: /\.tsx?$/, loader: "awesome-typescript-loader", options: {configFileName: "./tsconfig.json"} },
+      {test: /\.css?$/, loader: "style-loader!css-loader!"},
+      {test: /\.(png|jpg)$/, loader: "file-loader?name=images/[name].[ext]"}
     ]
   },
 
@@ -45,7 +48,10 @@ module.exports = {
     })
   ],
   stats: {
-    colors: true
+    colors: true,
+    modules: true,
+    reasons: true,
+    errorDetails: true
   }
 
 };

@@ -14,7 +14,6 @@
   "author": "npaessel@concord.org",
   "license": "MIT",
   "dependencies": {
-    "dateformat": "^2.0.0",
     "es6-promise": "^4.1.1",
     "firebase": "^3.7.0",
     "leaflet": "^1.0.3",
@@ -62,6 +61,7 @@
     "eslint-plugin-react": "^6.10.0",
     "eslint-plugin-standard": "^2.0.1",
     "extract-text-webpack-plugin": "^2.1.0",
+    "file-loader": "^0.11.2",
     "jest": "^19.0.2",
     "live-server": "^1.2.0",
     "mobx-react-devtools": "^4.2.15",
@@ -69,8 +69,7 @@
     "tslint": "^5.5.0",
     "typescript": "^2.4.2",
     "webpack": "^2.2.1",
-    "webpack-dev-server": "^2.4.1",
-    "yarn": "^0.20.3"
+    "webpack-dev-server": "^2.4.1"
   },
   "repository": {
     "type": "git",

@@ -13,6 +13,10 @@ import { ChooseSimulationView } from "./views/choose-simulation-view";
 // import { SetupView } from "./views/setup-view";
 import { simulationStore } from "./stores/simulation-store";
 
+require("!style-loader!css-loader!leaflet/dist/leaflet.css");
+require("!style-loader!css-loader!../html/loading.css");
+require("!style-loader!css-loader!../html/weather.css");
+
 injectTapEventPlugin();
 
 const log = function(msg: string) {
