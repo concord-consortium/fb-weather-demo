@@ -46,6 +46,7 @@ export class WeatherStationView extends React.Component<
     let callSign = "";
     let imgUrl = "img/farm.jpg";
     const time = simulationStore.timeString,
+          simulationName = simulationStore.simulationName,
           weatherStation = this.state.station || simulationStore.presenceStation,
           temperature = weatherStation && weatherStation.temperature,
           unitTempStr = simulationStore.formatTemperature(temperature, { withDegreeUnit: true }),
@@ -78,6 +79,10 @@ export class WeatherStationView extends React.Component<
       },
       name: {
         fontSize: "16pt",
+        fontWeight: "bold"
+      },
+      simulationName: {
+        fontSize: "14pt",
         fontWeight: "bold"
       },
       media: {
@@ -142,9 +147,12 @@ export class WeatherStationView extends React.Component<
                   {callSign}
                 </div>
                 <div style={styles.name}>
-                  {name}
-                </div>
+                {name}
               </div>
+              <div style={styles.simulationName}>
+                {simulationName}
+              </div>
+            </div>
             </CardText>
             <CardMedia style={styles.media}
               overlay={

@@ -54,8 +54,8 @@ export const SimulationStore = types.model(
     get simulationTime(): Date | null {
       return this.selected && this.selected.time;
     },
-    get simulationName(): string | null {
-      return this.selected && this.selected.name;
+    get simulationName(): string {
+      return (this.selected && this.selected.name) || "";
     },
 
     formatTime(time: Date | null): string {

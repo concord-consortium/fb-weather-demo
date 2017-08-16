@@ -177,7 +177,10 @@ export class TeacherView extends React.Component<
           </Tab>
           <Tab label="Control" value="control">
             <CardTitle>
-              Time: {time}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div>Time: {time}</div>
+                <div style={{ fontWeight: 'bold' }}>{simulationStore.simulationName}</div>
+              </div>
             </CardTitle>
             <CardMedia
               style={{
