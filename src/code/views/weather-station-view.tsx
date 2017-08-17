@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { Card, CardText, CardMedia, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
 import { WeatherStationConfigView } from "./weather-station-config-view";
-import { PredictionView } from "./prediction-view";
+import { PredictionFormView } from "./prediction-form-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../stores/simulation-store";
@@ -49,7 +49,7 @@ export class WeatherStationView extends React.Component<
           simulationName = simulationStore.simulationName,
           weatherStation = this.state.station || simulationStore.presenceStation,
           temperature = weatherStation && weatherStation.temperature,
-          unitTempStr = simulationStore.formatTemperature(temperature, { withDegreeUnit: true }),
+          unitTempStr = simulationStore.formatTemperature(temperature, { withUnit: true }),
           windSpeed = weatherStation && weatherStation.windSpeed,
           isNonZeroSpeed = windSpeed && isFinite(windSpeed),
           windSpeedStr = simulationStore.formatWindSpeed(windSpeed, { withUnit: true }),
@@ -177,7 +177,7 @@ export class WeatherStationView extends React.Component<
           </Tab>
           <Tab label="Predict" value="predict">
             <CardText>
-              <PredictionView />
+              <PredictionFormView />
             </CardText>
           </Tab>
         </Tabs>

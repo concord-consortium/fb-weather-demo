@@ -38,14 +38,14 @@ export const Simulation = types.model('Simulation', {
     return this.scenario && this.scenario.mapConfig;
   },
 
-  formatTime(time: Date | null): string {
+  formatTime(time: Date | null, format?: string): string {
     if (time == null) { return ""; }
     let m = moment(time);
     if (this.scenario.utcOffset) {
       m = m.utcOffset(this.scenario.utcOffset);
     }
     // formatting rules see: https://momentjs.com/
-    return m.format('lll');
+    return m.format(format || 'lll');
   }
 }, {
 }, {

@@ -60,18 +60,18 @@ const styles: ComponentStyleMap = {
   }
 };
 
-export interface PredictionViewProps {
+export interface PredictionFormViewProps {
 }
 
-export interface PredictionViewState {
+export interface PredictionFormViewState {
   predictedValue: string;
   description: string;
 }
 
 @observer
-export class PredictionView
-        extends React.Component<PredictionViewProps, PredictionViewState> {
-  constructor(props: PredictionViewProps, ctx: any) {
+export class PredictionFormView
+        extends React.Component<PredictionFormViewProps, PredictionFormViewState> {
+  constructor(props: PredictionFormViewProps, ctx: any) {
     super(props, ctx);
 
     this.state = { predictedValue: "", description: "" };
@@ -89,7 +89,7 @@ export class PredictionView
         case PredictionType.eDescription:
           break;
         case PredictionType.eTemperature:
-          return simulationStore.formatTemperature(station.temperature, { withDegreeUnit: true });
+          return simulationStore.formatTemperature(station.temperature, { withUnit: true });
         case PredictionType.eHumidity:
           break;
         case PredictionType.ePrecipitation:
@@ -156,7 +156,7 @@ export class PredictionView
         case PredictionType.ePrecipitation:
           break;
         case PredictionType.eWindSpeed:
-          return simulationStore.parseTemperature(strValue);
+          return simulationStore.parseWindSpeed(strValue);
         case PredictionType.eWindDirection:
           return simulationStore.parseWindDirection(strValue);
       }

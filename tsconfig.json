@@ -13,7 +13,8 @@
     "allowJs": true
   },
   "include": [
-    "./src/code/main.tsx"
+    "./src/code/main.tsx",
+    "./src/code/typings.d.ts"
   ],
   "exclude": [
     "./src/code/zzz_legacy/*"

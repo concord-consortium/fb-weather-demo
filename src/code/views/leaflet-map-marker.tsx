@@ -5,6 +5,7 @@ import { DivIcon } from "leaflet";
 import { PredictionType } from "../models/prediction";
 import { simulationStore } from "../stores/simulation-store";
 import { IWeatherStation } from "../models/weather-station";
+import * as _ from "lodash";
 
 interface LeafletMapMarkerProps {
   weatherStation: IWeatherStation;
@@ -21,16 +22,16 @@ export class LeafletMapMarker extends React.Component<
     super(props, ctx);
   }
 
-  get prediction() {
+  get tempPrediction() {
     const weatherStation = this.props.weatherStation;
     const predictions = simulationStore.predictions,
-          prediction = predictions && predictions.predictionFor(weatherStation);
-    return prediction;
+          stationPredictions = predictions && predictions.predictionsFor(weatherStation);
+    return _.find(stationPredictions, (p) => p.type === PredictionType.eTemperature);
   }
 
   get predictedTemp() {
-    return (this.prediction && (this.prediction.type === PredictionType.eTemperature))
-              ? this.prediction.predictedValue : null;
+    return (this.tempPrediction && (this.tempPrediction.type === PredictionType.eTemperature))
+              ? this.tempPrediction.predictedValue : null;
   }
 
   get actualTemp() {
@@ -53,7 +54,7 @@ export class LeafletMapMarker extends React.Component<
 
   predictedTempDiv() {
     const showPredictions = simulationStore.settings && simulationStore.settings.showPredictions;
-    if(showPredictions && this.prediction) {
+    if(showPredictions && this.tempPrediction) {
       if ((this.predictedTemp != null) && isFinite(this.predictedTemp)) {
         const predictedTempString = simulationStore.formatTemperature(this.predictedTemp, { withDegree: true });
         return `<span class="predictTemp">${predictedTempString}</span> /`;

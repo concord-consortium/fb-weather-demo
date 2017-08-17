@@ -35,6 +35,23 @@ export const Prediction = types.model("Prediction", {
     return (stations && stations.getStationByID(this.stationID)) || null;
   },
 
+  get predictedValueLabel() {
+    switch(this.type) {
+      case PredictionType.eTemperature:
+        return "Temperature";
+      case PredictionType.eWindSpeed:
+        return "Wind Speed";
+      case PredictionType.eWindDirection:
+        return "Wind Direction";
+    }
+    return "";
+  },
+
+  get descriptionLabel() {
+    return this.type === PredictionType.eDescription
+            ? "Description" : "Rationale";
+  },
+
   formatPredictedValue(options: any): string {
     switch(this.type) {
       case PredictionType.eTemperature:

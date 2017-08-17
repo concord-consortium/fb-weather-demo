@@ -58,8 +58,13 @@ export const SimulationStore = types.model(
       return (this.selected && this.selected.name) || "";
     },
 
-    formatTime(time: Date | null): string {
-      return (this.selected && this.selected.formatTime(time)) || "";
+    // formats a simulation time, i.e. with simulation's UTC offset
+    formatTime(time: Date | null, format?: string): string {
+      return (this.selected && this.selected.formatTime(time, format)) || "";
+    },
+    // formats a local time, i.e. with local UTC offset
+    formatLocalTime(time: Date | null, format?: string): string {
+      return (this.settings && this.settings.formatLocalTime(time, format)) || "";
     },
     formatTemperature(temp: number | null, options: IFormatTempOptions): string {
       return this.settings ? this.settings.formatTemperature(temp, options) : "";

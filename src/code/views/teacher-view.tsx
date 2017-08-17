@@ -10,16 +10,16 @@ import { TeacherOptionsView } from "./teacher-options-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { PredictionType, IPrediction } from "../models/prediction";
 import { simulationStore } from "../stores/simulation-store";
-
-const _ = require("lodash");
+const TreeView = require("react-treeview");
+require("!style-loader!css-loader!react-treeview/react-treeview.css");
+require("!style-loader!css-loader!../../html/treeview.css");
+import * as _ from "lodash";
 
 export type TeacherViewTab = "control" | "configure";
 
 export interface TeacherViewProps {}
 
 export interface TeacherViewState {
-  playing: boolean;
-  frameRate: number;
   tab: TeacherViewTab;
 }
 
@@ -35,11 +35,16 @@ const styles:ComponentStyleMap = {
     overflowY: "auto",
     height: "264px"
   },
+  predictionsTitle: {
+    marginTop: 16,
+    marginLeft: 20,
+    fontWeight: 'bold'
+  },
   prediction: {
     display: "flex",
     flexDirection: "column",
-    padding: "0em 2em",
-    width: "20vw"
+    paddingLeft: "2em",
+    width: "20em"
   },
   predictionItemEven: {
     backgroundColor: "hsl(0, 0%, 95%)",
@@ -80,16 +85,12 @@ const styles:ComponentStyleMap = {
 
 @observer
 export class TeacherView extends React.Component<
-  TeacherViewProps,
-  TeacherViewState
-> {
-  interval: any;
+                                  TeacherViewProps,
+                                  TeacherViewState> {
 
   constructor(props: TeacherViewProps, ctxt: any) {
     super(props, ctxt);
     this.state = {
-      playing: false,
-      frameRate: 2000,
       tab: "control"
     };
   }
@@ -103,36 +104,92 @@ export class TeacherView extends React.Component<
 
   renderPredictions() {
     const weatherStation = simulationStore.selectedStation;
-    if(weatherStation) {
-      const predictions = simulationStore.predictions && simulationStore.predictions.teacherPredictions;
+    if (!weatherStation) { return null; }
 
-      const renderPrediction = (prediction:IPrediction, index:number) => {
-        const style = index % 2 === 0 ? styles.predictionItemEven :  styles.predictionItemOdd,
-              predictedValue = prediction && prediction.formatPredictedValue({ withDegreeUnit: true });
-        const result =(
-          <div style={style} key={index}>
-             {/* <span style={styles.temp}>{prediction.timeStamp}</span> */}
-            <span style={styles.label}>Temp:</span>
-            <span style={styles.temp}>{"\xA0" + predictedValue}</span>
-            <div style={styles.label}>Reasoning:</div>
-            <div style={styles.rationale}>{prediction.description}</div>
-          </div>);
-        // debugger;
-        return result;
-      };
+    const predictions = (simulationStore.predictions && simulationStore.predictions.teacherPredictions) || [],
+          predictedTimes = {} as { [key: string] : { [key: string] : IPrediction[] } };
 
-      return (
-        <div>
-          <img style={styles.image} src={weatherStation.imageUrl}/>
-          <div style={styles.callSign}>{weatherStation.callSign}</div>
-          <div style={styles.stationName}>{weatherStation.name}</div>
-          <div style={styles.predictionContainer}>
-              {_.map(predictions,renderPrediction) }
-          </div>
-        </div>
-      );
+    predictions.forEach((p) => {
+      const pdt = String(p.predictedTime.getTime()),
+            pnt = String(p.predictionTime.getTime());
+      if (predictedTimes[pdt] == null) {
+        predictedTimes[pdt] = {};
+      }
+      const pdtSet = predictedTimes[pdt];
+      if (pdtSet[pnt] == null) {
+        pdtSet[pnt] = [];
+      }
+      pdtSet[pnt].push(p);
+    });
+
+    function formatPredictedValueLabel(prediction: IPrediction) {
+      return (prediction.type === PredictionType.eDescription)
+                ? "Descriptive"
+                : prediction.predictedValueLabel;
     }
-    return null;
+
+    function formatPredictedValue(prediction: IPrediction) {
+      const d = prediction.description,
+            kLimit = 17;
+      return (prediction.type === PredictionType.eDescription)
+                ? (d.length > kLimit
+                    ? `"${prediction.description.substr(0, kLimit)}..."`
+                    : d)
+                : prediction.formatPredictedValue({ withUnit: true });
+    }
+
+    function renderPredictionTree(predictions: IPrediction[]) {
+      return _.sortBy(predictions, 'timeStamp').reverse().map((p) => {
+                const timeStamp = simulationStore.formatLocalTime(p.timeStamp, 'l LT'),
+                      key = p.timeStamp.getTime(),
+                      sLabel = formatPredictedValueLabel(p),
+                      sValue = formatPredictedValue(p),
+                      dLabel = p.descriptionLabel,
+                      pLabel = <span className="node gray-bg">{sLabel}: {sValue}</span>;
+                return (
+                  <TreeView key={key} nodeLabel={pLabel} defaultCollapsed={true}>
+                    <div key="description" className="info">{dLabel}: {p.description}</div>
+                    <div key="time" className="info">Submitted: {timeStamp}</div>
+                  </TreeView>
+                );
+            });
+    }
+
+    function renderPredictionTreeView() {
+      return _.keys(predictedTimes).sort().reverse().map((pdt: string) => {
+        const spdt = simulationStore.formatTime(new Date(Number(pdt)), 'l LT'),
+              pdtLabel = <span className="node gray-bg">Predictions for: {spdt}</span>,
+              pdtSet = predictedTimes[pdt],
+              pntLabels = _.keys(pdtSet).map((pnt: string) => {
+                const spnt = simulationStore.formatTime(new Date(Number(pnt)), 'l LT'),
+                      pntLabel = <span className="node">Predicted at: {spnt}</span>,
+                      predictions = pdtSet[pnt],
+                      predictionTrees = renderPredictionTree(predictions);
+                return (
+                  <TreeView key={pnt} nodeLabel={pntLabel} defaultCollapsed={true}>
+                    {predictionTrees}
+                  </TreeView>
+                );
+              });
+        return (
+          <TreeView key={pdt} nodeLabel={pdtLabel} defaultCollapsed={true}>
+            {pntLabels}
+          </TreeView>
+        );
+      });
+    }
+
+    return (
+      <div>
+        <img style={styles.image} src={weatherStation.imageUrl}/>
+        <div style={styles.callSign}>{weatherStation.callSign}</div>
+        <div style={styles.stationName}>{weatherStation.name}</div>
+        <div style={styles.predictionContainer}>
+            <div style={styles.predictionsTitle}>Predictions</div>
+            {renderPredictionTreeView()}
+        </div>
+      </div>
+    );
   }
 
   render() {

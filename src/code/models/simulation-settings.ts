@@ -1,6 +1,7 @@
 import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 import { PredictionType } from "../models/prediction";
+import * as moment from "moment";
 
 enum TempUnits {
   Celsius = "C",
@@ -15,7 +16,7 @@ enum WindSpeedUnits {
 export type IFormatTempOptions = {
   precision?: number,
   withDegree?: boolean,
-  withDegreeUnit?: boolean,
+  withUnit?: boolean,
   asDifference?: boolean
 };
 
@@ -45,6 +46,15 @@ export const SimulationSettings = types.model('SimulationSettings', {
   enabledPredictions: types.maybe(types.string),  // null disables predictions
   predictionInterval: types.optional(types.number, 60), // minutes
 
+  get localUtcOffset() {
+    return -(new Date().getTimezoneOffset());
+  },
+
+  formatLocalTime(time: Date | null, format?: string): string {
+    if (time == null) { return ""; }
+    return moment(time).utcOffset(this.localUtcOffset).format(format || 'lll');
+  },
+
   formatTemperature(temp: number, options?: IFormatTempOptions): string {
     if ((temp == null) || !isFinite(temp)) { return ""; }
     const o = options || {},
@@ -60,7 +70,7 @@ export const SimulationSettings = types.model('SimulationSettings', {
     }
     return s
             + (o.withDegree ? "°" : "")
-            + (o.withDegreeUnit ? `°${this.tempUnit}` : "");
+            + (o.withUnit ? `°${this.tempUnit}` : "");
   },
 
   parseTemperature(temp: string): number | null {
