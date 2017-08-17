@@ -61,7 +61,7 @@ table.GridView td.set {
 .actualTemp {
   color: hsla(100,0%,20%,1);
 }
-.difTemp {
+.diffTemp {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -70,6 +70,9 @@ table.GridView td.set {
   color: white;
   font-size: 0.8em;
   border-radius: 0.25em;
+}
+.windSpeedUnit {
+  font-size: .6em;
 }
 .divIconContent {
   font-size: 8pt;
