@@ -11,6 +11,17 @@
     "test": "jest tests",
     "watch": "webpack --watch"
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts|tsx)$": "./node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/code/tests/.*\\.(ts|tsx|js)$"
+  },
   "author": "npaessel@concord.org",
   "license": "MIT",
   "dependencies": {
@@ -36,6 +47,7 @@
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
+    "@types/jest": "^21.1.5",
     "@types/lodash": "^4.14.72",
     "@types/material-ui": "^0.17.19",
     "@types/query-string": "^4.3.0",
@@ -63,11 +75,12 @@
     "eslint-plugin-standard": "^2.0.1",
     "extract-text-webpack-plugin": "^2.1.0",
     "file-loader": "^0.11.2",
-    "jest": "^19.0.2",
+    "jest": "^21.2.1",
     "live-server": "^1.2.0",
     "mobx-react-devtools": "^4.2.15",
     "style-loader": "^0.14.1",
-    "tslint": "^5.5.0",
+    "ts-jest": "^21.1.4",
+    "tslint": "^5.8.0",
     "typescript": "^2.4.2",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1"
