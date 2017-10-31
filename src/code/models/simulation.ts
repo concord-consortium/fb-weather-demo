@@ -10,6 +10,7 @@ import { WeatherStationState } from "./weather-station-state";
 import { PresenceStore } from "../stores/presence-store";
 import { WeatherStationStore } from "../stores/weather-station-store";
 import { PredictionStore } from "../stores/prediction-store";
+import { Grid } from "./grid";
 import { v1 as uuid } from "uuid";
 
 import * as _ from "lodash";
@@ -24,6 +25,7 @@ export const Simulation = types.model('Simulation', {
   presences: types.optional(PresenceStore,      () => PresenceStore.create()),
   predictions: types.optional(PredictionStore,  () => PredictionStore.create()),
   stations: types.optional(WeatherStationStore, () => WeatherStationStore.create()),
+  grid: types.optional(Grid,                    () => Grid.create()),
 
   get isPlaying(): boolean {
     return this.control.isPlaying;

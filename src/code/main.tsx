@@ -10,7 +10,7 @@ import { WeatherStationView } from "./views/weather-station-view";
 import { ClassView } from "./views/class-view";
 import { ChooseView } from "./views/choose-view";
 import { ChooseSimulationView } from "./views/choose-simulation-view";
-// import { SetupView } from "./views/setup-view";
+import { SetupView } from "./views/setup-view";
 import { simulationStore } from "./stores/simulation-store";
 
 require("!style-loader!css-loader!leaflet/dist/leaflet.css");
@@ -83,7 +83,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
                 <Route path="student" component={WeatherStationView} />
                 <Route path="teacher" component={TeacherView} />
                 <Route path="classroom" component={ClassView} />
-                {/* <Route path="setup" component={SetupView} /> */}
+                <Route path="setup" component={SetupView} />
                 <Route path="choose" component={ChooseView} />
               </Route>
             </Route>

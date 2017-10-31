@@ -9,6 +9,8 @@ import { IMapConfig } from "../models/map-config";
 import { IPredictionStore } from "./prediction-store";
 import { IPresenceStore } from "./presence-store";
 import { IWeatherStationStore } from "./weather-station-store";
+import { IGrid } from "../models/grid";
+
 const _ = require("lodash");
 
 export const SimulationStore = types.model(
@@ -26,6 +28,9 @@ export const SimulationStore = types.model(
     },
     get mapConfig(): IMapConfig | null {
       return this.selected && this.selected.mapConfig;
+    },
+    get grid(): IGrid | null {
+      return this.selected && this.selected.grid;
     },
     get settings(): ISimulationSettings | null {
       return this.selected && this.selected.settings;
