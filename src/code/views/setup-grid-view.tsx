@@ -1,13 +1,20 @@
 import * as React from "react";
 import { observer } from "mobx-react";
+import { Link } from "react-router";
+
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
+import { Card, CardTitle, CardText} from "material-ui/Card";
+import { Tabs, Tab } from "material-ui/Tabs";
+
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../stores/simulation-store";
 // const div = React.DOM.div;
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
-import { Link } from "react-router";
-export interface SetupProps {}
-export interface SetupState {
+
+import { GridView } from "./grid-view";
+
+export interface SetupGridProps {}
+export interface SetupGridState {
   rows: string;
   columns: string;
 }
@@ -30,11 +37,11 @@ const styles:ComponentStyleMap = {
 };
 
 @observer
-export class SetupView extends React.Component<
-  SetupProps,
-  SetupState
+export class SetupGridView extends React.Component<
+  SetupGridProps,
+  SetupGridState
 > {
-  constructor(props: SetupProps, ctx: any) {
+  constructor(props: SetupGridProps, ctx: any) {
     const grid = simulationStore.grid;
     super(props, ctx);
     if(grid) {
@@ -81,35 +88,36 @@ export class SetupView extends React.Component<
   renderDone() {
     const simulationName = simulationStore.selected ? simulationStore.selected.name : "choose";
     const path: string = `/simulations/${simulationName}`;
-    return <div><RaisedButton containerElement={<Link to={path}/>}>Done</RaisedButton></div>;
+    return (
+      <div>
+        <RaisedButton
+          primary={true}
+          containerElement={<Link to={path}/>}>
+            Done
+        </RaisedButton>
+      </div>
+    );
   }
 
   render() {
     const grid = simulationStore.grid;
-    const gridContainer = [];
     const controls = this.renderControls();
     if(grid == null) { return <div/>; }
-    else {
-      for(let row = 0; row < grid.rows; row++) {
-        let rowDivs = [];
-        for(let column = 0; column < grid.columns; column++) {
-          if (grid) {
-            const cell = grid.gridCellAt(row,column);
-            if (cell) {
-              const elem = <div style={styles.column}>{cell.displayName}</div>;
-              rowDivs.push(elem);
-            }
-          }
-        }
-        gridContainer.push(<div style={styles.row}>{rowDivs}</div>);
-      }
-    }
     return (
-      <div>
-        { controls }
-        { gridContainer }
-        { this.renderDone() }
-      </div>
+      <Card style={styles.card}>
+      <Tabs>
+        <Tab label="Room Size" value="Room Size">
+          <CardTitle>Configure your room size</CardTitle>
+          <CardText>
+            <div>
+              { controls }
+              <GridView grid={grid} />
+              { this.renderDone() }
+            </div>
+          </CardText>
+        </Tab>
+      </Tabs>
+    </Card>
     );
   }
 }

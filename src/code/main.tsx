@@ -7,10 +7,12 @@ import { gFirebase, FirebaseImp } from "./middleware/firebase-imp";
 
 import { TeacherView } from "./views/teacher-view";
 import { WeatherStationView } from "./views/weather-station-view";
+import { ChooseGroupView } from "./views/choose-group-view";
+import { ChooseCellView } from "./views/choose-cell-view";
 import { ClassView } from "./views/class-view";
 import { ChooseView } from "./views/choose-view";
 import { ChooseSimulationView } from "./views/choose-simulation-view";
-import { SetupView } from "./views/setup-view";
+import { SetupGridView } from "./views/setup-grid-view";
 import { simulationStore } from "./stores/simulation-store";
 
 require("!style-loader!css-loader!leaflet/dist/leaflet.css");
@@ -80,10 +82,12 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
               <IndexRedirect to="show/choose" />
               <Route path="show">
                 <IndexRedirect to="choose" />
-                <Route path="student" component={WeatherStationView} />
+                <Route path="student" component={ChooseGroupView} />
+                <Route path="chooseCell" component={ChooseCellView} />
+                <Route path="station" component={WeatherStationView} />
                 <Route path="teacher" component={TeacherView} />
                 <Route path="classroom" component={ClassView} />
-                <Route path="setup" component={SetupView} />
+                <Route path="setup" component={SetupGridView} />
                 <Route path="choose" component={ChooseView} />
               </Route>
             </Route>
