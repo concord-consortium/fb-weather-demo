@@ -15,6 +15,7 @@ function createCells(rows:number, columns:number) {
       const lon = (column * gridSizeInDegrees) + (0.5 * gridSizeInDegrees);
       const lat = (row * gridSizeInDegrees) + (0.5 * gridSizeInDegrees);
       const callSign = cellName(row,column);
+      const gridId = callSign;
       const weatherStation = WeatherStation.create({
         name: callSign,
         callSign: callSign,
@@ -24,6 +25,7 @@ function createCells(rows:number, columns:number) {
         long: lon
       });
       cells.push(GridCell.create( {
+        id: gridId,
         column: column,
         row: row,
         weatherStation: weatherStation

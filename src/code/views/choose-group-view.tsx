@@ -1,13 +1,14 @@
 import * as React from "react";
 import { observer } from "mobx-react";
+import { Link } from "react-router";
+
 import { Card, CardTitle, CardText} from "material-ui/Card";
 import { Tabs, Tab } from "material-ui/Tabs";
 import RaisedButton from "material-ui/RaisedButton";
-import { Link } from "react-router";
-import { simulationStore } from "../stores/simulation-store";
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-
+import {IGroup} from "../models/group";
+import { simulationStore } from "../stores/simulation-store";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 
 export type StationTab = "configure" | "weather";
@@ -28,18 +29,6 @@ const styles: ComponentStyleMap = {
   }
 };
 
-const groupOptions = [
-  "stallions",
-  "pumas",
-  "otters",
-  "lizards",
-  "moles",
-  "raccoons",
-  "alligators",
-  "goats",
-  "lambs"
-];
-
 
 @observer
 export class ChooseGroupView
@@ -49,8 +38,12 @@ export class ChooseGroupView
     this.state = {chosenGroup: "" };
   }
 
-  setGroup(event:any, index:number, identifier:string) {
-    this.setState({chosenGroup: identifier});
+  setGroup(event:any, index:number, name:string) {
+    this.setState({chosenGroup: name});
+    const presence = simulationStore.selectedPresence;
+    if(presence) {
+      presence.setGroupName(name);
+    }
   }
 
 
@@ -75,8 +68,20 @@ export class ChooseGroupView
 
   render() {
 
-    const optionFor = (animal:string) => <MenuItem value={animal} key={animal} primaryText={animal} />;
+    const optionFor = (animal:string) => {
+      return  <MenuItem value={animal} key={animal} primaryText={animal} />;
+    };
     const chooseButton = this.renderChooseButton();
+    const availableGroups = simulationStore.availableGroups;
+    const selectedGroup = simulationStore.selectedGroup;
+    let groupOptions:string[] = [];
+    if(availableGroups) {
+      groupOptions = availableGroups.map((g:IGroup) => g.name);
+      if(selectedGroup) {
+        groupOptions.push(selectedGroup.name);
+      }
+    }
+
     return (
       <Card style={styles.card}>
         <Tabs>

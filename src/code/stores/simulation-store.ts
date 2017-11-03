@@ -8,8 +8,10 @@ import { IWeatherStation } from "../models/weather-station";
 import { IMapConfig } from "../models/map-config";
 import { IPredictionStore } from "./prediction-store";
 import { IPresenceStore } from "./presence-store";
+import { IGroupStore } from "./group-store";
 import { IWeatherStationStore } from "./weather-station-store";
 import { IGrid } from "../models/grid";
+import { IGroup } from "../models/group";
 
 const _ = require("lodash");
 
@@ -44,6 +46,25 @@ export const SimulationStore = types.model(
     get selectedPresence(): IPresence | null {
       const presences = this.presences;
       return presences && presences.selected;
+    },
+    get selectedGroupName(): string | null {
+      return this.selectedPresence ? this.selectedPresence.groupName : null;
+    },
+    get groups(): IGroupStore | null {
+      return this.selected && this.selected.groups;
+    },
+    get groupList(): IGroup[] | null {
+      return this.groups && this.groups.groups;
+    },
+    get selectedGroup(): IGroup  | null {
+      return this.groups && this.groups.getGroup(this.selectedGroupName);
+    },
+    get availableGroups() {
+      const groupNames = this.presences.groupNames;
+      const groupList = this.groupList;
+      return _.filter(groupList, (g:IGroup) => {
+        return !(_.includes(groupNames, g.name));
+      });
     },
     get presenceStation(): IWeatherStation | null {
       const selectedPresence = this.selectedPresence;

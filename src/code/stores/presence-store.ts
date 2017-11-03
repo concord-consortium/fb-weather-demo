@@ -10,6 +10,15 @@ export const PresenceStore = types.model(
     presences: types.optional(types.map(Presence), {}),
     get weatherStation(): IWeatherStation | null {
       return this.selected && this.selected.weatherStation;
+    },
+    get presenceList(): IPresence[] {
+      return this.presences.values();
+    },
+    get groupNames() {
+      return this.presenceList.map((p:IPresence) => p.groupName);
+    },
+    get groupName() {
+      return this.selected ? this.selected.groupName : "";
     }
   },{
     // volatile

@@ -7,6 +7,9 @@ export interface GridCellProps {
   size?: number ;
   color?: string;
   textColor?: string;
+  cellClick?: (evt:any) => void;
+  colorFunc?: (cell:IGridCell|null) => string;
+  titleFunc?: (cell:IGridCell|null) => any;
 }
 export interface GridCellState {
   hover:boolean;
@@ -40,16 +43,15 @@ export class GridCellView extends React.Component<
   }
 
   render() {
-    const { color, textColor }  = this.props;
+    const { color, textColor, colorFunc, cell, cellClick  }  = this.props;
     const border = "1px solid black";
-    const transparent = "hsla(0, 0%, 0%, 0.0)";
-    const displayTextColor = this.state.hover ? textColor : transparent;
+    const displayColor = colorFunc ? colorFunc(cell) : color;
     const cellStyle:React.CSSProperties = {
       display: "flex",
       alignContent: "center",
       justifyContent: "center",
-      backgroundColor: color,
-      color: displayTextColor,
+      backgroundColor: displayColor,
+      color: textColor,
       alignItems: "center",
       fontSize: "24pt",
       fontWeight: "bold",
@@ -57,14 +59,26 @@ export class GridCellView extends React.Component<
       height: `${this.props.size}px`,
       border: border
     };
-    const {cell} = this.props;
+
+    const normalContent = this.props.titleFunc
+      ? this.props.titleFunc(cell)
+      : "";
+
+    const hoverContent = cell.displayName;
+
+    const content = this.state.hover
+        ? hoverContent
+        : normalContent;
+
+    const clickHandler = cellClick ? (e:any) => cellClick(cell) : undefined;
     return (
       <div
         style={cellStyle}
         onMouseOut = { ()=>this.mouseOut()  }
         onMouseOver= { ()=>this.mouseOver() }
+        onClick = { clickHandler }
         >
-        {cell.displayName}
+        {content}
       </div>
     );
 

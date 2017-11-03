@@ -10,7 +10,9 @@ import { WeatherStationState } from "./weather-station-state";
 import { PresenceStore } from "../stores/presence-store";
 import { WeatherStationStore } from "../stores/weather-station-store";
 import { PredictionStore } from "../stores/prediction-store";
+import { GroupStore } from "../stores/group-store";
 import { Grid } from "./grid";
+import { IGroup } from "./group";
 import { v1 as uuid } from "uuid";
 
 import * as _ from "lodash";
@@ -26,6 +28,7 @@ export const Simulation = types.model('Simulation', {
   predictions: types.optional(PredictionStore,  () => PredictionStore.create()),
   stations: types.optional(WeatherStationStore, () => WeatherStationStore.create()),
   grid: types.optional(Grid,                    () => Grid.create()),
+  groups: types.optional(GroupStore,            () => GroupStore.create()),
 
   get isPlaying(): boolean {
     return this.control.isPlaying;
@@ -39,7 +42,15 @@ export const Simulation = types.model('Simulation', {
   get mapConfig(): IMapConfig {
     return this.scenario && this.scenario.mapConfig;
   },
-
+  get group(): IGroup {
+    return this.groups.selected;
+  },
+  get groupName(): string {
+    if(this.group) {
+      return this.group.name;
+    }
+    return "";
+  },
   formatTime(time: Date | null, format?: string): string {
     if (time == null) { return ""; }
     let m = moment(time);
@@ -66,7 +77,7 @@ export const Simulation = types.model('Simulation', {
                         });
       this.stations.addStations(stations);
     }
-
+    this.createGroups();
     // initialize stations from WeatherEvent
     this.stations.stations.forEach((station: IWeatherStation) => {
       gWeatherEvent.stationData(station.callSign)
@@ -91,6 +102,20 @@ export const Simulation = types.model('Simulation', {
     });
   },
 
+  createGroups() {
+    const groupNames = [
+      "stallions",
+      "pumas",
+      "otters",
+      "lizards",
+      "moles",
+      "raccoons",
+      "alligators",
+      "goats",
+      "lambs"
+    ];
+    this.groups.addGroups(groupNames);
+  },
   // SimulationControl wrappers
   setTime(time: Date) {
     this.control.setTime(time);
