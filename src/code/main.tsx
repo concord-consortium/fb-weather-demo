@@ -7,8 +7,7 @@ import { gFirebase, FirebaseImp } from "./middleware/firebase-imp";
 
 import { TeacherView } from "./views/teacher-view";
 import { WeatherStationView } from "./views/weather-station-view";
-import { ChooseGroupView } from "./views/choose-group-view";
-import { ChooseCellView } from "./views/choose-cell-view";
+import { StudentTabsView } from "./views/student-tabs-view";
 import { ClassView } from "./views/class-view";
 import { ChooseView } from "./views/choose-view";
 import { ChooseSimulationView } from "./views/choose-simulation-view";
@@ -82,8 +81,8 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
               <IndexRedirect to="show/choose" />
               <Route path="show">
                 <IndexRedirect to="choose" />
-                <Route path="student" component={ChooseGroupView} />
-                <Route path="chooseCell" component={ChooseCellView} />
+                <Route path="student" component={StudentTabsView} />
+                <Route path="chooseCell" component={StudentTabsView} />
                 <Route path="station" component={WeatherStationView} />
                 <Route path="teacher" component={TeacherView} />
                 <Route path="classroom" component={ClassView} />

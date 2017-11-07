@@ -39,6 +39,9 @@ export const Presence = types.model("Presence",
   },
   setStation(station:IWeatherStation | null) {
     this.weatherStationID = station ? station.id : null;
+  },
+  setStationId(id:string) {
+    this.weatherStationID = id;
   }
 });
 

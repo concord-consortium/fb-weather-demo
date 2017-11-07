@@ -1,9 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Link } from "react-router";
 
-import { Card, CardTitle, CardText} from "material-ui/Card";
-import { Tabs, Tab } from "material-ui/Tabs";
+import { CardTitle, CardText} from "material-ui/Card";
 import RaisedButton from "material-ui/RaisedButton";
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -49,16 +47,11 @@ export class ChooseGroupView
 
   renderChooseButton() {
     if(this.state.chosenGroup === "") { return <div/>; }
-    const simulationName = simulationStore.selected ? simulationStore.selected.name : "choose";
-    const path: string = `/simulations/${simulationName}/show/chooseCell`;
     const style = styles.chooseButton;
 
     return (
       <div>
-        <RaisedButton
-          primary={true}
-          containerElement={<Link to={path}/>}
-          >
+        <RaisedButton primary={true}>
             <div style={style}>Choose {this.state.chosenGroup}</div>
         </RaisedButton>
       </div>
@@ -83,23 +76,19 @@ export class ChooseGroupView
     }
 
     return (
-      <Card style={styles.card}>
-        <Tabs>
-          <Tab label="Group" value="Group">
-            <CardTitle>Select your Group</CardTitle>
-            <CardText>
-              <SelectField
-                floatingLabelText="Group Name"
-                value={this.state.chosenGroup}
-                onChange={ (e,i,v) => this.setGroup(e,i,v) }
-              >
-                { groupOptions.map( opt => optionFor(opt)) }
-              </SelectField>
-              { chooseButton }
-            </CardText>
-          </Tab>
-        </Tabs>
-      </Card>
+      <div>
+        <CardTitle>Select your Group</CardTitle>
+        <CardText>
+          <SelectField
+            floatingLabelText="Group Name"
+            value={this.state.chosenGroup}
+            onChange={ (e,i,v) => this.setGroup(e,i,v) }
+          >
+            { groupOptions.map( opt => optionFor(opt)) }
+          </SelectField>
+          { chooseButton }
+        </CardText>
+      </div>
     );
   }
 }

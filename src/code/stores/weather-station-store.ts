@@ -28,14 +28,15 @@ export const WeatherStationStore = types.model(
   {
     addStations(stations: IWeatherStation[]) {
       stations.forEach((station) => {
-        let thisStation = this.getStation(station.callSign);
-        if (thisStation) {
-          // copy properties from new station to existing one?
-        }
-        else {
-          this.stationMap.put(station);
-        }
+        this.addStation(station);
       });
+    },
+    addStation(station:IWeatherStation) {
+      const thisStation = this.getStation(station.callSign);
+      if (thisStation) {} // copy properties to existing one? TBD
+      else {
+        this.stationMap.put(station);
+      }
     },
     select(station: IWeatherStation) {
       this.selectedID = station.id;

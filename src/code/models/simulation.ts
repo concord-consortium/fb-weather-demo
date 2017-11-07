@@ -64,7 +64,7 @@ export const Simulation = types.model('Simulation', {
 }, {
   afterCreate() {
     this.presences.initPresence();
-
+    this.grid.createCells(this.stations);
     if (_.size(this.stations.stations) === 0) {
       // create stations from scenario
       const stations = this.scenario.stations.map((spec: IStationSpec) => {

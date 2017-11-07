@@ -59,14 +59,14 @@ export class GridView extends React.Component<
           const cell = grid.gridCellAt(row,column);
           const onCellClick = this.props.onCellClick;
           const clickHandler = onCellClick ? (e:any) => onCellClick(cell) :  undefined;
-          if (grid) {
+          if(cell) {
             rowDivs.push(
               <GridCellView
                 cellClick={clickHandler}
                 size={size}
                 colorFunc={this.props.colorFunc}
                 key={`${row}-${column}`}
-                cell={grid.gridCellAt(row,column)}
+                cell={cell}
                 titleFunc={this.props.titleFunc}
               />);
           }

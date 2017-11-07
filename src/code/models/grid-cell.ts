@@ -1,5 +1,4 @@
 import { types } from "mobx-state-tree";
-import { WeatherStation } from "./weather-station";
 import { v1 as uuid } from "uuid";
 
 export const rowName = (n:number) => String.fromCharCode(65 + n);
@@ -10,7 +9,7 @@ export const GridCell = types.model('GridCell', {
   id: types.optional(types.identifier(types.string), ()=> uuid()),
   row: types.number,
   column: types.number,
-  weatherStation: WeatherStation,
+  weatherStationId: types.string,
   get columnName() {
     return colName(this.column);
   },
