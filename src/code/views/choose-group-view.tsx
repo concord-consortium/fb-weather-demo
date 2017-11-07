@@ -33,7 +33,8 @@ export class ChooseGroupView
   extends React.Component<ChooseGroupProps, ChooseGroupState> {
   constructor(props: ChooseGroupProps, context: any) {
     super(props);
-    this.state = {chosenGroup: "" };
+    const chosenGroup = simulationStore.selectedGroupName || "";
+    this.state = {chosenGroup: chosenGroup};
   }
 
   setGroup(event:any, index:number, name:string) {
