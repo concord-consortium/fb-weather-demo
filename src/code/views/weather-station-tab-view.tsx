@@ -1,6 +1,9 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { CardText, CardMedia, CardTitle } from "material-ui/Card";
+import { Card, CardText, CardMedia, CardTitle } from "material-ui/Card";
+import { Tab, Tabs } from "material-ui/Tabs";
+import { WeatherStationConfigView } from "./weather-station-config-view";
+import { PredictionFormView } from "./prediction-form-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../stores/simulation-store";
@@ -15,7 +18,7 @@ export interface WeatherStationState {
 }
 
 @observer
-export class WeatherStationView extends React.Component<
+export class WeatherStationTabView extends React.Component<
                                           WeatherStationProps,
                                           WeatherStationState> {
   constructor(props: WeatherStationProps, context: any) {
@@ -41,7 +44,7 @@ export class WeatherStationView extends React.Component<
   render() {
     let name = "";
     let callSign = "";
-    let imageUrl = "";
+    let imgUrl = "img/farm.jpg";
     const time = simulationStore.timeString,
           simulationName = simulationStore.simulationName,
           weatherStation = this.state.station || simulationStore.presenceStation,
@@ -58,7 +61,7 @@ export class WeatherStationView extends React.Component<
     if (weatherStation) {
       name = weatherStation.name;
       callSign = weatherStation.callSign;
-      imageUrl = weatherStation.imageUrl;
+      imgUrl = weatherStation.imageUrl;
     }
 
     const styles: ComponentStyleMap = {
@@ -71,14 +74,16 @@ export class WeatherStationView extends React.Component<
         alignItems: "flex-start"
       },
       callSign: {
-        fontSize: "24pt",
+        fontSize: "16pt",
         fontWeight: "bold"
       },
       name: {
-        fontSize: "1pt"
+        fontSize: "16pt",
+        fontWeight: "bold"
       },
       simulationName: {
-        fontSize: "9pt"
+        fontSize: "14pt",
+        fontWeight: "bold"
       },
       media: {
       },
@@ -99,6 +104,11 @@ export class WeatherStationView extends React.Component<
         color: "hsla(0, 0%, 80%, 0.9)"
       }
     };
+    const handleChangeTab = (newTab: StationTab) => {
+      this.setState({
+        tab: newTab
+      });
+    };
 
     const settings = simulationStore.settings,
           showTemperature = settings && settings.showTempValues,
@@ -109,10 +119,6 @@ export class WeatherStationView extends React.Component<
               ? `Temp: ${unitTempStr}`
               : null;
     }
-
-    const image = (imageUrl && (imageUrl.length > 1))
-      ? <img style={styles.image} src={imageUrl} />
-      : <div style={styles.image} />;
 
     function renderWindValues() {
       return showWindValues
@@ -129,41 +135,53 @@ export class WeatherStationView extends React.Component<
     }
 
     return (
-      <div>
-        <CardText>
-          <div style={styles.info}>
-            <div style={styles.callSign}>
-              {callSign}
-            </div>
-            <div style={styles.name}>
-            {name}
-          </div>
-          <div style={styles.simulationName}>
-            {simulationName}
-          </div>
-        </div>
-        </CardText>
-        <CardMedia style={styles.media}
-          overlay={
-            <div>
-              <CardTitle>
-                <div style={styles.stats}>
-                  <div style={styles.temp}>
-                    {renderTemperature()}
-                  </div>
-                  <div style={styles.wind}>
-                    {renderWindValues()}
-                  </div>
+      <Card style={styles.card}>
+        <Tabs value={this.state.tab} onChange={handleChangeTab}>
+          <Tab label="Configure" value="configure">
+            <WeatherStationConfigView station={weatherStation} onChangeStation={this.handleChangeStation} />
+          </Tab>
+          <Tab label="Weather" value="weather">
+            <CardText>
+              <div style={styles.info}>
+                <div style={styles.callSign}>
+                  {callSign}
                 </div>
-              </CardTitle>
-              <CardText style={styles.time}>
-                {time}
-              </CardText>
+                <div style={styles.name}>
+                {name}
+              </div>
+              <div style={styles.simulationName}>
+                {simulationName}
+              </div>
             </div>
-          } >
-          { image }
-        </CardMedia>
-      </div>
+            </CardText>
+            <CardMedia style={styles.media}
+              overlay={
+                <div>
+                  <CardTitle>
+                    <div style={styles.stats}>
+                      <div style={styles.temp}>
+                        {renderTemperature()}
+                      </div>
+                      <div style={styles.wind}>
+                        {renderWindValues()}
+                      </div>
+                    </div>
+                  </CardTitle>
+                  <CardText style={styles.time}>
+                    {time}
+                  </CardText>
+                </div>
+              } >
+              <img style={styles.image} src={imgUrl} />
+            </CardMedia>
+          </Tab>
+          <Tab label="Predict" value="predict">
+            <CardText>
+              <PredictionFormView />
+            </CardText>
+          </Tab>
+        </Tabs>
+      </Card>
     );
   }
 }
