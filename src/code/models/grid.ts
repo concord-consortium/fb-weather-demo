@@ -53,7 +53,10 @@ export const Grid = types.model('Grid', {
     return this.gridCells[index];
   },
   stationAt(row:number, column:number) {
-    return this.gridCellAt(row,column).weatherStation;
+    const stationId = this.gridCellAt(row,column).weatherStationId;
+    if(this.stationStore) {
+      return this.stationStore.getStationByID(stationId);
+    }
   },
   setRows(n:number) {
     if(n && n >= 0) {
