@@ -2,16 +2,15 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { CardText, CardMedia, CardTitle } from "material-ui/Card";
 import { ComponentStyleMap } from "../utilities/component-style-map";
-import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../stores/simulation-store";
+import { IWeatherStation } from "../models/weather-station";
 
 export type StationTab = "configure" | "weather";
 
 export interface WeatherStationProps {
+  weatherStation: IWeatherStation | null;
 }
 export interface WeatherStationState {
-  tab: StationTab;
-  station?: IWeatherStation | null;
 }
 
 @observer
@@ -20,31 +19,16 @@ export class WeatherStationView extends React.Component<
                                           WeatherStationState> {
   constructor(props: WeatherStationProps, context: any) {
     super(props);
-
-    const station = simulationStore.presenceStation;
-    this.state = {
-      tab: station ? "weather" : "configure",
-      station
-    };
   }
 
-  handleChangeStation = (station: IWeatherStation | null) => {
-    const presences = simulationStore.presences;
-    if (presences) {
-      presences.setStation(station);
-      if (station) {
-        this.setState({ tab: "weather", station });
-      }
-    }
-  }
 
   render() {
     let name = "";
     let callSign = "";
     let imageUrl = "";
+    const {weatherStation} = this.props;
     const time = simulationStore.timeString,
           simulationName = simulationStore.simulationName,
-          weatherStation = this.state.station || simulationStore.presenceStation,
           temperature = weatherStation && weatherStation.temperature,
           unitTempStr = simulationStore.formatTemperature(temperature, { withUnit: true }),
           windSpeed = weatherStation && weatherStation.windSpeed,

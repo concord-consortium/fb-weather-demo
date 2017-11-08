@@ -67,7 +67,7 @@ export class StudentTabsView extends React.Component<
     const groupTabLabel   = simulationStore.selectedGroupName || StudentTab.GroupTab;
     const weatherTabLabel = weatherDisabled ? "––" : "Current Conditions";
     const cellTabLabel    =
-      (simulationStore.presenceStation && simulationStore.presenceStation.name)
+      (simulationStore.presenceStation && `Location: ${simulationStore.presenceStation.name}`)
       || StudentTab.CellTab;
 
     return (
@@ -82,7 +82,7 @@ export class StudentTabsView extends React.Component<
           <Tab
             label={weatherTabLabel} disabled={weatherDisabled} value={StudentTab.WeatherTab}>
             <CardText>
-              <WeatherStationView />
+              <WeatherStationView weatherStation={simulationStore.presenceStation} />
             </CardText>
           </Tab>
         </Tabs>
