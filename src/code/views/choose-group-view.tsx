@@ -12,6 +12,7 @@ import { ComponentStyleMap } from "../utilities/component-style-map";
 export type StationTab = "configure" | "weather";
 
 export interface ChooseGroupProps {
+  onDone: () => void;
 }
 export interface ChooseGroupState {
   chosenGroup: string;
@@ -49,10 +50,10 @@ export class ChooseGroupView
   renderChooseButton() {
     if(this.state.chosenGroup === "") { return <div/>; }
     const style = styles.chooseButton;
-
+    const {onDone} = this.props;
     return (
       <div>
-        <RaisedButton primary={true}>
+        <RaisedButton primary={true} onTouchTap={onDone}>
             <div style={style}>Choose {this.state.chosenGroup}</div>
         </RaisedButton>
       </div>

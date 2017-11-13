@@ -37,11 +37,11 @@ export class GridView extends React.Component<
     const { grid } = this.props;
     const gridDivs = [];
     const size = 60;
-    if(grid == null) { return <div/>; }
+    if(grid == null) { return <div key="grid-cell-view"/>; }
     else {
       gridDivs.push(
-        <div style={styles.row}>
-          <div style={{width:size, height:size}} />
+        <div  key="grid-cell-header" style={styles.row}>
+          <div key="grid-cell-header-rows" style={{width:size, height:size}} />
           {
             _.range(grid.columns).map( (column:number) =>
               <GridHeaderView
@@ -65,7 +65,7 @@ export class GridView extends React.Component<
                 cellClick={clickHandler}
                 size={size}
                 colorFunc={this.props.colorFunc}
-                key={`${row}-${column}`}
+                key={`${row}-${column}-grid-cell`}
                 cell={cell}
                 titleFunc={this.props.titleFunc}
               />);
@@ -75,7 +75,7 @@ export class GridView extends React.Component<
       }
     }
     return (
-      <div style={{margin: "1em"}}>
+      <div key="grid-cell-view" style={{margin: "1em"}}>
         { gridDivs }
       </div>
     );

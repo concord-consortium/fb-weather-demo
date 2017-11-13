@@ -5,7 +5,7 @@ import { IWeatherStationStore } from "../stores/weather-station-store";
 
 import { v1 as uuid } from "uuid";
 
-const gridSizeInDegrees = 1;
+// const gridSizeInDegrees = 1;
 const defaultNumRows = 7;
 const defaultNumColumns = 7;
 
@@ -25,8 +25,8 @@ export const Grid = types.model('Grid', {
     const {rows,columns}  = this;
     for(let row = 0; row < rows; row++) {
       for(let column = 0; column < columns; column++) {
-        const lon = (column * gridSizeInDegrees) + (0.5 * gridSizeInDegrees);
-        const lat = (row * gridSizeInDegrees) + (0.5 * gridSizeInDegrees);
+        // const lon = (column * gridSizeInDegrees) + (0.5 * gridSizeInDegrees);
+        // const lat = (row * gridSizeInDegrees) + (0.5 * gridSizeInDegrees);
         const callSign = cellName(row,column);
         const gridId = callSign;
         const weatherStation = WeatherStation.create({
@@ -34,8 +34,8 @@ export const Grid = types.model('Grid', {
           callSign: callSign,
           id: callSign,
           imageUrl: "",
-          lat: lat,
-          long: lon
+          // lat: lat,
+          // long: lon
         });
         this.stationStore.addStation(weatherStation);
         this.gridCells.push(GridCell.create( {

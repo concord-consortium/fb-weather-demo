@@ -70,7 +70,7 @@ class WeatherEvent {
             .then((stations: any) => {
               if (stations) {
                 return stations.find((station: any) => {
-                                  return station.id === stationID;
+                                  return station.id.toLowerCase() === stationID.toLowerCase();
                                 });
               }
             });
@@ -79,5 +79,6 @@ class WeatherEvent {
 
 // use Github API until we sort out deployment
 export const gWeatherEventUrl =
-  "https://api.github.com/repos/concord-consortium/weather-events/contents/events/lake-michigan.json";
+  // "https://api.github.com/repos/concord-consortium/weather-events/contents/events/lake-michigan.json";
+  "https://api.github.com/repos/concord-consortium/weather-events/contents/events/day-one.json";
 export const gWeatherEvent = new WeatherEvent(gWeatherEventUrl);

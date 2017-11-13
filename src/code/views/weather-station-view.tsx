@@ -38,7 +38,6 @@ export class WeatherStationView extends React.Component<
           // arrowRotation = (windDirection != null) && isFinite(windDirection)
           //                   ? windDirection + 90 : null,
           // arrowChar = isNonZeroSpeed && windDirection ? "\u279B" : "\xA0";
-
     if (weatherStation) {
       name = weatherStation.name;
       callSign = weatherStation.callSign;
@@ -49,10 +48,6 @@ export class WeatherStationView extends React.Component<
       card: {
       },
       info: {
-        // display: "flex",
-        // flexDirection: "column",
-        // justifyContent: "space-between",
-        // alignItems: "stretch"
       },
       callSign: {
         fontSize: "24pt",

@@ -5,17 +5,29 @@ import { Tab, Tabs } from "material-ui/Tabs";
 import FloatingActionButton from "material-ui/FloatingActionButton";
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
+const TreeView = require("react-treeview");
+
+import { GridView } from "./grid-view";
 import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
+
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { PredictionType, IPrediction } from "../models/prediction";
+import { IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../stores/simulation-store";
-const TreeView = require("react-treeview");
+
+
 require("!style-loader!css-loader!react-treeview/react-treeview.css");
 require("!style-loader!css-loader!../../html/treeview.css");
 import * as _ from "lodash";
 
 export type TeacherViewTab = "control" | "configure";
+export const MAP_TYPE_GRID = "MAP_TYPE_GRID";
+export const MAP_TYPE_GEO  = "MAP_TYPE_GEO";
+
+// export const MAP_TYPE_GRID = "MAP_TYPE_GRID";
+// export const MAP_TYPE_GEO =  "MAP_TYPE_GEO";
+
 
 export interface TeacherViewProps {}
 
@@ -192,6 +204,59 @@ export class TeacherView extends React.Component<
     );
   }
 
+  renderLeafletMap() {
+   const weatherStations = (simulationStore.stations && simulationStore.stations.stations) || [];
+   return (
+    <LeafletMapView
+      mapConfig={simulationStore.mapConfig}
+      interaction={false}
+      weatherStations={weatherStations}
+      width={600}
+      height={400}
+    />
+   );
+  }
+
+  renderGridMap() {
+    const grid = simulationStore.grid;
+    const coldColor = "#346173";
+    const rainColor = "#6B4747";
+    const hotColor = "#BA5D5D";
+    const sunColor = "#DABA3B";
+    const normColor = "#D8D8D8";
+    const hotTemp = 25;
+    const coldTemp = 15;
+
+    const colorFunc = (cell:IGridCell) => {
+      const station = simulationStore.stations && simulationStore.stations.getStation(cell.weatherStationId);
+      if(station && station.temperature) {
+        if(station.temperature > hotTemp) { return hotColor; }
+        if(station.temperature > coldTemp) { return normColor; }
+        return coldColor;
+      }
+      return normColor;
+    };
+
+    const titleFunc = (cell:IGridCell) => {
+      const station = simulationStore.stations && simulationStore.stations.getStation(cell.weatherStationId);
+      const raining = station && station.precipitation;
+      const fontColor = raining ? rainColor : sunColor;
+      const style = { color: fontColor };
+      let className = raining ?  "icon-cloud-rain"  : "icon-sun";
+      return <i className={className} style={style} />;
+    };
+
+    return (
+      <GridView grid={grid} colorFunc={colorFunc} titleFunc={titleFunc}/>
+    );
+  }
+
+  renderMapView() {
+    let mapKind = MAP_TYPE_GRID;
+    if(mapKind === MAP_TYPE_GRID) { return this.renderGridMap(); }
+    if(mapKind === MAP_TYPE_GEO)  { return this.renderLeafletMap(); }
+  }
+
   render() {
     const isPlaying = !!(simulationStore.selected && simulationStore.selected.isPlaying),
           playPauseIcon = isPlaying ? "icon-pause_circle_filled" : "icon-play_circle_filled",
@@ -205,7 +270,6 @@ export class TeacherView extends React.Component<
     };
 
     const enabledPredictions = simulationStore.settings && simulationStore.settings.enabledPredictions,
-          weatherStations = (simulationStore.stations && simulationStore.stations.stations) || [],
           menuOptions = [
             <MenuItem key={0} value={null} primaryText="Disable Predictions" />,
             <MenuItem key={1} value={PredictionType.eDescription} primaryText="Enable Descriptive Predictions" />,
@@ -251,13 +315,7 @@ export class TeacherView extends React.Component<
                   cf. https://github.com/callemall/material-ui/issues/4177 */}
               <div>
                 <div style={styles.mapAndPrediction}>
-                  <LeafletMapView
-                    mapConfig={simulationStore.mapConfig}
-                    interaction={false}
-                    weatherStations={weatherStations}
-                    width={600}
-                    height={400}
-                  />
+                    { this.renderMapView() }
                   <div style={styles.prediction}>
                     {this.renderPredictions()}
                   </div>

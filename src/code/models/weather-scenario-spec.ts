@@ -41,6 +41,6 @@ export interface IWeatherScenarioSpec {
   startTime?: ITimeSpec;
   endTime?: ITimeSpec;
   utcOffset?: number;
-  stations: IStationSpec[];
+  stations?: IStationSpec[];
   mapConfig: IMapConfigSpec;
 }

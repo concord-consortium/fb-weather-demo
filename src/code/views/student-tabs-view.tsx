@@ -69,12 +69,18 @@ export class StudentTabsView extends React.Component<
     const cellTabLabel    =
       (simulationStore.presenceStation && `Location: ${simulationStore.presenceStation.name}`)
       || StudentTab.CellTab;
-
+    const onGroupChosen = () => {
+      const presence = simulationStore.selectedPresence;
+      if(presence) {
+        presence.setStationId("");
+        this.setState({selectedTab: StudentTab.CellTab});
+      }
+    };
     return (
       <Card style={styles.card}>
         <Tabs value={this.state.selectedTab} onChange={handleChangeTab}>
           <Tab label={groupTabLabel} value={StudentTab.GroupTab}>
-            <ChooseGroupView />
+            <ChooseGroupView onDone={onGroupChosen}/>
           </Tab>
           <Tab label={cellTabLabel} disabled={cellDisabled} value={StudentTab.CellTab}>
             <ChooseCellView />

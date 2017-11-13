@@ -64,7 +64,6 @@ export const Simulation = types.model('Simulation', {
 }, {
   afterCreate() {
     this.presences.initPresence();
-    this.grid.createCells(this.stations);
     if (_.size(this.stations.stations) === 0) {
       // create stations from scenario
       const stations = this.scenario.stations.map((spec: IStationSpec) => {
@@ -77,6 +76,8 @@ export const Simulation = types.model('Simulation', {
                         });
       this.stations.addStations(stations);
     }
+    
+    this.grid.createCells(this.stations); // create any missing stations … not included with scenario
     this.createGroups();
     // initialize stations from WeatherEvent
     this.stations.stations.forEach((station: IWeatherStation) => {
@@ -93,13 +94,13 @@ export const Simulation = types.model('Simulation', {
           if (!this.time) {
             this.setTime(startTime);
           }
-
           station.setState(new WeatherStationState(stationData, this.control));
         })
         .catch((err: any) => {
           console.log(`Error initializing weather station '${station.id}': ${err}`);
         });
     });
+
   },
 
   createGroups() {
