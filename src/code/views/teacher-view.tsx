@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Card, CardMedia, CardActions, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
-import FloatingActionButton from "material-ui/FloatingActionButton";
+
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 const TreeView = require("react-treeview");
@@ -10,7 +10,8 @@ const TreeView = require("react-treeview");
 import { GridView } from "./grid-view";
 import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
-
+import { PlaybackControlView } from "./playback-control-view";
+import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { PredictionType, IPrediction } from "../models/prediction";
 import { IGridCell } from "../models/grid-cell";
@@ -258,10 +259,7 @@ export class TeacherView extends React.Component<
   }
 
   render() {
-    const isPlaying = !!(simulationStore.selected && simulationStore.selected.isPlaying),
-          playPauseIcon = isPlaying ? "icon-pause_circle_filled" : "icon-play_circle_filled",
-          playPauseAction = isPlaying ? simulationStore.stop : simulationStore.play,
-          time = simulationStore.timeString;
+    const time = simulationStore.timeString;
 
     const handleChangeTab = (value: TeacherViewTab) => {
       this.setState({
@@ -321,32 +319,15 @@ export class TeacherView extends React.Component<
                   </div>
                 </div>
                 <CardActions>
-                  <FloatingActionButton
-                    iconClassName="icon-refresh"
-                    disabled={isPlaying}
-                    onTouchTap={simulationStore.rewind}
-                  />
-                  <FloatingActionButton
-                    iconClassName="icon-skip_previous"
-                    disabled={isPlaying}
-                    onTouchTap={simulationStore.stepBack}
-                  />
-                  <FloatingActionButton
-                    iconClassName={playPauseIcon}
-                    onTouchTap={playPauseAction}
-                  />
-                  <FloatingActionButton
-                    iconClassName="icon-skip_next"
-                    disabled={isPlaying}
-                    onTouchTap={simulationStore.stepForward}
-                  />
+                  <SegmentedControlView />
+                  {/* <PlaybackControlView />
                   <DropDownMenu
                     style={styles.typeMenu}
                     value={enabledPredictions}
                     autoWidth={true}
                     onChange={this.handlePredictionTypeChange}>
                     {menuOptions}
-                  </DropDownMenu>
+                  </DropDownMenu> */}
                 </CardActions>
               </div>
             </CardMedia>

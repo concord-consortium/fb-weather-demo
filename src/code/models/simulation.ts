@@ -121,8 +121,29 @@ export const Simulation = types.model('Simulation', {
   setTime(time: Date) {
     this.control.setTime(time);
   },
+
+  proportionalTime(portion:number) {
+    const max = this.scenario.endTime && this.scenario.endTime.getTime();
+    const min = this.scenario.startTime && this.scenario.startTime.getTime();
+    const rangeMSeconds = max - min;
+    const adjustmentSeconds = rangeMSeconds * portion;
+    return new Date(min + adjustmentSeconds);
+  },
+
+  setProportionalTime(portion:number) {
+    this.control.setTime(this.proportionalTime(portion));
+  },
+  setHalfTime() {
+    this.control.setHalfTime();
+  },
   rewind() {
     this.control.rewind();
+  },
+  playFirstHalf() {
+    this.control.playFirstHalf();
+  },
+  playSecondHalf() {
+    this.control.playSecondHalf();
   },
   play() {
     this.control.play();

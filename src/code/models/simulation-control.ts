@@ -1,13 +1,14 @@
 import { types } from "mobx-state-tree";
 import * as moment from 'moment';
-
-export const SimulationControl = types.model(
+import { simulationStore } from '../stores/simulation-store';
+export const  SimulationControl = types.model(
   "SimulationControl",
   {
     // properties
     startTime: types.maybe(types.Date),
     isPlaying: types.optional(types.boolean, false),
     time: types.maybe(types.Date),
+    halfTime: types.maybe(types.Date),
     timeStep: types.optional(types.number, 60), // minutes per time step
     speed: types.optional(types.number, 1),
 
@@ -30,21 +31,44 @@ export const SimulationControl = types.model(
     setTime(newTime: Date) {
       this.time = newTime;
     },
+    setHalfTime() {
+      this.halfTime = this.time;
+    },
     rewind() {
       if (this.startTime) {
         this.time = this.startTime;
       }
     },
-    play() {
+    enableTimer(endTime: Date) {
       if (!this.isPlaying) {
         this._clearTimer();
-
-        // by default we update the simulation by 30 min every half second
         this.timer = setInterval(() => {
-          this.advanceTime({ minutes: 30 });
+          if(endTime && this.time >= endTime) {
+            this.stop();
+          }
+          else {
+            this.advanceTime({ minutes: 60 });
+          }
         }, 500);
-
         this.isPlaying = true;
+      }
+    },
+    play() {
+      const endTime = simulationStore.selected && simulationStore.selected.scenario.endTime;
+      this.enableTimer(endTime);
+    },
+    playFirstHalf() {
+      this.rewind();
+      const endTime = this.halfTime || (simulationStore.selected && simulationStore.selected.scenario.endTime);
+      this.enableTimer(endTime);
+    },
+    playSecondHalf() {
+      const endTime = simulationStore.selected && simulationStore.selected.scenario.endTime;
+      if (!this.isPlaying) {
+        if(this.halfTime) {
+          // this.setTime(this.halfTime);
+          this.enableTimer(endTime);
+        }
       }
     },
     stop() {
