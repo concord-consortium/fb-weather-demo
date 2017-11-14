@@ -219,10 +219,10 @@ export class TeacherView extends React.Component<
 
   renderGridMap() {
     const grid = simulationStore.grid;
-    const coldColor = "#346173";
+    const coldColor = "#9DBCC9";
     const rainColor = "#6B4747";
-    const hotColor = "#BA5D5D";
-    const sunColor = "#DABA3B";
+    const hotColor = "#F0AEA6";
+    const sunColor = "#8D7927";
     const normColor = "#D8D8D8";
     const hotTemp = 25;
     const coldTemp = 15;
@@ -247,7 +247,7 @@ export class TeacherView extends React.Component<
     };
 
     return (
-      <GridView grid={grid} colorFunc={colorFunc} titleFunc={titleFunc}/>
+      <GridView grid={grid} colorFunc={colorFunc} titleFunc={titleFunc} />
     );
   }
 

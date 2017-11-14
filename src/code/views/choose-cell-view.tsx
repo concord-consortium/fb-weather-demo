@@ -41,9 +41,9 @@ export class ChooseCellView
     const occupiedStations = _.map(presences,  (value,key) => value.weatherStationID);
 
     const stationId = presence && presence.weatherStationID;
-    const green = "green";
-    const grey = "grey";
-    const white = "white";
+    const myTeamCellColor = "#D4EBB0";
+    const teamCellColor = "#B7AEAE";
+    const unoccupiedColor = "#D8D8D8";
     const onClick = (cell:IGridCell) => {
       if(presence) {
         presence.setStationId(cell.weatherStationId);
@@ -51,13 +51,13 @@ export class ChooseCellView
     };
     const colorFunc = (cell:IGridCell) => {
       if(cell.weatherStationId === stationId) {
-        return green;
+        return myTeamCellColor;
       }
       if(simulationStore.presences &&
         _.includes(occupiedStations, cell.id)) {
-        return grey;
+        return teamCellColor;
       }
-      return white;
+      return unoccupiedColor;
     };
 
     const titleFunc = (cell:IGridCell) => {
@@ -72,7 +72,11 @@ export class ChooseCellView
       <div>
         <CardTitle>{groupName}: choose your location on the grid</CardTitle>
         <CardText>
-          <GridView grid={grid} colorFunc={colorFunc} titleFunc={titleFunc} onCellClick={onClick}/>
+          <GridView grid={grid}
+            colorFunc={colorFunc}
+            titleFunc={titleFunc}
+            onCellClick={onClick}
+            rollOverFunc={ (cell) => cell &&  cell.displayName}/>
         </CardText>
       </div>
     );

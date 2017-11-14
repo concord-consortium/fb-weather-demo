@@ -10,6 +10,7 @@ export interface GridCellProps {
   cellClick?: (evt:any) => void;
   colorFunc?: (cell:IGridCell|null) => string;
   titleFunc?: (cell:IGridCell|null) => any;
+  rollOverFunc?:(cell:IGridCell|null) => any;
 }
 export interface GridCellState {
   hover:boolean;
@@ -64,7 +65,9 @@ export class GridCellView extends React.Component<
       ? this.props.titleFunc(cell)
       : "";
 
-    const hoverContent = cell.displayName;
+    const hoverContent = this.props.rollOverFunc
+      ? this.props.rollOverFunc(cell)
+      : normalContent;
 
     const content = this.state.hover
         ? hoverContent

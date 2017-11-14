@@ -82,7 +82,7 @@ export class ChooseGroupView
         <CardTitle>Select your Group</CardTitle>
         <CardText>
           <SelectField
-            floatingLabelText="Group Name"
+            floatingLabelText="Team Name"
             value={this.state.chosenGroup}
             onChange={ (e,i,v) => this.setGroup(e,i,v) }
           >

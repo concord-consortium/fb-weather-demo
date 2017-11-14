@@ -13,6 +13,7 @@ export interface GridViewProps {
   onCellClick?: (cell:IGridCell|null) => void;
   colorFunc?: (cell:IGridCell|null) => string;
   titleFunc?: (cell:IGridCell|null) => any;
+  rollOverFunc?: (cell:IGridCell|null) => any;
 }
 
 export interface GridViewState {}
@@ -68,6 +69,7 @@ export class GridView extends React.Component<
                 key={`${row}-${column}-grid-cell`}
                 cell={cell}
                 titleFunc={this.props.titleFunc}
+                rollOverFunc={this.props.rollOverFunc}
               />);
           }
         }
