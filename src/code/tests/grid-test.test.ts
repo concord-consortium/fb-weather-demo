@@ -19,10 +19,8 @@ describe("Testing Grid Class", () => {
   test("finding a station at row, column", () => {
     grid.createCells(stationStore);
     let station = grid.stationAt(0,0);
-    expect(station.lat).toBe(0.5);
-    expect(station.long).toBe(0.5);
+    expect(station.callSign).toBe("A-1");
     station = grid.stationAt(1,1);
-    expect(station.lat).toBe(1.5);
-    expect(station.long).toBe(1.5);
+    expect(station.callSign).toBe("B-2");
   });
 });

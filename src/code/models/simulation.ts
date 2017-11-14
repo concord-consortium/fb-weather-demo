@@ -76,8 +76,8 @@ export const Simulation = types.model('Simulation', {
                         });
       this.stations.addStations(stations);
     }
-    
-    this.grid.createCells(this.stations); // create any missing stations … not included with scenario
+    // create any missing stations … not included with scenario
+    this.grid.createCells(this.stations);
     this.createGroups();
     // initialize stations from WeatherEvent
     this.stations.stations.forEach((station: IWeatherStation) => {
