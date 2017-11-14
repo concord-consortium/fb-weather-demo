@@ -10,6 +10,13 @@
       "hour": 1,
       "minute": 0
     },
+    "endTime": {
+      "year": 1970,
+      "month": 12,
+      "day": 23,
+      "hour": 8,
+      "minute": 0
+    },
     "utcOffset": 0,
     "mapConfig": {
       "id": "Day One",
