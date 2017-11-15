@@ -1,6 +1,5 @@
 import { Grid } from "../models/grid";
 import { WeatherStationStore } from "../stores/weather-station-store";
-
 describe("Testing Grid Class", () => {
   let grid = Grid.create();
   let stationStore = WeatherStationStore.create({});
@@ -9,12 +8,12 @@ describe("Testing Grid Class", () => {
       columns:7,
       rows:7,
       id:expect.stringMatching(/[a-z|0-9]+/),
-      gridCells:expect.arrayContaining([])
+      cellMap:expect.objectContaining({})
     });
   });
   test("Adding the grid cells", () => {
     grid.createCells(stationStore);
-    expect(grid.gridCells.length).toBe(49);
+    expect(grid.cellMap.size).toBe(49);
   });
   test("finding a station at row, column", () => {
     grid.createCells(stationStore);

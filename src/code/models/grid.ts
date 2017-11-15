@@ -12,7 +12,7 @@ const defaultNumColumns = 7;
 export const Grid = types.model('Grid', {
   // Properties
   id: types.optional(types.identifier(types.string), ()=> uuid()),
-  gridCells: types.optional(types.array(GridCell), []),
+  cellMap: types.optional(types.map(GridCell), {}),
   columns: types.optional(types.number, defaultNumColumns),
   rows: types.optional(types.number, defaultNumRows)
 }, {
@@ -38,7 +38,7 @@ export const Grid = types.model('Grid', {
           // long: lon
         });
         this.stationStore.addStation(weatherStation);
-        this.gridCells.push(GridCell.create( {
+        this.cellMap.put(GridCell.create( {
           id: gridId,
           column: column,
           row: row,
@@ -49,8 +49,8 @@ export const Grid = types.model('Grid', {
   },
 
   gridCellAt(row:number, column:number) {
-    const index = row * this.columns + column;
-    return this.gridCells[index];
+    const key=cellName(row,column);
+    return this.cellMap.get(key);
   },
   stationAt(row:number, column:number) {
     const stationId = this.gridCellAt(row,column).weatherStationId;
