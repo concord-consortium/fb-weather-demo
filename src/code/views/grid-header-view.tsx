@@ -35,7 +35,9 @@ export class GridHeaderView extends React.Component<
       alignItems: "center",
       width: `${this.props.size}px`,
       height: `${this.props.size}px`,
-      border: border
+      border: border,
+      fontSize: "20pt",
+      fontWeight: "bold"
     };
     return (
       <div style={cellStyle}>{label}</div>
