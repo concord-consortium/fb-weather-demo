@@ -48,7 +48,6 @@ export class LeafletMapView extends React.Component<
     const baseMap = (simulationStore.settings && simulationStore.settings.showBaseMap)
       ? <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
       : null;
-
     return (
       <div>
         <Map
@@ -56,8 +55,6 @@ export class LeafletMapView extends React.Component<
           onzoomend={updateMap}
           onmoveend={updateMap}
           zoom={mapConfig.zoom}
-          width={this.props.width}
-          height={this.props.height}
           zoomControl={this.props.interaction}
           attributionControl={false}
           dragging={this.props.interaction}
