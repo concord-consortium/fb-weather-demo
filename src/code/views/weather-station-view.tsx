@@ -4,7 +4,7 @@ import { CardText } from "material-ui/Card";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../stores/simulation-store";
 import { IWeatherStation } from "../models/weather-station";
-
+import { weatherColor, precipDiv } from "./weather-styler";
 export type StationTab = "configure" | "weather";
 
 export interface WeatherStationProps {
@@ -14,9 +14,8 @@ export interface WeatherStationState {
 }
 
 @observer
-export class WeatherStationView extends React.Component<
-                                          WeatherStationProps,
-                                          WeatherStationState> {
+export class WeatherStationView extends
+  React.Component<WeatherStationProps,WeatherStationState> {
   constructor(props: WeatherStationProps, context: any) {
     super(props);
   }
@@ -25,12 +24,13 @@ export class WeatherStationView extends React.Component<
   render() {
     let name = "";
     let callSign = "";
-    let imageUrl = "";
     const {weatherStation} = this.props;
     const time = simulationStore.timeString,
           simulationName = simulationStore.simulationName,
           temperature = weatherStation && weatherStation.temperature,
           unitTempStr = simulationStore.formatTemperature(temperature, { withUnit: true });
+          // NP: Removed but saved in comments here for easy access.
+          // Its likely we are going to put this back in at some point.
           // windSpeed = weatherStation && weatherStation.windSpeed,
           // isNonZeroSpeed = windSpeed && isFinite(windSpeed);
           // windSpeedStr = simulationStore.formatWindSpeed(windSpeed, { withUnit: true }),
@@ -41,31 +41,59 @@ export class WeatherStationView extends React.Component<
     if (weatherStation) {
       name = weatherStation.name;
       callSign = weatherStation.callSign;
-      imageUrl = weatherStation.imageUrl;
     }
-
+    const color = weatherColor(weatherStation);
     const styles: ComponentStyleMap = {
-      card: {
-      },
       info: {
-      },
-      callSign: {
-        fontSize: "24pt",
-        fontWeight: "bold"
+        display: "grid",
+        gridAutoColumns: "minmax(50px,200px)",
+        gridGap: "10px",
+        gridAutoRows: "minmax(50px, auto)",
       },
       name: {
         fontSize: "1pt"
       },
       simulationName: {
+        gridRow: "1",
+        gridColumn: "1",
         fontSize: "9pt",
-        color: "hsla(0, 0%, 80%, 0.9)"
+        alignSelf: "flex-end"
       },
-      datum: {
-        marginTop: '1em',
-        marginBottom: '1em'
+      graphic: {
+        backgroundColor: color,
+        gridRow: "2/5",
+        gridColumn: "1",
+        fontSize: "100px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      },
+      callSign: {
+        gridRow: "2",
+        gridColumn: "2",
+        fontSize: "24pt",
+        fontWeight: "bold",
+        alignSelf: "flex-start"
+      },
+      temp: {
+        gridRow: "3",
+        gridColumn: "2",
+        fontSize: "24pt",
+        fontWeight: "bold",
+        alignSelf: "center"
+      },
+      precip: {
+        gridRow: "4",
+        gridColumn: "2",
+        fontSize: "24pt",
+        fontWeight: "bold",
+        alignSelf: "flex-end"
       },
       time: {
-        color: "hsla(0, 0%, 80%, 0.9)"
+        gridRow: "5",
+        gridColumn: "1",
+        fontSize: "12pt",
+        color: "hsla(0, 0%, 10%, 0.9)"
       }
     };
 
@@ -78,41 +106,32 @@ export class WeatherStationView extends React.Component<
               : null;
     }
 
-    // function renderWindValues() {
-    //   return showWindValues
-    //           ? [
-    //               <span key='speed'>
-    //                 {`Wind: ${windSpeedStr}\xA0`}
-    //               </span>,
-    //               <span key='direction'
-    //                     style={{ transform: `rotate(${arrowRotation}deg`, display: 'inline-block'}}>
-    //                 {arrowChar}
-    //               </span>
-    //           ]
-    //           : null;
-    // }
-
     return (
       <div>
         <CardText>
           <div style={styles.info}>
             <div style={styles.simulationName}>
-              Simulation Name: {simulationName}
+              Simulation: {simulationName}
+            </div>
+            <div style={styles.graphic}>
+              <div>
+                {precipDiv(weatherStation)}
+              </div>
             </div>
             <div style={styles.callSign}>
-              Cell: {callSign}
+              {callSign}
             </div>
             <div style={styles.name}>
               {name}
             </div>
             <div style={styles.time}>
-              Time: {time}
+              {time}
             </div>
-            <div style={styles.datum}>
+            <div style={styles.temp}>
               {renderTemperature()}
             </div>
-            <div style={styles.datum}>
-              Precipitation: clear
+            <div style={styles.precip}>
+              clear
             </div>
         </div>
         </CardText>

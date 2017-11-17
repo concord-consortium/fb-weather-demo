@@ -8,6 +8,7 @@ import MenuItem from 'material-ui/MenuItem';
 const TreeView = require("react-treeview");
 
 import { GridView } from "./grid-view";
+import { weatherColor, precipDiv } from "./weather-styler";
 import { LeafletMapView } from "./leaflet-map-view";
 import { TeacherOptionsView } from "./teacher-options-view";
 import { PlaybackControlView } from "./playback-control-view";
@@ -220,31 +221,15 @@ export class TeacherView extends React.Component<
 
   renderGridMap() {
     const grid = simulationStore.grid;
-    const coldColor = "#9DBCC9";
-    const rainColor = "#6B4747";
-    const hotColor = "#F0AEA6";
-    const sunColor = "#8D7927";
-    const normColor = "#D8D8D8";
-    const hotTemp = 25;
-    const coldTemp = 15;
 
     const colorFunc = (cell:IGridCell) => {
       const station = simulationStore.stations && simulationStore.stations.getStation(cell.weatherStationId);
-      if(station && station.temperature) {
-        if(station.temperature > hotTemp) { return hotColor; }
-        if(station.temperature > coldTemp) { return normColor; }
-        return coldColor;
-      }
-      return normColor;
+      return weatherColor(station);
     };
 
     const titleFunc = (cell:IGridCell) => {
       const station = simulationStore.stations && simulationStore.stations.getStation(cell.weatherStationId);
-      const raining = station && station.precipitation;
-      const fontColor = raining ? rainColor : sunColor;
-      const style = { color: fontColor };
-      let className = raining ?  "icon-cloud-rain"  : "icon-sun";
-      return <i className={className} style={style} />;
+      return precipDiv(station);
     };
 
     return (
@@ -320,14 +305,14 @@ export class TeacherView extends React.Component<
                 </div>
                 <CardActions>
                   <SegmentedControlView />
-                  {/* <PlaybackControlView />
+                  <PlaybackControlView />
                   <DropDownMenu
                     style={styles.typeMenu}
                     value={enabledPredictions}
                     autoWidth={true}
                     onChange={this.handlePredictionTypeChange}>
                     {menuOptions}
-                  </DropDownMenu> */}
+                  </DropDownMenu>
                 </CardActions>
               </div>
             </CardMedia>
