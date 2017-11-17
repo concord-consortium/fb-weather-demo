@@ -40,6 +40,7 @@ export const  SimulationControl = types.model(
       }
     },
     enableTimer(endTime: Date) {
+      const sleepMs = (100/this.speed) * 1000;
       if (!this.isPlaying) {
         this._clearTimer();
         this.timer = setInterval(() => {
@@ -47,9 +48,9 @@ export const  SimulationControl = types.model(
             this.stop();
           }
           else {
-            this.advanceTime({ minutes: 60 });
+            this.stepForward();
           }
-        }, 500);
+        }, sleepMs);
         this.isPlaying = true;
       }
     },
