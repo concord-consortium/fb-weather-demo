@@ -7,6 +7,7 @@ const DEFAULT_ACTIVITY = "default";
 
 interface FirebaseUser {
   displayName: string;
+  uid: string;
 }
 interface FirebaseError {
   message: string;
@@ -25,7 +26,8 @@ interface FirebaseData {
   forEach: Function;
 }
 interface FirebaseDisconnectSerivce {
-  remove(): void;
+  remove(onComplete?: ()=> void): void;
+  update(values:any, anyonComplete?: ()=> void): void;
 }
 
 interface FirebaseRef {
