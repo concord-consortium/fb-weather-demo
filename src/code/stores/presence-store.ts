@@ -1,5 +1,6 @@
 import { types } from "mobx-state-tree";
-import { Presence, IPresence, presenceId } from "../models/presence";
+import { Presence, IPresence } from "../models/presence";
+import { gFirebase } from "../middleware/firebase-imp";
 import { IWeatherStation } from "../models/weather-station";
 import { v1 as uuid } from "uuid";
 
@@ -34,18 +35,21 @@ export const PresenceStore = types.model(
       this.selected = presence;
       return presence;
     },
-    createPresence(): IPresence {
-      const presence = Presence.create();
+    createPresence(id:string): IPresence {
+      const presence = Presence.create({id:id});
       return this.addPresence(presence);
     },
     initPresence() {
-      const id = presenceId();
-      const existing = this.presences.get(id);
+      const userId = gFirebase.user.uid;
+      const existing = this.presences.get(userId);
       if(existing) {
         this.selected=existing;
       }
       else {
-        this.createPresence();
+        this.createPresence(userId);
+      }
+      if(this.selected) {
+        this.selected.updateTime();
       }
     }
   }

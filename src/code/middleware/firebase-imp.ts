@@ -108,7 +108,7 @@ export class FirebaseImp {
       auth.onAuthStateChanged(function(user: FirebaseUser) {
         if (user) {
           log(user.displayName + " authenticated");
-          finishAuth({ result: { user: user } });
+          finishAuth({ user: user } );
           resolve(imp);
         } else {
           reqAuth();

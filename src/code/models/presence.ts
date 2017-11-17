@@ -16,7 +16,7 @@ export const Presence = types.model("Presence",
   // properties
   id: types.optional(types.identifier(types.string), ()=> presenceId()),
   username: types.optional(types.string, () => "anonymous"),
-  start: types.optional(types.Date, () => new Date()),
+  start: types.optional(types.string, () => new Date().toISOString()),
   weatherStationID: types.maybe(types.string),
   groupName: types.maybe(types.string),
   get weatherStation(): IWeatherStation | null {
@@ -42,6 +42,9 @@ export const Presence = types.model("Presence",
   },
   setStationId(id:string) {
     this.weatherStationID = id;
+  },
+  updateTime() {
+    this.start = new Date().toISOString();
   }
 });
 

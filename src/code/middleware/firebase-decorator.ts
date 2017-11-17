@@ -1,9 +1,9 @@
 import { onSnapshot, applySnapshot } from "mobx-state-tree";
-import { gFirebase } from "./firebase-imp";
+import { gFirebase, FirebaseImp } from "./firebase-imp";
 
 const _ = require("lodash");
 
-export const Firebasify = (model:any, relativeDataPath:string, callback?:Function) => {
+export const Firebasify = (model:any, relativeDataPath:string, callback?:(f:FirebaseImp)=>void) => {
   let isFirstTime = true;
   const firebaseListener = {
     setState(newData:any) {
@@ -15,7 +15,7 @@ export const Firebasify = (model:any, relativeDataPath:string, callback?:Functio
       if(isFirstTime) {
         isFirstTime = false;
         if(callback) {
-          callback();
+          callback(gFirebase);
         }
       }
     },
