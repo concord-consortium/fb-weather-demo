@@ -11,7 +11,7 @@ export const  SimulationControl = types.model(
     halfTime: types.maybe(types.Date),
     timeStep: types.optional(types.number, 15),      // minutes per time step
     timeScale: types.optional(types.number, 60),     // wall-time to simulation time mulitplier.
-    refreshSeconds: types.optional(types.number, 5), // updates frame rate.
+    updateIntervalS: types.optional(types.number, 5), // updates frame rate.
     get moment() {
       return moment(this.time);
     }
@@ -33,13 +33,21 @@ export const  SimulationControl = types.model(
     setHalfTime() {
       this.halfTime = this.time;
     },
+    setUpdateIntervalS(newValue:string) {
+      const parsed = parseInt(newValue,10) || 0;
+      this.updateIntervalS = parsed;
+    },
+    setTimeScale(newValue: string) {
+      const parsed = parseInt(newValue,10) || 0;
+      this.timeScale = parsed;
+    },
     rewind() {
       if (this.startTime) {
         this.time = this.startTime;
       }
     },
     enableTimer(endTime: Date) {
-      const sleepMs = this.refreshSeconds * 1000;
+      const sleepMs = this.updateIntervalS * 1000;
       let lastTime = new Date().getTime();
       let newTime = new Date().getTime();
 

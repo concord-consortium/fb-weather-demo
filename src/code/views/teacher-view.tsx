@@ -10,7 +10,7 @@ const TreeView = require("react-treeview");
 import { GridView } from "./grid-view";
 import { weatherColor, precipDiv } from "./weather-styler";
 import { LeafletMapView } from "./leaflet-map-view";
-import { TeacherOptionsView } from "./teacher-options-view";
+import { PlaybackOptionsView } from "./playback-options-view";
 import { PlaybackControlView } from "./playback-control-view";
 import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
@@ -277,7 +277,8 @@ export class TeacherView extends React.Component<
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
           <Tab label="Options" value="configure">
-            <TeacherOptionsView />
+            {/* <TeacherOptionsView /> */}
+            <PlaybackOptionsView />
           </Tab>
           <Tab label="Control" value="control">
             <CardTitle>
