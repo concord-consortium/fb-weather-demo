@@ -9,10 +9,9 @@ export const  SimulationControl = types.model(
     isPlaying: types.optional(types.boolean, false),
     time: types.maybe(types.Date),
     halfTime: types.maybe(types.Date),
-    timeStep: types.optional(types.number, 60), // minutes per time step
-    speed: types.optional(types.number, 1),
-
-    // computed properties
+    timeStep: types.optional(types.number, 15),      // minutes per time step
+    timeScale: types.optional(types.number, 60),     // wall-time to simulation time mulitplier.
+    refreshSeconds: types.optional(types.number, 5), // updates frame rate.
     get moment() {
       return moment(this.time);
     }
@@ -40,7 +39,10 @@ export const  SimulationControl = types.model(
       }
     },
     enableTimer(endTime: Date) {
-      const sleepMs = (100/this.speed) * 1000;
+      const sleepMs = this.refreshSeconds * 1000;
+      let lastTime = new Date().getTime();
+      let newTime = new Date().getTime();
+
       if (!this.isPlaying) {
         this._clearTimer();
         this.timer = setInterval(() => {
@@ -48,7 +50,11 @@ export const  SimulationControl = types.model(
             this.stop();
           }
           else {
-            this.stepForward();
+            newTime = new Date().getTime();
+            const elapsedS = (newTime - lastTime) / 1000;
+            lastTime = newTime;
+            const simSeconds = elapsedS * this.timeScale;
+            this.advanceTime({seconds: simSeconds});
           }
         }, sleepMs);
         this.isPlaying = true;
