@@ -46,7 +46,9 @@ export class ChooseCellView
     const unoccupiedColor = "#D8D8D8";
     const onClick = (cell:IGridCell) => {
       if(presence) {
-        presence.setStationId(cell.weatherStationId);
+        if(!_.includes(occupiedStations,cell.id)) {
+          presence.setStationId(cell.weatherStationId);
+        }
       }
     };
     const colorFunc = (cell:IGridCell) => {
