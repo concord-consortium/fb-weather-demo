@@ -14,6 +14,9 @@ export const  SimulationControl = types.model(
     updateIntervalS: types.optional(types.number, 5), // updates frame rate.
     get moment() {
       return moment(this.time);
+    },
+    get endTime():Date|null {
+      return simulationStore.selected && simulationStore.selected.scenario.endTime;
     }
   }, {
     timer: null
@@ -30,8 +33,9 @@ export const  SimulationControl = types.model(
     setTime(newTime: Date) {
       this.time = newTime;
     },
-    setHalfTime() {
-      this.halfTime = this.time;
+    setHalfTime(newTime:Date) {
+      this.halfTime = newTime;
+      this.time = newTime;
     },
     setUpdateIntervalS(newValue:string) {
       const parsed = parseInt(newValue,10) || 0;
@@ -69,8 +73,7 @@ export const  SimulationControl = types.model(
       }
     },
     play() {
-      const endTime = simulationStore.selected && simulationStore.selected.scenario.endTime;
-      this.enableTimer(endTime);
+      this.enableTimer(this.endTime);
     },
     playFirstHalf() {
       this.rewind();

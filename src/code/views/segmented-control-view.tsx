@@ -2,8 +2,10 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import RaisedButton from "material-ui/RaisedButton";
 import Slider from 'material-ui/Slider';
-
+import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../stores/simulation-store";
+
+import { TimelineView} from "./timeline-view";
 
 export interface SegmentedControlViewProps {}
 export interface SegmentedControlViewState {
@@ -16,26 +18,37 @@ export class SegmentedControlView extends React.Component<
                                   SegmentedControlViewState> {
 
   render() {
-    const isPlaying = !!(simulationStore.selected && simulationStore.selected.isPlaying);
+    const simulation = simulationStore.selected;
+    const isPlaying = !!(simulation && simulation.isPlaying);
     // const playPauseIcon = isPlaying ? "icon-pause_circle_filled" : "icon-play_circle_filled";
     // const playPauseAction = isPlaying ? simulationStore.stop : simulationStore.play;
     const playFirstHalf = () =>  simulationStore.playFirstHalf();
     const playSecondHalf = () => simulationStore.playSecondHalf();
     const reset = () => simulationStore.rewind();
     const dragStop = (o:any) => {
-      if (simulationStore.selected) {
+      if (simulation) {
         const newTime = this.state.splitTime;
         if(newTime) {
-          simulationStore.selected.setProportionalTime(newTime);
-          simulationStore.selected.setHalfTime();
+          simulation.setHalfTime(newTime);
         }
       }
     };
 
     const change   = (o:any, v:number) => this.setState ( {splitTime: v });
-
+    const startTime = simulation && simulation.startTime;
+    const endTime = simulation && simulation.endTime;
+    const halfTime = simulation && simulation.halfTime;
+    const currentTime = simulation && simulation.time;
+    const style:ComponentStyleMap = {
+      container: {
+        display: "flex",
+        flexDirection: "column",
+        alignContent: "center",
+        justifyContent: "center"
+      }
+    };
     return(
-      <div style={{maxWidth: "500px", marginLeft: "2em"}} >
+      <div style={style.container} >
         <div>
             <RaisedButton
               disabled={isPlaying}
@@ -54,9 +67,16 @@ export class SegmentedControlView extends React.Component<
               label="Run second portion"
             />
           </div>
+          <TimelineView
+            startTime={startTime}
+            halfTime={halfTime}
+            currentTime={currentTime}
+            endTime={endTime}
+            />
           <Slider
             min={0}
             max={1}
+            style={{width: "50vw"}}
             onChange={change}
             onDragStop={dragStop}
           />

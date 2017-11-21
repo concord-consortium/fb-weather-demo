@@ -39,6 +39,12 @@ export interface TeacherViewState {
 
 
 const styles:ComponentStyleMap = {
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignContent: "center",
+    justifyContent: "center"
+  },
   mapAndPrediction: {
     display: "flex",
     flexDirection: "row",
@@ -297,7 +303,7 @@ export class TeacherView extends React.Component<
               {/* extra div eliminates material-ui warning:
                   "You cannot call prepareStyles() on the same style object more than once"
                   cf. https://github.com/callemall/material-ui/issues/4177 */}
-              <div>
+              <div style={styles.wrapper}>
                 <div style={styles.mapAndPrediction}>
                     { this.renderMapView() }
                   <div style={styles.prediction}>

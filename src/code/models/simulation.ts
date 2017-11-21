@@ -36,6 +36,15 @@ export const Simulation = types.model('Simulation', {
   get time(): Date {
     return this.control.time;
   },
+  get startTime(): Date {
+      return this.control.startTime;
+  },
+  get endTime(): Date {
+    return this.control.endTime;
+  },
+  get halfTime(): Date {
+    return this.control.halfTime;
+  },
   get timeString(): string {
     return this.formatTime(this.time);
   },
@@ -133,8 +142,8 @@ export const Simulation = types.model('Simulation', {
   setProportionalTime(portion:number) {
     this.control.setTime(this.proportionalTime(portion));
   },
-  setHalfTime() {
-    this.control.setHalfTime();
+  setHalfTime(portion: number) {
+    this.control.setHalfTime(this.proportionalTime(portion));
   },
   rewind() {
     this.control.rewind();
