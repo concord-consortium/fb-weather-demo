@@ -99,8 +99,11 @@ export class TimelineView extends React.Component<
         </div>
         <div style={style.bar}>
           <div style={style.filling} />
-          <div style={style.splitMarker} />
-          {this.renderMoment(halfTime as Date)}
+          <div style={style.splitMarker}>
+            <div style={{position:"relative", top: "12px", left: "-55px"}}>
+              {this.renderMoment(halfTime as Date)}
+            </div>
+          </div>
         </div>
         <div style={style.end}>
           {this.renderMoment(endTime as Date)}
