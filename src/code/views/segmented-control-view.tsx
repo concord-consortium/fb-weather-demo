@@ -20,8 +20,6 @@ export class SegmentedControlView extends React.Component<
   render() {
     const simulation = simulationStore.selected;
     const isPlaying = !!(simulation && simulation.isPlaying);
-    // const playPauseIcon = isPlaying ? "icon-pause_circle_filled" : "icon-play_circle_filled";
-    // const playPauseAction = isPlaying ? simulationStore.stop : simulationStore.play;
     const playFirstHalf = () =>  simulationStore.playFirstHalf();
     const playSecondHalf = () => simulationStore.playSecondHalf();
     const reset = () => simulationStore.rewind();
@@ -43,13 +41,13 @@ export class SegmentedControlView extends React.Component<
       container: {
         display: "flex",
         flexDirection: "column",
-        alignContent: "center",
-        justifyContent: "center"
+        maxWidth: "500px",
+        alignItems: "center"
       }
     };
     return(
       <div style={style.container} >
-        <div>
+          <div>
             <RaisedButton
               disabled={isPlaying}
               onTouchTap={reset}

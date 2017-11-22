@@ -25,7 +25,8 @@ export class TimelineView extends React.Component<
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        margin: "0.5em"
+        margin: "0.5em",
+        width: "100px"
       },
       date: {
       },
@@ -79,7 +80,7 @@ export class TimelineView extends React.Component<
         margin: "0px",
         padding: "0px",
         width: `${currentFac * 100}%`,
-        backgroundColor: "gray"
+        backgroundColor: "rgb(0, 188, 212)"
       },
       splitMarker: {
         margin: "0px",
