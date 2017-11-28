@@ -25,34 +25,27 @@ export const PresenceStore = types.model(
     // volatile
     selected: null as any as IPresence | null
   },{
-    afterCreate() {
-      this.initPresence();
-    },
     setStation(station:IWeatherStation | null) {
       if(this.selected) {
         this.selected.setStation(station);
       }
     },
-    addPresence(presence:IPresence): IPresence {
+    createPresence(id:string): IPresence {
+      const presence = Presence.create({id:id});
       this.presences.put(presence);
       this.selected = presence;
       return presence;
     },
-    createPresence(id:string): IPresence {
-      const presence = Presence.create({id:id});
-      return this.addPresence(presence);
-    },
     initPresence() {
-      gFirebase.postConnect.then( () => {
-        const userId = gFirebase.user.uid;
-        const existing = this.presences.get(userId);
-        if(existing) {
-          this.selected=existing;
-        }
-        else {
-          this.createPresence(userId);
-        }
-      });
+      console.log('calling init presence');
+      const userId = gFirebase.user.uid;
+      const existing = this.presences.get(userId);
+      if(existing) {
+        this.selected=existing;
+      }
+      else {
+        this.createPresence(userId);
+      }
     }
   }
 );

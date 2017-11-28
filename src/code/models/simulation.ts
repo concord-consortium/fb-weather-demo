@@ -42,7 +42,7 @@ export const Simulation = types.model('Simulation', {
       return this.control.startTime;
   },
   get endTime(): Date {
-    return this.control.endTime;
+    return this.scenario.endTime;
   },
   get halfTime(): Date {
     return this.control.halfTime;
@@ -57,8 +57,7 @@ export const Simulation = types.model('Simulation', {
     return this.groups.selected;
   },
   get selectedPresence(): IPresence | null {
-    const presences = this.presences;
-    return presences && presences.selected;
+    return this.presences.selected;
   },
   get selectedGroupName(): string | null {
     return this.selectedPresence ? this.selectedPresence.groupName : null;
@@ -220,13 +219,33 @@ export const Simulation = types.model('Simulation', {
 });
 
 export type ISimulation = typeof Simulation.Type;
-export const simulations:any = {};
+
+
+export const simulations = types.model(
+  {
+    simulationsMap: types.optional(types.map(Simulation), {})
+  },
+  {},
+  {
+    add(s:ISimulation) {
+      this.simulationsMap.put(s);
+    },
+    get(name:string):ISimulation | undefined {
+      return this.simulationsMap.get(name);
+    }
+  }).create();
+
 export let simulationStore:ISimulation;
+
 export function simulationNamed(name:string){
-  if(!simulations[name]) {
-    simulations[name] = Simulation.create({name:name, id:name});
-    Firebasify(simulations[name],`simulations/${name}`);
+  simulationStore = simulations.get(name) || Simulation.create({name:name, id:name});
+  if(!simulations.get(name)) {
+    const path = `simulations/${name}`;
+    simulations.add(simulationStore);
+    Firebasify(simulationStore, path);
+    console.log(`💀 added simulation at ${path}`);
   }
-  simulationStore = simulations[name];
-  return simulations[name];
+  console.log(`💀 simulation changed to ${name}`);
+  simulationStore.presences.initPresence();
+  return simulationStore;
 }

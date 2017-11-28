@@ -11,6 +11,7 @@ export const Firebasify = (model:any, relativeDataPath:string) => {
   };
   pendingRef.then((ref:FirebaseRef) => {
     ref.once('value').then( (newV:FirebaseData) => {
+      updateFunc(newV);
       ref.on('value',updateFunc);
       onSnapshot(model, (newSnapshot:any) => {
         pendingRef.then((ref:FirebaseRef) => {
