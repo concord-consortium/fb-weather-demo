@@ -1,34 +1,23 @@
 import { onSnapshot, applySnapshot } from "mobx-state-tree";
-import { gFirebase, FirebaseImp } from "./firebase-imp";
+import { gFirebase, FirebaseData, FirebaseRef} from "./firebase-imp";
 
-const _ = require("lodash");
-
-export const Firebasify = (model:any, relativeDataPath:string, callback?:(f:FirebaseImp)=>void) => {
-  let isFirstTime = true;
-  const firebaseListener = {
-    setState(newData:any) {
-      // const dotPath = relativeDataPath.replace(/\//g,".");
-      const myData = _.get(newData,relativeDataPath);
-      if(myData !== undefined){
-        applySnapshot(model, myData);
-      }
-      if(isFirstTime) {
-        isFirstTime = false;
-        if(callback) {
-          callback(gFirebase);
-        }
-      }
-    },
-    // Ignore these sessionlistening methods... Don't think we need them.
-    setSessionPath(path:string) { return;},
-    setSessionList(sessions:string[]) { return; }
+export const Firebasify = (model:any, relativeDataPath:string) => {
+  const pendingRef = gFirebase.refForPath(relativeDataPath);
+  const updateFunc = (newV:FirebaseData) => {
+    const v = newV.val();
+    if(v) {
+      applySnapshot(model, v);
+    }
   };
-
-  // TBD: track these, so that we can optionally remove them?
-  gFirebase.addListener(firebaseListener);
-
-  onSnapshot(model, (newSnapshot:any) => {
-    gFirebase.saveToRelativePath(newSnapshot, relativeDataPath);
+  pendingRef.then((ref:FirebaseRef) => {
+    ref.once('value').then( (newV:FirebaseData) => {
+      ref.on('value',updateFunc);
+      onSnapshot(model, (newSnapshot:any) => {
+        pendingRef.then((ref:FirebaseRef) => {
+          ref.update(newSnapshot);
+        });
+      });
+    });
   });
-};
 
+};
