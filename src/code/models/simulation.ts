@@ -1,6 +1,6 @@
 import { types } from "mobx-state-tree";
 import { SimulationControl } from "./simulation-control";
-import { SimulationSettings } from "./simulation-settings";
+import { SimulationSettings, IFormatTempOptions, IFormatWindSpeedOptions } from "../models/simulation-settings";
 import { IMapConfig } from "./map-config";
 import { gWeatherEvent } from "./weather-event";
 import { WeatherScenario, IStationSpec } from "./weather-scenario";
@@ -13,13 +13,15 @@ import { PredictionStore } from "../stores/prediction-store";
 import { GroupStore } from "../stores/group-store";
 import { Grid } from "./grid";
 import { IGroup } from "./group";
+import { IPresence } from "./presence";
+import { Firebasify } from "../middleware/firebase-decorator";
 import { v1 as uuid } from "uuid";
 
 import * as _ from "lodash";
 import * as moment from 'moment';
 
 export const Simulation = types.model('Simulation', {
-  name: types.string,
+  name: types.optional(types.string,  () => "busted"),
   id: types.optional(types.identifier(types.string), () => uuid()),
   scenario: types.optional(WeatherScenario,     () => WeatherScenario.create(gWeatherScenarioSpec)),
   control: types.optional(SimulationControl,    () => SimulationControl.create()),
@@ -54,11 +56,30 @@ export const Simulation = types.model('Simulation', {
   get group(): IGroup {
     return this.groups.selected;
   },
+  get selectedPresence(): IPresence | null {
+    const presences = this.presences;
+    return presences && presences.selected;
+  },
+  get selectedGroupName(): string | null {
+    return this.selectedPresence ? this.selectedPresence.groupName : null;
+  },
   get groupName(): string {
     if(this.group) {
       return this.group.name;
     }
     return "";
+  },    get groupList(): IGroup[] | null {
+    return this.groups && this.groups.groups;
+  },
+  get selectedGroup(): IGroup  | null {
+    return this.groups && this.groups.getGroup(this.selectedGroupName);
+  },
+  get availableGroups() {
+    const groupNames = this.presences.groupNames;
+    const groupList = this.groupList;
+    return _.filter(groupList, (g:IGroup) => {
+      return !(_.includes(groupNames, g.name));
+    });
   },
   formatTime(time: Date | null, format?: string): string {
     if (time == null) { return ""; }
@@ -68,11 +89,41 @@ export const Simulation = types.model('Simulation', {
     }
     // formatting rules see: https://momentjs.com/
     return m.format(format || 'lll');
-  }
+  },
+
+  // formats a local time, i.e. with local UTC offset
+  formatLocalTime(time: Date | null, format?: string): string {
+    return (this.settings && this.settings.formatLocalTime(time, format)) || "";
+  },
+  formatTemperature(temp: number | null, options: IFormatTempOptions): string {
+    return this.settings ? this.settings.formatTemperature(temp, options) : "";
+  },
+  parseTemperature(temp: string): number | null {
+    return this.settings && this.settings.parseTemperature(temp);
+  },
+  formatWindSpeed(windSpeed: number | null, options: IFormatWindSpeedOptions): string {
+    return this.settings ? this.settings.formatWindSpeed(windSpeed, options) : "";
+  },
+  parseWindSpeed(windSpeed: string): number | null {
+    return this.settings && this.settings.parseWindSpeed(windSpeed);
+  },
+  formatWindDirection(windSpeed: number | null, options: IFormatWindSpeedOptions): string {
+    return this.settings ? this.settings.formatWindDirection(windSpeed, options) : "";
+  },
+  parseWindDirection(windDirection: string): number | null {
+    return this.settings && this.settings.parseWindDirection(windDirection);
+  },
+  get selectedStation(): IWeatherStation | null {
+    const stations = this.stations;
+    return stations && stations.selected;
+  },
+  get presenceStation(): IWeatherStation | null {
+    const selectedPresence = this.selectedPresence;
+    return selectedPresence && selectedPresence.weatherStation;
+  },
 }, {
 }, {
   afterCreate() {
-    this.presences.initPresence();
     if (_.size(this.stations.stations) === 0) {
       // create stations from scenario
       const stations = this.scenario.stations.map((spec: IStationSpec) => {
@@ -167,4 +218,15 @@ export const Simulation = types.model('Simulation', {
     this.control.stepBack();
   }
 });
+
 export type ISimulation = typeof Simulation.Type;
+export const simulations:any = {};
+export let simulationStore:ISimulation;
+export function simulationNamed(name:string){
+  if(!simulations[name]) {
+    simulations[name] = Simulation.create({name:name, id:name});
+    Firebasify(simulations[name],`simulations/${name}`);
+  }
+  simulationStore = simulations[name];
+  return simulations[name];
+}

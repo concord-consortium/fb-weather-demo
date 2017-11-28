@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { Marker } from "react-leaflet";
 import { DivIcon } from "leaflet";
 import { PredictionType } from "../models/prediction";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
 import * as _ from "lodash";
 

@@ -1,7 +1,7 @@
 import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 import { IWeatherStation } from "./weather-station";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 import { IWeatherStationStore } from "../stores/weather-station-store";
 import { IGroup } from "./group";
 
@@ -24,7 +24,7 @@ export const Presence = types.model("Presence",
     return stations && stations.getStationByID(this.weatherStationID) || null;
   },
   get group(): IGroup | null {
-    const groups = simulationStore.selected ? simulationStore.selected.groups : null;
+    const groups = simulationStore.groups;
     return groups && groups.getGroup(this.groupName) || null;
   }
 },{

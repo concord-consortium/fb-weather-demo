@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { CardText } from "material-ui/Card";
 import { ComponentStyleMap } from "../utilities/component-style-map";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
 import { weatherColor, precipDiv } from "./weather-styler";
 export type StationTab = "configure" | "weather";
@@ -26,7 +26,7 @@ export class WeatherStationView extends
     let callSign = "";
     const {weatherStation} = this.props;
     const time = simulationStore.timeString,
-          simulationName = simulationStore.simulationName,
+          simulationName = simulationStore.name,
           temperature = weatherStation && weatherStation.temperature,
           unitTempStr = simulationStore.formatTemperature(temperature, { withUnit: true });
           // NP: Removed but saved in comments here for easy access.

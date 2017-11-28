@@ -8,7 +8,7 @@ import { Card, CardTitle, CardText} from "material-ui/Card";
 import { Tabs, Tab } from "material-ui/Tabs";
 
 import { ComponentStyleMap } from "../utilities/component-style-map";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 // const div = React.DOM.div;
 
 import { GridView } from "./grid-view";
@@ -86,7 +86,7 @@ export class SetupGridView extends React.Component<
   }
 
   renderDone() {
-    const simulationName = simulationStore.selected ? simulationStore.selected.name : "choose";
+    const simulationName = simulationStore.name;
     const path: string = `/simulations/${simulationName}`;
     return (
       <div>

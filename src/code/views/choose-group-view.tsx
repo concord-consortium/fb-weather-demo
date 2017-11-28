@@ -6,7 +6,7 @@ import RaisedButton from "material-ui/RaisedButton";
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import {IGroup} from "../models/group";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 
 export type StationTab = "configure" | "weather";
@@ -34,7 +34,7 @@ export class ChooseGroupView
   extends React.Component<ChooseGroupProps, ChooseGroupState> {
   constructor(props: ChooseGroupProps, context: any) {
     super(props);
-    const chosenGroup = simulationStore.selectedGroupName || "";
+    const chosenGroup = simulationStore.groupName || "";
     this.state = {chosenGroup: chosenGroup};
   }
 

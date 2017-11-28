@@ -12,13 +12,18 @@ import { IGroupStore } from "./group-store";
 import { IWeatherStationStore } from "./weather-station-store";
 import { IGrid } from "../models/grid";
 import { IGroup } from "../models/group";
+import { v1 as uuid } from "uuid";
 
 const _ = require("lodash");
+const SimulationName = types.model({
+  name: types.string,
+  id: types.optional(types.identifier(types.string), ()=> uuid()),
+});
 
 export const SimulationStore = types.model(
   "SimulationStore",
   {
-    simulations: types.optional(types.map(Simulation), {}),
+    simulations: types.optional(types.map(SimulationName), {}),
 
     get simulationList(): ISimulation[] {
       const names = _.map(this.simulations.values(), 'name');
@@ -119,19 +124,27 @@ export const SimulationStore = types.model(
         name: name,
         scenario: scenario
       });
-      this.simulations.put(simulation);
+      const simulationName = SimulationName.create( {
+        name: simulation.name,
+        id: simulation.id
+      });
+      this.simulations.put(simulationName);
       return simulation;
     },
-    select(simulation:ISimulation) {
-      this.selected=simulation.id;
-    },
-    selectById(id:string) {
-      this.selected=this.simulations.get(id).id;
-    },
+    // select(simulation:ISimulation) {
+    //   this.selected=simulation.id;
+    // },
+    // selectById(id:string) {
+    //   this.selected=this.simulations.get(id).id;
+    // },
     selectByName(name:string): ISimulation | null {
       const found = _.find(this.simulations.values(), (s: ISimulation) => s.name === name);
-      return found ? this.selected = found : null;
+      this.selected = found || Simulation.create();
+      // TODO stop listening to the last one...
+      Firebasify(this.selected, `simulations/${name}`);
+      return this.selected;
     },
+
     deselect(){
       this.selected=null;
     },
@@ -169,7 +182,7 @@ export const SimulationStore = types.model(
 );
 export type ISimulationStore = typeof SimulationStore.Type;
 
-export const simulationStore = SimulationStore.create();
+export const simulationListStore = SimulationStore.create();
 
-Firebasify(simulationStore,"Simulations");
+Firebasify(simulationListStore, "SimulationsList");
 

@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import RaisedButton from "material-ui/RaisedButton";
 import Slider from 'material-ui/Slider';
 import { ComponentStyleMap } from "../utilities/component-style-map";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 import { TimelineView} from "./timeline-view";
 
@@ -18,7 +18,7 @@ export class SegmentedControlView extends React.Component<
                                   SegmentedControlViewState> {
 
   render() {
-    const simulation = simulationStore.selected;
+    const simulation = simulationStore;
     const isPlaying = !!(simulation && simulation.isPlaying);
     const playFirstHalf = () =>  simulationStore.playFirstHalf();
     const playSecondHalf = () => simulationStore.playSecondHalf();

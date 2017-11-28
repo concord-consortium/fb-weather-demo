@@ -5,7 +5,7 @@ import { LeafletMapMarker } from "./leaflet-map-marker";
 
 import { IMapConfig } from "../models/map-config";
 import { IWeatherStation } from "../models/weather-station";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 interface LeafletMapProps {
   mapConfig: IMapConfig | null;

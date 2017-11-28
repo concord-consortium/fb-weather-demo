@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { CardText } from "material-ui/Card";
 import TextField from "material-ui/TextField";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 export type TeacherViewTab = "control" | "configure";
 
@@ -23,7 +23,7 @@ export class PlaybackOptionsView extends React.Component<
         maxWidth: 250
       }
     };
-    const simulationControl = simulationStore.selected && simulationStore.selected.control;
+    const simulationControl = simulationStore.control;
 
     if (simulationControl) {
       const chageTimeScale = (e:any, v:string) => simulationControl.setTimeScale(v);

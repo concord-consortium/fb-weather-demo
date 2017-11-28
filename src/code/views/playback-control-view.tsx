@@ -1,7 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import FloatingActionButton from "material-ui/FloatingActionButton";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 export interface PlaybackControlViewProps {}
 export interface PlaybackControlViewState {}
@@ -12,7 +12,7 @@ export class PlaybackControlView extends React.Component<
                                   PlaybackControlViewState> {
 
   render() {
-    const isPlaying = !!(simulationStore.selected && simulationStore.selected.isPlaying);
+    const isPlaying = !!(simulationStore.isPlaying);
     const playPauseIcon = isPlaying ? "icon-pause_circle_filled" : "icon-play_circle_filled";
     const playPauseAction = isPlaying ? simulationStore.stop : simulationStore.play;
 

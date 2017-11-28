@@ -1,7 +1,7 @@
 import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 import { IWeatherStation } from "./weather-station";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "./simulation";
 
 export enum PredictionType {
   eDescription = 'description',

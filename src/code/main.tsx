@@ -12,7 +12,7 @@ import { ClassView } from "./views/class-view";
 import { ChooseView } from "./views/choose-view";
 import { ChooseSimulationView } from "./views/choose-simulation-view";
 import { SetupGridView } from "./views/setup-grid-view";
-import { simulationStore } from "./stores/simulation-store";
+import { simulationNamed } from "./models/simulation";
 
 require("!style-loader!css-loader!leaflet/dist/leaflet.css");
 require("!style-loader!css-loader!../html/loading.css");
@@ -24,19 +24,19 @@ const log = function(msg: string) {
   console.log(msg);
 };
 
+
 const updateSession = function(nextSimulation: string) {
-  if (nextSimulation && nextSimulation !== gFirebase.session) {
-    if(simulationStore.selectByName(nextSimulation)) {
-      const logString = `
-        ================================================
-        Changed Simulation path to: ${nextSimulation}
-        ================================================
-      `;
-      log(logString);
-    }
-    else {
-      hashHistory.push('/simulations/choose');
-    }
+  if (nextSimulation && nextSimulation) {
+    simulationNamed(nextSimulation);
+    const logString = `
+      ================================================
+      Changed Simulation path to: ${nextSimulation}
+      ================================================
+    `;
+    log(logString);
+  }
+  else {
+    hashHistory.push('/simulations/choose');
   }
 };
 

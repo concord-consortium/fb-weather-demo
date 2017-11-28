@@ -12,7 +12,7 @@ import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 
 import { IGridCell } from "../models/grid-cell";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 
 require("!style-loader!css-loader!react-treeview/react-treeview.css");
@@ -168,7 +168,7 @@ export class TeacherView extends React.Component<
             <CardTitle>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 'bold', fontSize: "14pt"}}> {time}</div>
-                <div>{simulationStore.simulationName}</div>
+                <div>{simulationStore.name}</div>
               </div>
             </CardTitle>
             <CardMedia

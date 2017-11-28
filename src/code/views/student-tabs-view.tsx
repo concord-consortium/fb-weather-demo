@@ -9,7 +9,7 @@ import { ChooseGroupView } from "./choose-group-view";
 import { ChooseCellView } from "./choose-cell-view";
 import { WeatherStationView } from "./weather-station-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 
 enum StudentTab {
@@ -70,7 +70,9 @@ export class StudentTabsView extends React.Component<
       (simulationStore.presenceStation && `Location: ${simulationStore.presenceStation.name}`)
       || StudentTab.CellTab;
     const onGroupChosen = () => {
-      const presence = simulationStore.selectedPresence;
+      const store = simulationStore;
+      const presence = store.selectedPresence;
+      debugger;
       if(presence) {
         presence.setStationId("");
         this.setState({selectedTab: StudentTab.CellTab});

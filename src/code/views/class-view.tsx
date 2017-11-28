@@ -2,7 +2,7 @@ import * as React from "react";
 import { Tabs, Tab } from "material-ui/Tabs";
 import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { LeafletMapView } from "./leaflet-map-view";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 export interface ClassViewProps {}
 export interface ClassViewState {}

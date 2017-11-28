@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 
 import { CardTitle, CardText} from "material-ui/Card";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 import { IGridCell } from "../models/grid-cell";
 import { GridView } from "./grid-view";
 
@@ -33,7 +33,7 @@ export class ChooseCellView
   }
 
   render() {
-    const grid = simulationStore.selected ? simulationStore.selected.grid : null;
+    const grid = simulationStore.grid;
     const group = simulationStore.selectedGroup;
     const groupName = group && group.name;
     const presence = simulationStore.selectedPresence;

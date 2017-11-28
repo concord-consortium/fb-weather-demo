@@ -1,7 +1,7 @@
 import { types } from "mobx-state-tree";
 import { Prediction, IPrediction } from "../models/prediction";
 import { IWeatherStation } from "../models/weather-station";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 export const PredictionStore = types.model("PredictionStore", {
   predictions: types.optional(types.array(Prediction), []),
