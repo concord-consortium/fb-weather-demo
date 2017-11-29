@@ -34,13 +34,13 @@ export class ChooseGroupView
   extends React.Component<ChooseGroupProps, ChooseGroupState> {
   constructor(props: ChooseGroupProps, context: any) {
     super(props);
-    const chosenGroup = simulationStore.groupName || "";
+    const chosenGroup = simulationStore.selected.groupName || "";
     this.state = {chosenGroup: chosenGroup};
   }
 
   setGroup(event:any, index:number, name:string) {
     this.setState({chosenGroup: name});
-    const presence = simulationStore.selectedPresence;
+    const presence = simulationStore.selected.selectedPresence;
     if(presence) {
       presence.setGroupName(name);
     }
@@ -67,8 +67,8 @@ export class ChooseGroupView
       return  <MenuItem value={animal} key={animal} primaryText={animal} />;
     };
     const chooseButton = this.renderChooseButton();
-    const availableGroups = simulationStore.availableGroups;
-    const selectedGroup = simulationStore.selectedGroup;
+    const availableGroups = simulationStore.selected.availableGroups;
+    const selectedGroup = simulationStore.selected.selectedGroup;
     let groupOptions:string[] = [];
     if(availableGroups) {
       groupOptions = availableGroups.map((g:IGroup) => g.name);

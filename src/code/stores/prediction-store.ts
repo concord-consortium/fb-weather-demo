@@ -6,7 +6,7 @@ import { simulationStore } from "../models/simulation";
 export const PredictionStore = types.model("PredictionStore", {
   predictions: types.optional(types.array(Prediction), []),
   get prediction(): IPrediction | null {
-    const station = simulationStore.presenceStation;
+    const station = simulationStore.selected.presenceStation;
     let prediction = null;
     if (station) {
       prediction = this.predictions.filter((p:IPrediction) => p.station === station)[0];
@@ -14,7 +14,7 @@ export const PredictionStore = types.model("PredictionStore", {
     return prediction;
   },
   get teacherPredictions(): IPrediction[] {
-    const station = simulationStore.selectedStation;
+    const station = simulationStore.selected.selectedStation;
     let predictions = [];
     if (station) {
       predictions = this.predictions.filter((p:IPrediction) => p.station === station).reverse();
@@ -43,7 +43,7 @@ export const PredictionStore = types.model("PredictionStore", {
   }
 },{
   addPrediction(prediction:IPrediction) {
-    const station = simulationStore.presenceStation;
+    const station = simulationStore.selected.presenceStation;
     if (station) {
       prediction.setStation(station);
       this.predictions.push(prediction);

@@ -184,5 +184,5 @@ export type ISimulationStore = typeof SimulationStore.Type;
 
 export const simulationListStore = SimulationStore.create();
 
-Firebasify(simulationListStore, "SimulationsList");
+// Firebasify(simulationListStore, "SimulationsList");
 

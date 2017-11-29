@@ -23,7 +23,7 @@ export class PlaybackOptionsView extends React.Component<
         maxWidth: 250
       }
     };
-    const simulationControl = simulationStore.control;
+    const simulationControl = simulationStore.selected.control;
 
     if (simulationControl) {
       const chageTimeScale = (e:any, v:string) => simulationControl.setTimeScale(v);

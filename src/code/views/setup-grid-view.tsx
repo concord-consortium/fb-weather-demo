@@ -42,7 +42,8 @@ export class SetupGridView extends React.Component<
   SetupGridState
 > {
   constructor(props: SetupGridProps, ctx: any) {
-    const grid = simulationStore.grid;
+    const simulation = simulationStore.selected;
+    const grid = simulation.grid;
     super(props, ctx);
     if(grid) {
       this.state = {
@@ -53,7 +54,8 @@ export class SetupGridView extends React.Component<
   }
 
   renderControls() {
-    const grid = simulationStore.grid;
+    const simulation = simulationStore.selected;
+    const grid = simulation.grid;
     if(grid) {
       const updateRows = (e:any, value:string) => {
         this.setState({rows: value});
@@ -86,7 +88,8 @@ export class SetupGridView extends React.Component<
   }
 
   renderDone() {
-    const simulationName = simulationStore.name;
+    const simulation = simulationStore.selected;
+    const simulationName = simulation.name;
     const path: string = `/simulations/${simulationName}`;
     return (
       <div>
@@ -100,7 +103,8 @@ export class SetupGridView extends React.Component<
   }
 
   render() {
-    const grid = simulationStore.grid;
+    const simulation = simulationStore.selected;
+    const grid = simulation.grid;
     const controls = this.renderControls();
     if(grid == null) { return <div/>; }
     return (

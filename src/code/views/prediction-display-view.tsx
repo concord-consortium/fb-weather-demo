@@ -6,7 +6,6 @@ import { DropDownMenu, MenuItem } from "material-ui/DropDownMenu";
 const TreeView = require("react-treeview");
 
 import { PredictionType, IPrediction } from "../models/prediction";
-import { simulationStore } from "../stores/simulation-store";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import * as _ from "lodash";
 
@@ -75,10 +74,11 @@ export class PredictionDisplayView extends React.Component<
 
 
   render() {
-    const weatherStation = simulationStore.selectedStation;
+    const simulation = simulationStore.selected;
+    const weatherStation = simulation.selectedStation;
     if (!weatherStation) { return null; }
 
-    const predictions = (simulationStore.predictions && simulationStore.predictions.teacherPredictions) || [],
+    const predictions = (simulation.predictions && simulation.predictions.teacherPredictions) || [],
           predictedTimes = {} as { [key: string] : { [key: string] : IPrediction[] } };
 
     predictions.forEach((p) => {
@@ -112,7 +112,7 @@ export class PredictionDisplayView extends React.Component<
 
     function renderPredictionTree(predictions: IPrediction[]) {
       return _.sortBy(predictions, 'timeStamp').reverse().map((p) => {
-                const timeStamp = simulationStore.formatLocalTime(p.timeStamp, 'l LT'),
+                const timeStamp = simulation.formatLocalTime(p.timeStamp, 'l LT'),
                       key = p.timeStamp.getTime(),
                       sLabel = formatPredictedValueLabel(p),
                       sValue = formatPredictedValue(p),
@@ -129,11 +129,11 @@ export class PredictionDisplayView extends React.Component<
 
     function renderPredictionTreeView() {
       return _.keys(predictedTimes).sort().reverse().map((pdt: string) => {
-        const spdt = simulationStore.formatTime(new Date(Number(pdt)), 'l LT'),
+        const spdt = simulation.formatTime(new Date(Number(pdt)), 'l LT'),
               pdtLabel = <span className="node gray-bg">Predictions for: {spdt}</span>,
               pdtSet = predictedTimes[pdt],
               pntLabels = _.keys(pdtSet).map((pnt: string) => {
-                const spnt = simulationStore.formatTime(new Date(Number(pnt)), 'l LT'),
+                const spnt = simulation.formatTime(new Date(Number(pnt)), 'l LT'),
                       pntLabel = <span className="node">Predicted at: {spnt}</span>,
                       predictions = pdtSet[pnt],
                       predictionTrees = renderPredictionTree(predictions);

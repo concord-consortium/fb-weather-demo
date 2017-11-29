@@ -33,10 +33,11 @@ export class PredictionSelectionView extends React.Component<
 
 
   render() {
-    const time = simulationStore.timeString;
+    const simulation = simulationStore.selected;
+    const time = simulation.timeString;
 
 
-    const enabledPredictions = simulationStore.settings && simulationStore.settings.enabledPredictions,
+    const enabledPredictions = simulation.settings && simulation.settings.enabledPredictions,
       menuOptions = [
         <MenuItem key={0} value={null} primaryText="Disable Predictions" />,
         <MenuItem key={1} value={PredictionType.eDescription} primaryText="Enable Descriptive Predictions" />,
@@ -44,7 +45,7 @@ export class PredictionSelectionView extends React.Component<
         <MenuItem key={3} value={PredictionType.eWindSpeed} primaryText="Enable Wind Speed Predictions" />,
         <MenuItem key={4} value={PredictionType.eWindDirection} primaryText="Enable Wind Direction Predictions" />
       ].filter((item) => {
-        const settings = simulationStore.settings,
+        const settings = simulation.settings,
               showTempValues = settings && settings.showTempValues,
               showWindValues = settings && settings.showWindValues;
         if (!showTempValues && (item.props.value === PredictionType.eTemperature)) {

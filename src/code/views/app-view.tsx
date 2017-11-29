@@ -35,7 +35,7 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
         <div>
           <div style={{ display: "none", fontSize: "9pt", color: "gray" }}>
             <Link to="/simulations">
-              {simulationStore.name}
+              {simulationStore.selected.name}
             </Link>
           </div>
           {/*<DevTools />*/}

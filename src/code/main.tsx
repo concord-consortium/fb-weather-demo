@@ -12,7 +12,7 @@ import { ClassView } from "./views/class-view";
 import { ChooseView } from "./views/choose-view";
 import { ChooseSimulationView } from "./views/choose-simulation-view";
 import { SetupGridView } from "./views/setup-grid-view";
-import { simulationNamed } from "./models/simulation";
+import { simulationStore } from "./models/simulation";
 
 require("!style-loader!css-loader!leaflet/dist/leaflet.css");
 require("!style-loader!css-loader!../html/loading.css");
@@ -25,46 +25,49 @@ const log = function(msg: string) {
 };
 
 
-const updateSession = function(nextSimulation: string) {
-  if (nextSimulation && nextSimulation) {
-    simulationNamed(nextSimulation);
-    const logString = `
-      ================================================
-      Changed Simulation path to: ${nextSimulation}
-      ================================================
-    `;
-    log(logString);
-  }
-  else {
-    hashHistory.push('/simulations/choose');
-  }
-};
-
-const simulationChanged = function(
-  prevState: any,
-  nextState: any,
-  replace: any,
-  callback: Function | undefined
-) {
-  updateSession(nextState.params.simulationName);
-  if (callback) {
-    callback();
-  }
-};
-
-const onEnter = function(
-  nextState: any,
-  replace: any,
-  callback: Function | undefined
-) {
-  updateSession(nextState.params.simulationName);
-  if (callback) {
-    callback();
-  }
-};
 
 gFirebase.postConnect.then( (imp:FirebaseImp)=> {
   imp.dataRef.once('value').then((snapshot:any) => {
+
+    const updateSession = function (nextSimulation: string) {
+      if (nextSimulation && nextSimulation) {
+        simulationStore.select(nextSimulation);
+        const logString = `
+          ================================================
+          Changed Simulation path to: ${nextSimulation}
+          ================================================
+        `;
+        log(logString);
+      }
+      else {
+        hashHistory.push('/simulations/choose');
+      }
+    };
+
+    const simulationChanged = function (
+      prevState: any,
+      nextState: any,
+      replace: any,
+      callback: Function | undefined
+    ) {
+      updateSession(nextState.params.simulationName);
+      if (callback) {
+        callback();
+      }
+    };
+
+    const onEnter = function (
+      nextState: any,
+      replace: any,
+      callback: Function | undefined
+    ) {
+      updateSession(nextState.params.simulationName);
+      if (callback) {
+        callback();
+      }
+    };
+
+
     ReactDOM.render(
       <Router history={hashHistory}>
         <Route

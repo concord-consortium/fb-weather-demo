@@ -78,8 +78,9 @@ export class PredictionFormView
   }
 
   predictionPrompt() {
-    const settings = simulationStore.settings,
-          station = simulationStore.presenceStation,
+    const simulation = simulationStore.selected;
+    const settings = simulation.settings,
+          station = simulation.presenceStation,
           predictionType = settings && settings.enabledPredictions,
           predictionInterval = (settings && settings.predictionInterval) || 60;
 
@@ -89,13 +90,13 @@ export class PredictionFormView
         case PredictionType.eDescription:
           break;
         case PredictionType.eTemperature:
-          return simulationStore.formatTemperature(station.temperature, { withUnit: true });
+          return simulation.formatTemperature(station.temperature, { withUnit: true });
         case PredictionType.eHumidity:
           break;
         case PredictionType.ePrecipitation:
           break;
         case PredictionType.eWindSpeed:
-          return simulationStore.formatWindSpeed(station.windSpeed, { withUnit: true });
+          return simulation.formatWindSpeed(station.windSpeed, { withUnit: true });
         case PredictionType.eWindDirection:
           return station.strWindDirection();
       }
@@ -104,12 +105,12 @@ export class PredictionFormView
 
     if (predictionType) {
       const spec = predictionType && controlsSpec[predictionType],
-            simulationTime = simulationStore.simulationTime,
-            simulationTimeStr = simulationStore.timeString,
+            simulationTime = simulation.simulationTime,
+            simulationTimeStr = simulation.timeString,
             predictionTime = simulationTime && moment(simulationTime)
                                                 .add({ minutes: predictionInterval })
                                                 .toDate(),
-            predictionTimeStr = simulationStore.formatTime(predictionTime),
+            predictionTimeStr = simulation.formatTime(predictionTime),
             sValue = getCurrentValue(),
             prompt = spec && spec.prompt && spec.prompt
                       .replace(/%sTime%/, simulationTimeStr)
@@ -139,9 +140,10 @@ export class PredictionFormView
   }
 
   submitPrediction = (event: any) => {
-    const predictionType = simulationStore.settings && simulationStore.settings.enabledPredictions,
-          simulationTime = simulationStore.simulationTime,
-          predictions = simulationStore.predictions;
+    const simulation = simulationStore.selected;
+    const predictionType = simulation.settings && simulation.settings.enabledPredictions,
+          simulationTime = simulation.simulationTime,
+          predictions = simulation.predictions;
 
     if (!predictionType || !simulationTime || !predictions) { return; }
 
@@ -150,15 +152,15 @@ export class PredictionFormView
         case PredictionType.eDescription:
           break;
         case PredictionType.eTemperature:
-          return simulationStore.parseTemperature(strValue);
+          return simulation.parseTemperature(strValue);
         case PredictionType.eHumidity:
           break;
         case PredictionType.ePrecipitation:
           break;
         case PredictionType.eWindSpeed:
-          return simulationStore.parseWindSpeed(strValue);
+          return simulation.parseWindSpeed(strValue);
         case PredictionType.eWindDirection:
-          return simulationStore.parseWindDirection(strValue);
+          return simulation.parseWindDirection(strValue);
       }
       return null;
     }

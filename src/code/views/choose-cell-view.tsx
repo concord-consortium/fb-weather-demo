@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import { CardTitle, CardText} from "material-ui/Card";
 import { simulationStore } from "../models/simulation";
 import { IGridCell } from "../models/grid-cell";
+import { IPresence } from "../models/presence";
 import { GridView } from "./grid-view";
 
 import * as _ from "lodash";
@@ -33,12 +34,13 @@ export class ChooseCellView
   }
 
   render() {
-    const grid = simulationStore.grid;
-    const group = simulationStore.selectedGroup;
+    const simulation = simulationStore.selected;
+    const grid = simulation.grid;
+    const group = simulation.selectedGroup;
     const groupName = group && group.name;
-    const presence = simulationStore.selectedPresence;
-    const presences = simulationStore.presences && simulationStore.presences.presences.values();
-    const occupiedStations = _.map(presences,  (value,key) => value.weatherStationID);
+    const presence = simulation.selectedPresence;
+    const presences = simulation.presences;
+    const occupiedStations = _.map(presences,  (value,key) => (value as IPresence).weatherStationID);
 
     const stationId = presence && presence.weatherStationID;
     const myTeamCellColor = "#D4EBB0";
@@ -55,7 +57,7 @@ export class ChooseCellView
       if(cell.weatherStationId === stationId) {
         return myTeamCellColor;
       }
-      if(simulationStore.presences &&
+      if(simulationStore.selected.presences &&
         _.includes(occupiedStations, cell.id)) {
         return teamCellColor;
       }

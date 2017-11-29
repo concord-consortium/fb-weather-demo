@@ -106,35 +106,38 @@ export class TeacherView extends React.Component<
   }
 
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
-    const settings = simulationStore.settings;
+    const simulation = simulationStore.selected;
+    const settings = simulation.settings;
     if (settings) {
       settings.setSetting('enabledPredictions', value);
     }
   }
 
   renderLeafletMap() {
-   const weatherStations = (simulationStore.stations && simulationStore.stations.stations) || [];
-   return (
-    <LeafletMapView
-      mapConfig={simulationStore.mapConfig}
-      interaction={false}
-      weatherStations={weatherStations}
-      width={600}
-      height={400}
-    />
-   );
+    const simulation = simulationStore.selected;
+    const weatherStations = (simulation.stations && simulation.stations.stations) || [];
+    return (
+      <LeafletMapView
+        mapConfig={simulation.mapConfig}
+        interaction={false}
+        weatherStations={weatherStations}
+        width={600}
+        height={400}
+      />
+    );
   }
 
   renderGridMap() {
-    const grid = simulationStore.grid;
+    const simulation = simulationStore.selected;
+    const grid = simulation.grid;
 
     const colorFunc = (cell:IGridCell) => {
-      const station = simulationStore.stations && simulationStore.stations.getStation(cell.weatherStationId);
+      const station = simulation.stations && simulation.stations.getStation(cell.weatherStationId);
       return weatherColor(station);
     };
 
     const titleFunc = (cell:IGridCell) => {
-      const station = simulationStore.stations && simulationStore.stations.getStation(cell.weatherStationId);
+      const station = simulation.stations && simulation.stations.getStation(cell.weatherStationId);
       return precipDiv(station);
     };
 
@@ -150,7 +153,8 @@ export class TeacherView extends React.Component<
   }
 
   render() {
-    const time = simulationStore.timeString;
+    const simulation = simulationStore.selected;
+    const time = simulation.timeString;
 
     const handleChangeTab = (value: TeacherViewTab) => {
       this.setState({
@@ -168,7 +172,7 @@ export class TeacherView extends React.Component<
             <CardTitle>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 'bold', fontSize: "14pt"}}> {time}</div>
-                <div>{simulationStore.name}</div>
+                <div>{simulation.name}</div>
               </div>
             </CardTitle>
             <CardMedia

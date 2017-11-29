@@ -2,12 +2,12 @@ import { types } from "mobx-state-tree";
 import { Presence, IPresence } from "../models/presence";
 import { gFirebase } from "../middleware/firebase-imp";
 import { IWeatherStation } from "../models/weather-station";
-import { v1 as uuid } from "uuid";
+// import { v1 as uuid } from "uuid";
 
 export const PresenceStore = types.model(
   "PresenceStore",
   {
-    id: types.optional(types.identifier(types.string), () => uuid()),
+    id: types.optional(types.identifier(types.string), "store"), // () => uuid()),
     presences: types.optional(types.map(Presence), {}),
     get weatherStation(): IWeatherStation | null {
       return this.selected && this.selected.weatherStation;
@@ -23,7 +23,7 @@ export const PresenceStore = types.model(
     }
   },{
     // volatile
-    selected: null as any as IPresence | null
+    selected: () => Presence.create({id:"fake"})
   },{
     setStation(station:IWeatherStation | null) {
       if(this.selected) {
@@ -37,7 +37,6 @@ export const PresenceStore = types.model(
       return presence;
     },
     initPresence() {
-      console.log('calling init presence');
       const userId = gFirebase.user.uid;
       const existing = this.presences.get(userId);
       if(existing) {

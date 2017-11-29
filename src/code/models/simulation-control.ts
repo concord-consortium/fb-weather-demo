@@ -16,7 +16,7 @@ export const  SimulationControl = types.model(
       return moment(this.time);
     },
     get endTime():Date|null {
-      return simulationStore.endTime;
+      return simulationStore.selected.endTime;
     }
   }, {
     timer: null
@@ -77,11 +77,11 @@ export const  SimulationControl = types.model(
     },
     playFirstHalf() {
       this.rewind();
-      const endTime = this.halfTime || (simulationStore.scenario.endTime);
+      const endTime = this.halfTime || (simulationStore.selected.scenario.endTime);
       this.enableTimer(endTime);
     },
     playSecondHalf() {
-      const endTime = simulationStore.scenario.endTime;
+      const endTime = simulationStore.selected.scenario.endTime;
       if (!this.isPlaying) {
         if(this.halfTime) {
           // this.setTime(this.halfTime);

@@ -25,15 +25,16 @@ export class WeatherStationView extends
     let name = "";
     let callSign = "";
     const {weatherStation} = this.props;
-    const time = simulationStore.timeString,
-          simulationName = simulationStore.name,
+    const simulation = simulationStore.selected;
+    const time = simulation.timeString,
+          simulationName = simulation.name,
           temperature = weatherStation && weatherStation.temperature,
-          unitTempStr = simulationStore.formatTemperature(temperature, { withUnit: true });
+          unitTempStr = simulation.formatTemperature(temperature, { withUnit: true });
           // NP: Removed but saved in comments here for easy access.
           // Its likely we are going to put this back in at some point.
           // windSpeed = weatherStation && weatherStation.windSpeed,
           // isNonZeroSpeed = windSpeed && isFinite(windSpeed);
-          // windSpeedStr = simulationStore.formatWindSpeed(windSpeed, { withUnit: true }),
+          // windSpeedStr = simulation.formatWindSpeed(windSpeed, { withUnit: true }),
           // windDirection = weatherStation && weatherStation.windDirection,
           // arrowRotation = (windDirection != null) && isFinite(windDirection)
           //                   ? windDirection + 90 : null,
@@ -96,8 +97,8 @@ export class WeatherStationView extends
         color: "hsla(0, 0%, 10%, 0.9)"
       }
     };
-
-    const settings = simulationStore.settings,
+  
+    const settings = simulation.settings,
           showTemperature = settings && settings.showTempValues;
 
     function renderTemperature() {

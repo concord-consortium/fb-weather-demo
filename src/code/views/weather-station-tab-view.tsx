@@ -23,8 +23,8 @@ export class WeatherStationTabView extends React.Component<
                                           WeatherStationState> {
   constructor(props: WeatherStationProps, context: any) {
     super(props);
-
-    const station = simulationStore.presenceStation;
+    const simulation = simulationStore.selected;
+    const station = simulation.presenceStation;
     this.state = {
       tab: station ? "weather" : "configure",
       station
@@ -32,7 +32,8 @@ export class WeatherStationTabView extends React.Component<
   }
 
   handleChangeStation = (station: IWeatherStation | null) => {
-    const presences = simulationStore.presences;
+    const simulation = simulationStore.selected;
+    const presences = simulation.presences;
     if (presences) {
       presences.setStation(station);
       if (station) {
@@ -45,14 +46,15 @@ export class WeatherStationTabView extends React.Component<
     let name = "";
     let callSign = "";
     let imgUrl = "img/farm.jpg";
-    const time = simulationStore.timeString,
+    const simulation = simulationStore.selected;
+    const time = simulation.timeString,
           simulationName = simulationStore.simulationName,
-          weatherStation = this.state.station || simulationStore.presenceStation,
+          weatherStation = this.state.station || simulation.presenceStation,
           temperature = weatherStation && weatherStation.temperature,
-          unitTempStr = simulationStore.formatTemperature(temperature, { withUnit: true }),
+          unitTempStr = simulation.formatTemperature(temperature, { withUnit: true }),
           windSpeed = weatherStation && weatherStation.windSpeed,
           isNonZeroSpeed = windSpeed && isFinite(windSpeed),
-          windSpeedStr = simulationStore.formatWindSpeed(windSpeed, { withUnit: true }),
+          windSpeedStr = simulation.formatWindSpeed(windSpeed, { withUnit: true }),
           windDirection = weatherStation && weatherStation.windDirection,
           arrowRotation = (windDirection != null) && isFinite(windDirection)
                             ? windDirection + 90 : null,
@@ -109,8 +111,8 @@ export class WeatherStationTabView extends React.Component<
         tab: newTab
       });
     };
-
-    const settings = simulationStore.settings,
+    const simulation = simulationStore.selected;
+    const settings = simulation.settings,
           showTemperature = settings && settings.showTempValues,
           showWindValues = settings && settings.showWindValues;
 

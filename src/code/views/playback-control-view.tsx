@@ -12,21 +12,22 @@ export class PlaybackControlView extends React.Component<
                                   PlaybackControlViewState> {
 
   render() {
-    const isPlaying = !!(simulationStore.isPlaying);
+    const simulation = simulationStore.selected;
+    const isPlaying = !!(simulation.isPlaying);
     const playPauseIcon = isPlaying ? "icon-pause_circle_filled" : "icon-play_circle_filled";
-    const playPauseAction = isPlaying ? simulationStore.stop : simulationStore.play;
+    const playPauseAction = isPlaying ? simulation.stop : simulation.play;
 
     return(
       <div>
           <FloatingActionButton
             iconClassName="icon-refresh"
             disabled={isPlaying}
-            onTouchTap={simulationStore.rewind}
+            onTouchTap={simulation.rewind}
           />
           <FloatingActionButton
             iconClassName="icon-skip_previous"
             disabled={isPlaying}
-            onTouchTap={simulationStore.stepBack}
+            onTouchTap={simulation.stepBack}
           />
           <FloatingActionButton
             iconClassName={playPauseIcon}
@@ -35,7 +36,7 @@ export class PlaybackControlView extends React.Component<
           <FloatingActionButton
             iconClassName="icon-skip_next"
             disabled={isPlaying}
-            onTouchTap={simulationStore.stepForward}
+            onTouchTap={simulation.stepForward}
           />
         </div>
     );

@@ -18,11 +18,11 @@ export class SegmentedControlView extends React.Component<
                                   SegmentedControlViewState> {
 
   render() {
-    const simulation = simulationStore;
+    const simulation = simulationStore.selected;
     const isPlaying = !!(simulation && simulation.isPlaying);
-    const playFirstHalf = () =>  simulationStore.playFirstHalf();
-    const playSecondHalf = () => simulationStore.playSecondHalf();
-    const reset = () => simulationStore.rewind();
+    const playFirstHalf = () =>  simulation.playFirstHalf();
+    const playSecondHalf = () => simulation.playSecondHalf();
+    const reset = () => simulation.rewind();
     const dragStop = (o:any) => {
       if (simulation) {
         const newTime = this.state.splitTime;

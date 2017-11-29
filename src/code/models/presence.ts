@@ -20,11 +20,11 @@ export const Presence = types.model("Presence",
   weatherStationID: types.maybe(types.string),
   groupName: types.maybe(types.string),
   get weatherStation(): IWeatherStation | null {
-    const stations: IWeatherStationStore | null = simulationStore.stations;
+    const stations: IWeatherStationStore | null = simulationStore.selected.stations;
     return stations && stations.getStationByID(this.weatherStationID) || null;
   },
   get group(): IGroup | null {
-    const groups = simulationStore.groups;
+    const groups = simulationStore.selected.groups;
     return groups && groups.getGroup(this.groupName) || null;
   }
 },{

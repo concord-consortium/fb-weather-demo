@@ -7,15 +7,15 @@ import { WeatherScenario, IStationSpec } from "./weather-scenario";
 import { gWeatherScenarioSpec } from "./weather-scenario-spec";
 import { WeatherStation, IWeatherStation } from "./weather-station";
 import { WeatherStationState } from "./weather-station-state";
-import { PresenceStore } from "../stores/presence-store";
 import { WeatherStationStore } from "../stores/weather-station-store";
 import { PredictionStore } from "../stores/prediction-store";
 import { GroupStore } from "../stores/group-store";
 import { Grid } from "./grid";
 import { IGroup } from "./group";
-import { IPresence } from "./presence";
+import { IPresence, Presence} from "./presence";
 import { Firebasify } from "../middleware/firebase-decorator";
 import { v1 as uuid } from "uuid";
+import { gFirebase } from "../middleware/firebase-imp";
 
 import * as _ from "lodash";
 import * as moment from 'moment';
@@ -23,14 +23,14 @@ import * as moment from 'moment';
 export const Simulation = types.model('Simulation', {
   name: types.optional(types.string,  () => "busted"),
   id: types.optional(types.identifier(types.string), () => uuid()),
-  scenario: types.optional(WeatherScenario,     () => WeatherScenario.create(gWeatherScenarioSpec)),
-  control: types.optional(SimulationControl,    () => SimulationControl.create()),
-  settings: types.optional(SimulationSettings,  () => SimulationSettings.create()),
-  presences: types.optional(PresenceStore,      () => PresenceStore.create()),
-  predictions: types.optional(PredictionStore,  () => PredictionStore.create()),
-  stations: types.optional(WeatherStationStore, () => WeatherStationStore.create()),
-  grid: types.optional(Grid,                    () => Grid.create()),
-  groups: types.optional(GroupStore,            () => GroupStore.create()),
+  scenario: types.optional(WeatherScenario,      () => WeatherScenario.create(gWeatherScenarioSpec)),
+  control: types.optional(SimulationControl,     () => SimulationControl.create()),
+  settings: types.optional(SimulationSettings,   () => SimulationSettings.create()),
+  presences: types.optional(types.map(Presence), {} ),
+  predictions: types.optional(PredictionStore,   () => PredictionStore.create()),
+  stations: types.optional(WeatherStationStore,  () => WeatherStationStore.create()),
+  grid: types.optional(Grid,                     () => Grid.create()),
+  groups: types.optional(GroupStore,             () => GroupStore.create()),
 
   get isPlaying(): boolean {
     return this.control.isPlaying;
@@ -57,7 +57,7 @@ export const Simulation = types.model('Simulation', {
     return this.groups.selected;
   },
   get selectedPresence(): IPresence | null {
-    return this.presences.selected;
+    return this.presences.get(gFirebase.user.uid);
   },
   get selectedGroupName(): string | null {
     return this.selectedPresence ? this.selectedPresence.groupName : null;
@@ -161,7 +161,11 @@ export const Simulation = types.model('Simulation', {
     });
 
   },
-
+  initPresence() {
+    const id = gFirebase.user.uid;
+    const newPresence = Presence.create({id:id});
+    this.presences.put(newPresence);
+  },
   createGroups() {
     const groupNames = [
       "stallions",
@@ -221,31 +225,29 @@ export const Simulation = types.model('Simulation', {
 export type ISimulation = typeof Simulation.Type;
 
 
-export const simulations = types.model(
+const SimulationStore = types.model(
   {
     simulationsMap: types.optional(types.map(Simulation), {})
   },
-  {},
   {
-    add(s:ISimulation) {
-      this.simulationsMap.put(s);
+    selected: () => Simulation.create({id:"fake", name:"fake"})
+  },
+  {
+    add(name:string) {
+      const newSimulation = Simulation.create({name:name, id:name});
+      this.simulationsMap.put(newSimulation);
+      return newSimulation;
     },
     get(name:string):ISimulation | undefined {
       return this.simulationsMap.get(name);
+    },
+    select(name:string){
+      this.selected = this.get(name) || this.add(name);
+      Firebasify(this.selected, `simulations/${name}`, () => {
+        this.selected.initPresence();
+      });
+      return this.selected;
     }
-  }).create();
+  });
 
-export let simulationStore:ISimulation;
-
-export function simulationNamed(name:string){
-  simulationStore = simulations.get(name) || Simulation.create({name:name, id:name});
-  if(!simulations.get(name)) {
-    const path = `simulations/${name}`;
-    simulations.add(simulationStore);
-    Firebasify(simulationStore, path);
-    console.log(`💀 added simulation at ${path}`);
-  }
-  console.log(`💀 simulation changed to ${name}`);
-  simulationStore.presences.initPresence();
-  return simulationStore;
-}
+export const simulationStore  = SimulationStore.create();

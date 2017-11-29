@@ -37,8 +37,9 @@ export class StudentTabsView extends React.Component<
   }
 
   enabledTabs() {
-    const group = simulationStore.selectedGroup;
-    const weatherStation = simulationStore.presenceStation;
+    const simulation = simulationStore.selected;
+    const group = simulation.selectedGroup;
+    const weatherStation = simulation.presenceStation;
     if(!group) {
       return [StudentTab.GroupTab];
     }
@@ -59,20 +60,19 @@ export class StudentTabsView extends React.Component<
     const handleChangeTab = (newTab: StudentTab) => {
       this.setState({selectedTab: newTab});
     };
-
+    const simulation = simulationStore.selected;
     const enabledTabs = this.enabledTabs();
     const disabled = (tab:StudentTab) => ! _.includes(enabledTabs, tab);
     const cellDisabled    = disabled(StudentTab.CellTab);
     const weatherDisabled = disabled(StudentTab.WeatherTab);
-    const groupTabLabel   = simulationStore.selectedGroupName || StudentTab.GroupTab;
+    const groupTabLabel   = simulation.selectedGroupName || StudentTab.GroupTab;
     const weatherTabLabel = weatherDisabled ? "––" : "Current Conditions";
     const cellTabLabel    =
-      (simulationStore.presenceStation && `Location: ${simulationStore.presenceStation.name}`)
+      (simulation.presenceStation && `Location: ${simulation.presenceStation.name}`)
       || StudentTab.CellTab;
     const onGroupChosen = () => {
-      const store = simulationStore;
-      const presence = store.selectedPresence;
-      debugger;
+      const simulation = simulationStore.selected;
+      const presence = simulation.selectedPresence;
       if(presence) {
         presence.setStationId("");
         this.setState({selectedTab: StudentTab.CellTab});
@@ -90,7 +90,7 @@ export class StudentTabsView extends React.Component<
           <Tab
             label={weatherTabLabel} disabled={weatherDisabled} value={StudentTab.WeatherTab}>
             <CardText>
-              <WeatherStationView weatherStation={simulationStore.presenceStation} />
+              <WeatherStationView weatherStation={simulation.presenceStation} />
             </CardText>
           </Tab>
         </Tabs>

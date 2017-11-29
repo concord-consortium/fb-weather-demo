@@ -39,7 +39,8 @@ export class WeatherStationConfigView extends React.Component<
   }
 
   render() {
-    const weatherStation = this.props.station || simulationStore.presenceStation;
+    const simulation = simulationStore.selected;
+    const weatherStation = this.props.station || simulation.presenceStation;
     const weatherStationId = weatherStation && weatherStation.callSign;
 
     const styles: ComponentStyleMap = {

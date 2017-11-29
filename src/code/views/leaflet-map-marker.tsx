@@ -23,8 +23,9 @@ export class LeafletMapMarker extends React.Component<
   }
 
   get tempPrediction() {
+    const simulation = simulationStore.selected;
     const weatherStation = this.props.weatherStation;
-    const predictions = simulationStore.predictions,
+    const predictions = simulation.predictions,
           stationPredictions = predictions && predictions.predictionsFor(weatherStation);
     return _.find(stationPredictions, (p) => p.type === PredictionType.eTemperature);
   }
@@ -41,7 +42,8 @@ export class LeafletMapMarker extends React.Component<
 
   get diffTemp() {
     return (this.predictedTemp != null) && (this.actualTemp != null)
-              ? this.predictedTemp - this.actualTemp : null;
+      ? this.predictedTemp - this.actualTemp
+      : null;
   }
 
   get windSpeed() {
@@ -53,10 +55,11 @@ export class LeafletMapMarker extends React.Component<
   }
 
   predictedTempDiv() {
-    const showPredictions = simulationStore.settings && simulationStore.settings.showPredictions;
+    const simulation = simulationStore.selected;
+    const showPredictions = simulation.settings && simulation.settings.showPredictions;
     if(showPredictions && this.tempPrediction) {
       if ((this.predictedTemp != null) && isFinite(this.predictedTemp)) {
-        const predictedTempString = simulationStore.formatTemperature(this.predictedTemp, { withDegree: true });
+        const predictedTempString = simulation.formatTemperature(this.predictedTemp, { withDegree: true });
         return `<span class="predictTemp">${predictedTempString}</span> /`;
       }
     }
@@ -64,30 +67,33 @@ export class LeafletMapMarker extends React.Component<
   }
 
   actualTempDiv() {
-    const showTempValues = simulationStore.settings && simulationStore.settings.showTempValues;
+    const simulation = simulationStore.selected;
+    const showTempValues = simulation.settings && simulation.settings.showTempValues;
     if (showTempValues && (this.actualTemp != null) && isFinite(this.actualTemp)) {
-      const actualTempString = simulationStore.formatTemperature(this.actualTemp, { withDegree: true });
+      const actualTempString = simulation.formatTemperature(this.actualTemp, { withDegree: true });
       return `<span class="actualTemp">${actualTempString}</span>`;
     }
     return "";
   }
 
   diffTempDiv() {
-    const showDeltaTemp = simulationStore.settings && simulationStore.settings.showDeltaTemp;
+    const simulation = simulationStore.selected;
+    const showDeltaTemp = simulation.settings && simulation.settings.showDeltaTemp;
     if (showDeltaTemp && (this.diffTemp != null) && isFinite(this.diffTemp)) {
       const options = { asDifference: true, withDegreeUnit: true },
-            diffTempString = simulationStore.formatTemperature(this.diffTemp, options);
+            diffTempString = simulation.formatTemperature(this.diffTemp, options);
       return `<div class="diffTemp">${diffTempString}</div>`;
     }
     return "";
   }
 
   windSpeedDiv() {
-    const settings = simulationStore.settings,
-          showWindValues = settings && settings.showWindValues,
-          windSpeedUnit = (settings && settings.windSpeedUnit) || "";
+    const simulation = simulationStore.selected;
+    const settings = simulation.settings;
+    const showWindValues = settings && settings.showWindValues;
+    const windSpeedUnit = (settings && settings.windSpeedUnit) || "";
     if (showWindValues && (this.windSpeed != null) && isFinite(this.windSpeed)) {
-      const windSpeedStr = simulationStore.formatWindSpeed(this.windSpeed, {withUnit: false }),
+      const windSpeedStr = simulation.formatWindSpeed(this.windSpeed, {withUnit: false }),
             kFourPerEmSpace = '\u2005';
       return `<span class="windSpeed">${windSpeedStr}</span>` +
             `<span class="windSpeedUnit">${kFourPerEmSpace + windSpeedUnit}</span>`;
@@ -96,7 +102,8 @@ export class LeafletMapMarker extends React.Component<
   }
 
   windDirectionDiv() {
-    const showWindValues = simulationStore.settings && simulationStore.settings.showWindValues;
+    const simulation = simulationStore.selected;
+    const showWindValues = simulation.settings && simulation.settings.showWindValues;
     if (showWindValues && (this.windDirection != null)) {
       const classes = `"windDirection"`,
             rotation = this.windDirection + 90,
@@ -108,7 +115,8 @@ export class LeafletMapMarker extends React.Component<
   }
 
   callsignDiv() {
-    const showStationNames = simulationStore.settings && simulationStore.settings.showStationNames;
+    const simulation = simulationStore.selected;
+    const showStationNames = simulation.settings && simulation.settings.showStationNames;
     if (showStationNames) {
       return `<div>${this.props.weatherStation.callSign}</div>`;
     }
@@ -116,9 +124,10 @@ export class LeafletMapMarker extends React.Component<
   }
 
   render() {
+    const simulation = simulationStore.selected;
     const weatherStation = this.props.weatherStation;
     const handleClick = function(evt:any) {
-      const simulationStations = simulationStore.stations;
+      const simulationStations = simulation.stations;
       if (simulationStations) {
         simulationStations.select(weatherStation);
       }
