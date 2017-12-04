@@ -12,7 +12,9 @@ import { PredictionStore } from "../stores/prediction-store";
 import { GroupStore } from "../stores/group-store";
 import { Grid } from "./grid";
 import { IGroup } from "./group";
-import { IPresence, Presence} from "./presence";
+import { IPresence } from "./presence";
+// import { IPresence, Presence} from "./presence";
+import { PresenceStore} from "../stores/presence-store";
 import { Firebasify } from "../middleware/firebase-decorator";
 import { v1 as uuid } from "uuid";
 import { gFirebase } from "../middleware/firebase-imp";
@@ -26,7 +28,8 @@ export const Simulation = types.model('Simulation', {
   scenario: types.optional(WeatherScenario,      () => WeatherScenario.create(gWeatherScenarioSpec)),
   control: types.optional(SimulationControl,     () => SimulationControl.create()),
   settings: types.optional(SimulationSettings,   () => SimulationSettings.create()),
-  presences: types.optional(types.map(Presence), {} ),
+  // presences: types.optional(types.map(Presence), {} ),
+  presences: types.optional(PresenceStore,       () => PresenceStore.create()),
   predictions: types.optional(PredictionStore,   () => PredictionStore.create()),
   stations: types.optional(WeatherStationStore,  () => WeatherStationStore.create()),
   grid: types.optional(Grid,                     () => Grid.create()),
@@ -57,22 +60,16 @@ export const Simulation = types.model('Simulation', {
     return this.groups.selected;
   },
   get selectedPresence(): IPresence | null {
-    return this.presences.get(gFirebase.user.uid);
-  },
-  get selectedGroupName(): string | null {
-    return this.selectedPresence ? this.selectedPresence.groupName : null;
+    return this.presences.selected;
   },
   get groupName(): string {
-    if(this.group) {
-      return this.group.name;
-    }
-    return "";
+    return this.presences.groupName;
   },
   get groupList(): IGroup[] | null {
     return this.groups && this.groups.groups;
   },
   get selectedGroup(): IGroup  | null {
-    return this.groups && this.groups.getGroup(this.selectedGroupName);
+    return this.groups && this.groups.getGroup(this.groupName);
   },
   get availableGroups() {
     const groupNames = this.presences.groupNames;
@@ -190,14 +187,15 @@ export const Simulation = types.model('Simulation', {
   },
   initPresence() {
     const id = gFirebase.user.uid;
-    const existing = this.presences.get(id);
-    if(existing) {
-      existing.updateTime();
-    }
-    else {
-      const newPresence = Presence.create({id:id});
-      this.presences.put(newPresence);
-    }
+    this.presences.createPresence(id);
+    // const existing = this.presences.get(id);
+    // if(existing) {
+    //   existing.updateTime();
+    // }
+    // else {
+    //   const newPresence = Presence.create({id:id});
+    //   this.presences.put(newPresence);
+    // }
   },
   createGroups() {
     const groupNames = [

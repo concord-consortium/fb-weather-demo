@@ -20,10 +20,11 @@ export const PresenceStore = types.model(
     },
     get groupName() {
       return this.selected ? this.selected.groupName : "";
+    },
+    get selected() {
+      return this.presences.get(gFirebase.user.uid);
     }
   },{
-    // volatile
-    selected: () => Presence.create({id:"fake"})
   },{
     setStation(station:IWeatherStation | null) {
       if(this.selected) {
@@ -33,16 +34,12 @@ export const PresenceStore = types.model(
     createPresence(id:string): IPresence {
       const presence = Presence.create({id:id});
       this.presences.put(presence);
-      this.selected = presence;
       return presence;
     },
-    initPresence() {
+    init() {
       const userId = gFirebase.user.uid;
       const existing = this.presences.get(userId);
-      if(existing) {
-        this.selected=existing;
-      }
-      else {
+      if(!existing) {
         this.createPresence(userId);
       }
     }

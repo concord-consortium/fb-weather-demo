@@ -65,7 +65,7 @@ export class StudentTabsView extends React.Component<
     const disabled = (tab:StudentTab) => ! _.includes(enabledTabs, tab);
     const cellDisabled    = disabled(StudentTab.CellTab);
     const weatherDisabled = disabled(StudentTab.WeatherTab);
-    const groupTabLabel   = simulation.selectedGroupName || StudentTab.GroupTab;
+    const groupTabLabel   = simulation.groupName || StudentTab.GroupTab;
     const weatherTabLabel = weatherDisabled ? "––" : "Current Conditions";
     const cellTabLabel    =
       (simulation.presenceStation && `Location: ${simulation.presenceStation.name}`)

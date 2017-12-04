@@ -39,7 +39,7 @@ export class ChooseCellView
     const group = simulation.selectedGroup;
     const groupName = group && group.name;
     const presence = simulation.selectedPresence;
-    const presences = simulation.presences;
+    const presences = simulation.presences.presenceList;
     const occupiedStations = _.map(presences,  (value,key) => (value as IPresence).weatherStationID);
 
     const stationId = presence && presence.weatherStationID;
@@ -66,7 +66,12 @@ export class ChooseCellView
 
     const titleFunc = (cell:IGridCell) => {
       const id = cell.id;
-      const foundPresence = _.find(presences, (p) =>  p.weatherStationID === id);
+      const foundPresence = _.find(presences, (p) =>  {
+        const pId = p.weatherStationID;
+        console.log(`${id} == ${pId}`);
+        return pId === id;
+      });
+
       if(foundPresence) {
         return <div style={{fontSize:"8pt"}}>{foundPresence.groupName} </div>;
       }
