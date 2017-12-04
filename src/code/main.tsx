@@ -67,6 +67,25 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
       }
     };
 
+    const setTeacherMode = function (
+      nextState: any,
+      replace: any,
+      callback: Function | undefined
+    ) {
+      const simulation = simulationStore.selected;
+      simulation.setIsTeacherView(true);
+      if(callback) { callback(); }
+    };
+
+    const setStudentMode = function (
+      nextState: any,
+      replace: any,
+      callback: Function | undefined
+    ) {
+      const simulation = simulationStore.selected;
+      simulation.setIsTeacherView(false);
+      if(callback) { callback(); }
+    };
 
     ReactDOM.render(
       <Router history={hashHistory}>
@@ -84,10 +103,10 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
               <IndexRedirect to="show/choose" />
               <Route path="show">
                 <IndexRedirect to="choose" />
-                <Route path="student" component={StudentTabsView} />
+                <Route path="student" onEnter={setStudentMode}  component={StudentTabsView} />
                 <Route path="chooseCell" component={StudentTabsView} />
                 <Route path="station" component={WeatherStationView} />
-                <Route path="teacher" component={TeacherView} />
+                <Route path="teacher" onEnter={setTeacherMode} component={TeacherView} />
                 <Route path="classroom" component={ClassView} />
                 <Route path="setup" component={SetupGridView} />
                 <Route path="choose" component={ChooseView} />

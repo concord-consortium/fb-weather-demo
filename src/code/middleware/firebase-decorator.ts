@@ -1,13 +1,12 @@
 import { onSnapshot, applySnapshot } from "mobx-state-tree";
 import { gFirebase, FirebaseData, FirebaseRef} from "./firebase-imp";
+import * as _ from "lodash";
 
 export const Firebasify = (model:any, relativeDataPath:string, callBack?:()=> void) => {
   const pendingRef = gFirebase.refForPath(relativeDataPath);
   const updateFunc = (newV:FirebaseData) => {
     const v = newV.val();
     if(v) {
-      // console.log("Upadating model:");
-      // console.log(v);
       applySnapshot(model, v);
     }
   };
@@ -16,8 +15,10 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:()=> vo
       updateFunc(newV);
       ref.on('value',updateFunc);
       onSnapshot(model, (newSnapshot:any) => {
-        // console.log("updating firebase from model");
-        // console.log(newSnapshot);
+        const data = _.clone(newSnapshot);
+        if(model.filterOutboundData) {
+          model.filterOutboundData(data);
+        }
         ref.update(newSnapshot);
       });
       if(callBack) {

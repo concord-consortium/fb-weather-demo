@@ -39,6 +39,7 @@ export interface FirebaseRef {
   onDisconnect(): FirebaseDisconnectSerivce;
   remove(): void;
   update(data: any): void;
+  set(value:any): void;
   remove(key: string): void;
   child(path: string): FirebaseRef;
 }

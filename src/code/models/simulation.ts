@@ -67,7 +67,8 @@ export const Simulation = types.model('Simulation', {
       return this.group.name;
     }
     return "";
-  },    get groupList(): IGroup[] | null {
+  },
+  get groupList(): IGroup[] | null {
     return this.groups && this.groups.groups;
   },
   get selectedGroup(): IGroup  | null {
@@ -120,7 +121,9 @@ export const Simulation = types.model('Simulation', {
     const selectedPresence = this.selectedPresence;
     return selectedPresence && selectedPresence.weatherStation;
   },
-}, {
+},{
+  // volatile:
+  isTeacherView: false,
 }, {
   afterCreate() {
     if (_.size(this.stations.stations) === 0) {
@@ -159,12 +162,42 @@ export const Simulation = types.model('Simulation', {
           console.log(`Error initializing weather station '${station.id}': ${err}`);
         });
     });
-
+  },
+  filterOutboundData(snapshot:any) {
+    let copy = _.cloneDeep(snapshot);
+    const studentRemoveKeys= ["control", "settings", "scenario", "grid", "stations"];
+    const teacherRemoveKeys= ["presences"];
+    // remove keys from object.
+    const remove = (obj:any, keys:string[]) => {
+      let key;
+      for (key in obj) {
+        if(_.includes(keys,key)){
+          delete obj[key];
+        }
+        else if (typeof obj === "object") {
+          remove(obj[key], keys);
+        }
+      }
+    };
+    // remove the control tree from student snapshot
+    // to prevent the replay of timestamp changes.
+    const keysToRemove = this.isTeacherView ? teacherRemoveKeys : studentRemoveKeys;
+    remove(copy, keysToRemove);
+    return copy;
+  },
+  setIsTeacherView(teachermode:boolean) {
+    this.isTeacherView = teachermode;
   },
   initPresence() {
     const id = gFirebase.user.uid;
-    const newPresence = Presence.create({id:id});
-    this.presences.put(newPresence);
+    const existing = this.presences.get(id);
+    if(existing) {
+      existing.updateTime();
+    }
+    else {
+      const newPresence = Presence.create({id:id});
+      this.presences.put(newPresence);
+    }
   },
   createGroups() {
     const groupNames = [
