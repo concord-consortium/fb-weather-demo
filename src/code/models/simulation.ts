@@ -187,6 +187,9 @@ export const Simulation = types.model('Simulation', {
   },
   initPresence() {
     const id = gFirebase.user.uid;
+    if(this.presences.selected.id === id) {
+      return;
+    }
     this.presences.createPresence(id);
     // const existing = this.presences.get(id);
     // if(existing) {
