@@ -1,7 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-// import DevTools from "mobx-react-devtools";
 import { Link } from "react-router";
 import { simulationStore } from "../models/simulation";
 
@@ -38,7 +37,6 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
               {simulationStore.selected.name}
             </Link>
           </div>
-          {/*<DevTools />*/}
           {this.props.children}
         </div>
       </MuiThemeProvider>

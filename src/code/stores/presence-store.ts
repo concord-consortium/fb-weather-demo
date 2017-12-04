@@ -2,12 +2,11 @@ import { types } from "mobx-state-tree";
 import { Presence, IPresence } from "../models/presence";
 import { gFirebase } from "../middleware/firebase-imp";
 import { IWeatherStation } from "../models/weather-station";
-// import { v1 as uuid } from "uuid";
 
 export const PresenceStore = types.model(
   "PresenceStore",
   {
-    id: types.optional(types.identifier(types.string), "store"), // () => uuid()),
+    id: types.optional(types.identifier(types.string), "store"),
     presences: types.optional(types.map(Presence), {}),
     get weatherStation(): IWeatherStation | null {
       return this.selected && this.selected.weatherStation;

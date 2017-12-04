@@ -68,7 +68,6 @@ export class ChooseCellView
       const id = cell.id;
       const foundPresence = _.find(presences, (p) =>  {
         const pId = p.weatherStationID;
-        console.log(`${id} == ${pId}`);
         return pId === id;
       });
 

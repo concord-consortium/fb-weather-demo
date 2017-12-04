@@ -84,7 +84,6 @@ export const  SimulationControl = types.model(
       const endTime = simulationStore.selected.scenario.endTime;
       if (!this.isPlaying) {
         if(this.halfTime) {
-          // this.setTime(this.halfTime);
           this.enableTimer(endTime);
         }
       }

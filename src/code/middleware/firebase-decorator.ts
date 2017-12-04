@@ -23,7 +23,6 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:()=> vo
       });
       if(callBack) {
         setTimeout( ()=> {
-          console.log("In callback");
           callBack();
         }, 5000);
       }

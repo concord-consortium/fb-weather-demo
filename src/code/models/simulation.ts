@@ -13,7 +13,6 @@ import { GroupStore } from "../stores/group-store";
 import { Grid } from "./grid";
 import { IGroup } from "./group";
 import { IPresence } from "./presence";
-// import { IPresence, Presence} from "./presence";
 import { PresenceStore} from "../stores/presence-store";
 import { Firebasify } from "../middleware/firebase-decorator";
 import { v1 as uuid } from "uuid";
@@ -28,7 +27,6 @@ export const Simulation = types.model('Simulation', {
   scenario: types.optional(WeatherScenario,      () => WeatherScenario.create(gWeatherScenarioSpec)),
   control: types.optional(SimulationControl,     () => SimulationControl.create()),
   settings: types.optional(SimulationSettings,   () => SimulationSettings.create()),
-  // presences: types.optional(types.map(Presence), {} ),
   presences: types.optional(PresenceStore,       () => PresenceStore.create()),
   predictions: types.optional(PredictionStore,   () => PredictionStore.create()),
   stations: types.optional(WeatherStationStore,  () => WeatherStationStore.create()),
@@ -191,14 +189,6 @@ export const Simulation = types.model('Simulation', {
       return;
     }
     this.presences.createPresence(id);
-    // const existing = this.presences.get(id);
-    // if(existing) {
-    //   existing.updateTime();
-    // }
-    // else {
-    //   const newPresence = Presence.create({id:id});
-    //   this.presences.put(newPresence);
-    // }
   },
   createGroups() {
     const groupNames = [
