@@ -24,7 +24,7 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:()=> vo
       if(callBack) {
         setTimeout( ()=> {
           callBack();
-        }, 5000);
+        }, 1);
       }
     });
   });

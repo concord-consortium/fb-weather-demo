@@ -26,8 +26,9 @@ export interface FirebaseData {
 }
 
 interface FirebaseDisconnectSerivce {
-  remove(onComplete?: ()=> void): void;
-  update(values:any, anyonComplete?: ()=> void): void;
+  remove(onComplete?: (error:any)=> void): Promise<any>;
+  set(value: any, onComplete?: (error:any)=> void): Promise<any>;
+  update(values:any, anyonComplete?: ()=> void): Promise<any>;
 }
 
 export interface FirebaseRef {

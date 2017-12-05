@@ -184,11 +184,16 @@ export const Simulation = types.model('Simulation', {
     this.isTeacherView = teachermode;
   },
   initPresence() {
-    const id = gFirebase.user.uid;
-    if(this.presences.selected.id === id) {
-      return;
-    }
-    this.presences.createPresence(id);
+    const self = this;
+    const firebase = gFirebase;
+    gFirebase.postConnect.then( () => {
+      const id = firebase.user.uid;
+      if(self.presences.selected && self.presences.selected.id === id) {
+        return;
+      }
+      const path =`simulations/${self.id}`;
+      self.presences.createPresence(path, id);
+    });
   },
   createGroups() {
     const groupNames = [

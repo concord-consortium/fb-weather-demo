@@ -30,17 +30,14 @@ export const PresenceStore = types.model(
         this.selected.setStation(station);
       }
     },
-    createPresence(id:string): IPresence {
+    createPresence(_path:string, id:string): IPresence {
+      const firebase = gFirebase;
       const presence = Presence.create({id:id});
+      const path = `${_path}/presences/presences/${id}`;
+      const presref = firebase.dataRef.child(path);
+      presref.onDisconnect().remove();
       this.presences.put(presence);
       return presence;
-    },
-    init() {
-      const userId = gFirebase.user.uid;
-      const existing = this.presences.get(userId);
-      if(!existing) {
-        this.createPresence(userId);
-      }
     }
   }
 );
