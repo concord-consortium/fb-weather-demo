@@ -106,7 +106,7 @@ export class WeatherStationView extends
               ? `Temp: ${unitTempStr || '29c'}`
               : null;
     }
-
+    const precip = (weatherStation && weatherStation.precipitation)  ? "Rain" : "Clear";
     return (
       <div>
         <CardText>
@@ -132,7 +132,7 @@ export class WeatherStationView extends
               {renderTemperature()}
             </div>
             <div style={styles.precip}>
-              clear
+              {precip}
             </div>
         </div>
         </CardText>
