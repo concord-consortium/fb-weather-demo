@@ -97,7 +97,7 @@ export class WeatherStationView extends
         color: "hsla(0, 0%, 10%, 0.9)"
       }
     };
-  
+
     const settings = simulation.settings,
           showTemperature = settings && settings.showTempValues;
 
