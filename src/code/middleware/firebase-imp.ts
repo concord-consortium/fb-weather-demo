@@ -1,5 +1,4 @@
 const firebase = require("firebase");
-import { Promise } from "es6-promise";
 
 const DEFAULT_SIMULATION = "default";
 const DEFAULT_VERSION_STRING = "1.3.0-pre1";

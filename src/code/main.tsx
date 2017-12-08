@@ -10,6 +10,7 @@ import { WeatherStationView } from "./views/weather-station-view";
 import { StudentTabsView } from "./views/student-tabs-view";
 import { ClassView } from "./views/class-view";
 import { ChooseView } from "./views/choose-view";
+import { PortalView } from "./views/portal-view";
 import { ChooseSimulationView } from "./views/choose-simulation-view";
 import { SetupGridView } from "./views/setup-grid-view";
 import { simulationStore } from "./models/simulation";
@@ -92,12 +93,14 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
         <Route
           path="/"
           component={AppView}
-          onChange={simulationChanged}
-          onEnter={onEnter}
-        >
-          <IndexRedirect to="/simulations" />
-          <Route path="/simulations">
-            <IndexRedirect to="choose" />
+          >
+          <IndexRedirect to="/portal-launch" />
+          <Route path="/portal-launch" component={PortalView} />
+          <Route path="/simulations"
+                onChange={simulationChanged}
+                onEnter={onEnter}
+          >
+            {/* <IndexRedirect to="choose" /> */}
             <Route path="choose" component={ChooseSimulationView} />
             <Route path="/simulations/:simulationName">
               <IndexRedirect to="show/choose" />

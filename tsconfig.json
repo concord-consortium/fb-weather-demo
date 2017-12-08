@@ -6,7 +6,7 @@
     "noUnusedLocals": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "ES2015",
     "strictNullChecks": true,
     "jsx": "react",
     "experimentalDecorators": true,
