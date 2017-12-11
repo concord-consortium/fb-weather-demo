@@ -37,7 +37,7 @@ export class PortalUrlUtility {
     constructor() {
       const q = queryString;
       this.params = q.parse(window.location.search);
-      this.isTeacher  = isTeacherParams(this.params);
+      this.isTeacher = isTeacherParams(this.params);
     }
 
     async getFirebaseKey():Promise<string> {

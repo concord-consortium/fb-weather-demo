@@ -1,7 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import RaisedButton from "material-ui/RaisedButton";
-import { Card, CardActions } from "material-ui/Card";
+import { Card, CardActions, CardText, CardTitle } from "material-ui/Card";
 import { Link } from "react-router";
 
 import { PortalUrlUtility  } from "../utilities/portal-url-utility";
@@ -20,7 +20,7 @@ export class PortalView extends React.Component<
 > {
   constructor(props: PortalViewProps, ctx: any) {
     super(props);
-    this.state = {simulationKey: 'fake', showTeacher: true}
+    this.state = {simulationKey: 'fake', showTeacher: true};
   }
 
   componentDidMount() {
@@ -31,27 +31,29 @@ export class PortalView extends React.Component<
     });
   }
 
-  linkToSim() {
+  nextUrl() {
     const simulation = this.state.simulationKey;
     const view = this.state.showTeacher ? "teacher" : "student";
-    const studentPath = `/simulations/${simulation}/show/${view}`;
-    return <Link to={studentPath} />;
+    return `/simulations/${simulation}/show/${view}`;
+  }
+
+  linkToSim() {
+    return <Link to={this.nextUrl()} />;
   }
 
   render() {
-    const location = window.location;
-    console.log(location);
     return (
       <Card>
-        <div style={{}}>
-          Hi This here is an unstyled view.
-        </div>
+        <CardTitle>Start Simulation</CardTitle>
+        <CardText style={{}}>
+          When the class is ready press the "Start" button below.
+        </CardText>
         <CardActions>
           <RaisedButton
             primary={true}
             containerElement={this.linkToSim()}
           >
-          Link
+          Start
           </RaisedButton>
         </CardActions>
       </Card>

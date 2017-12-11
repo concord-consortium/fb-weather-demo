@@ -57,7 +57,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
       }
     };
 
-    const onEnter = function (
+    const onEnterSimulation = function (
       nextState: any,
       replace: any,
       callback: Function | undefined
@@ -98,7 +98,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
           <Route path="/portal-launch" component={PortalView} />
           <Route path="/simulations"
                 onChange={simulationChanged}
-                onEnter={onEnter}
+                onEnter={onEnterSimulation}
           >
             {/* <IndexRedirect to="choose" /> */}
             <Route path="choose" component={ChooseSimulationView} />
