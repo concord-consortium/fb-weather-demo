@@ -2,6 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 
 import { CardTitle, CardText} from "material-ui/Card";
+import RaisedButton from "material-ui/RaisedButton";
 import { simulationStore } from "../models/simulation";
 import { IGridCell } from "../models/grid-cell";
 import { IPresence } from "../models/presence";
@@ -10,6 +11,7 @@ import { GridView } from "./grid-view";
 import * as _ from "lodash";
 
 export interface ChooseCellProps {
+  onDone: () => void;
 }
 export interface ChooseCellStsate {
   chosenCell: IGridCell | null;
@@ -24,13 +26,21 @@ export class ChooseCellView
     this.state = {chosenCell: null};
   }
 
-  setCell(cell:IGridCell) {
-    this.setState({chosenCell: cell});
-  }
 
-
-  setStation() {
-
+  renderChooseButton(chosenCell?:IGridCell|null) {
+    if(!chosenCell) { return <div/>; }
+    const style:React.CSSProperties = {
+      color: "white",
+      margin: "0.25em",
+      fontWeight: "bold"
+    };
+    const {onDone} = this.props;
+    return(<div>
+        <RaisedButton primary={true} onTouchTap={onDone}>
+            <div style={style}>Choose {chosenCell.displayName}</div>
+        </RaisedButton>
+      </div>
+    );
   }
 
   render() {
@@ -40,6 +50,7 @@ export class ChooseCellView
     const groupName = group && group.name;
     const presence = simulation.selectedPresence;
     const presences = simulation.presences.presenceList;
+    const chosenCell = presence && simulation.grid.cellMap.get(presence.weatherStationID || "xxx");
     const occupiedStations = _.map(presences,  (value,key) => (value as IPresence).weatherStationID);
 
     const stationId = presence && presence.weatherStationID;
@@ -85,6 +96,7 @@ export class ChooseCellView
             titleFunc={titleFunc}
             onCellClick={onClick}
             rollOverFunc={ (cell) => cell &&  cell.displayName}/>
+            {this.renderChooseButton(chosenCell) }
         </CardText>
       </div>
     );

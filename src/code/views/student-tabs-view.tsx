@@ -78,6 +78,14 @@ export class StudentTabsView extends React.Component<
         this.setState({selectedTab: StudentTab.CellTab});
       }
     };
+    const onCellChosen = () => {
+      const simulation = simulationStore.selected;
+      const presence = simulation.selectedPresence;
+      if(presence) {
+        this.setState({selectedTab: StudentTab.WeatherTab});
+      }
+    };
+
     return (
       <Card style={styles.card}>
         <Tabs value={this.state.selectedTab} onChange={handleChangeTab}>
@@ -85,7 +93,7 @@ export class StudentTabsView extends React.Component<
             <ChooseGroupView onDone={onGroupChosen}/>
           </Tab>
           <Tab label={cellTabLabel} disabled={cellDisabled} value={StudentTab.CellTab}>
-            <ChooseCellView />
+            <ChooseCellView onDone={onCellChosen}/>
           </Tab>
           <Tab
             label={weatherTabLabel} disabled={weatherDisabled} value={StudentTab.WeatherTab}>
