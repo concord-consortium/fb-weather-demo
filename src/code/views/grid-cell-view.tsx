@@ -45,7 +45,7 @@ export class GridCellView extends React.Component<
 
   render() {
     const { color, textColor, colorFunc, cell, cellClick  }  = this.props;
-    const border = "1px solid hsla(50,20%,90%,1)";
+    const border = "1px solid white";
     const displayColor = colorFunc ? colorFunc(cell) : color;
     const cellStyle:React.CSSProperties = {
       display: "flex",
