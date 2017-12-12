@@ -45,6 +45,7 @@ export const SimulationSettings = types.model('SimulationSettings', {
   showPredictions: types.optional(types.boolean, true),
   enabledPredictions: types.maybe(types.string),  // null disables predictions
   predictionInterval: types.optional(types.number, 60), // minutes
+  showCities: types.optional(types.boolean, false),
 
   get localUtcOffset() {
     return -(new Date().getTimezoneOffset());
@@ -123,6 +124,7 @@ export const SimulationSettings = types.model('SimulationSettings', {
       case 'showPredictions': this.setShowPredictions(value as boolean); break;
       case 'enabledPredictions': this.setEnabledPredictions(value as string); break;
       case 'predictionInterval': this.setPredictionInterval(value as number); break;
+      case 'showCities': this.setShowCities(value as boolean); break;
       default:
         console.log(`Invalid setting name: '${key}'`);
     }
@@ -169,6 +171,10 @@ export const SimulationSettings = types.model('SimulationSettings', {
 
   setPredictionInterval(predictionInterval: number) {
     this.predictionInterval = predictionInterval;
+  },
+
+  setShowCities(showEm:boolean) {
+    this.showCities = showEm;
   }
 });
 export type ISimulationSettings = typeof SimulationSettings.Type;

@@ -73,3 +73,6 @@
 .icon-skip_previous:before {
   content: "\e045";
 }
+.icon-album:before {
+  content: "\e019";
+}

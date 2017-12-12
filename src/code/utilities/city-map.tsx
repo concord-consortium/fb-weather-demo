@@ -18,11 +18,16 @@ export function cityAnotation(cellName:string) {
           display: 'block',
           overflow:'visible',
           fontSize: '12pt',
-          paddingLeft: '0.25em',
-          paddingRight: '0.25em',
-          backgroundColor: 'hsla(255, 0%, 100%, 0.7)',
-          borderRadius: '0.5em'
-          }}> ⌾ {name} </div>
+          padding: '0.3em',
+          paddingLeft: '0.5em',
+          paddingRight: '0.5em',
+          // backgroundColor: 'hsla(255, 0%, 100%, 0.5)',
+          borderRadius: '1em',
+          fontWeight: 400,
+          }}>
+           <i className="icon-album" style={{paddingRight: '4px'}}/>
+           {name}
+          </div>
     );
   }
 }

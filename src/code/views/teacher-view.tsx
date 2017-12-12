@@ -10,6 +10,7 @@ import { PlaybackOptionsView } from "./playback-options-view";
 import { PlaybackControlView } from "./playback-control-view";
 import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
+import { TeacherOptionsView } from "./teacher-options-view";
 
 import { IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
@@ -136,10 +137,11 @@ export class TeacherView extends React.Component<
       return weatherColor(station);
     };
 
+    const showCities = simulation.settings.showCities;
     const titleFunc = (cell:IGridCell) => {
       const station = simulation.stations && simulation.stations.getStation(cell.weatherStationId);
       const precip = precipDiv(station);
-      const city = cityAnotation(cell.weatherStationId);
+      const city = showCities ? cityAnotation(cell.weatherStationId) : null;
       return (
         <div style={{}}>
           {city}
@@ -174,6 +176,7 @@ export class TeacherView extends React.Component<
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
           <Tab label="Options" value="configure">
             <PlaybackOptionsView />
+            <TeacherOptionsView />
           </Tab>
           <Tab label="Control" value="control">
             <CardTitle>

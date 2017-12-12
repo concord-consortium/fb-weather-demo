@@ -7,6 +7,7 @@
 <font-face units-per-em="1024" ascent="960" descent="-64" />
 <missing-glyph horiz-adv-x="1024" />
 <glyph unicode="&#x20;" horiz-adv-x="512" d="" />
+<glyph unicode="&#xe019;" glyph-name="album" d="M512 468.667c24 0 42-18 42-42s-18-42-42-42-42 18-42 42 18 42 42 42zM512 234.667c106 0 192 86 192 192s-86 192-192 192-192-86-192-192 86-192 192-192zM512 852.667c236 0 426-190 426-426s-190-426-426-426-426 190-426 426 190 426 426 426z" />
 <glyph unicode="&#xe01f;" glyph-name="fast_forward" d="M554 682.667l364-256-364-256v512zM170 170.667v512l364-256z" />
 <glyph unicode="&#xe020;" glyph-name="fast_rewind" d="M490 426.667l364 256v-512zM470 170.667l-364 256 364 256v-512z" />
 <glyph unicode="&#xe034;" glyph-name="pause" d="M598 724.667h170v-596h-170v596zM256 128.667v596h170v-596h-170z" />
