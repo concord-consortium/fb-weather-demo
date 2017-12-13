@@ -1,7 +1,7 @@
 const firebase = require("firebase");
 
 const DEFAULT_SIMULATION = "default";
-const DEFAULT_VERSION_STRING = "1.3.0-pre1";
+const DEFAULT_VERSION_STRING = "1.3.0-pre2";
 
 interface FirebaseUser {
   displayName: string;
