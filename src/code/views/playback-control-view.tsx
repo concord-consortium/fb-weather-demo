@@ -18,7 +18,7 @@ export class PlaybackControlView extends React.Component<
     const playPauseAction = isPlaying ? simulation.stop : simulation.play;
 
     return(
-      <div>
+      <div style={{marginBottom: "20px"}}>
           <FloatingActionButton
             iconClassName="icon-refresh"
             disabled={isPlaying}

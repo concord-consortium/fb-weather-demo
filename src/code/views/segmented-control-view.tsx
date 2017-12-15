@@ -74,7 +74,7 @@ export class SegmentedControlView extends React.Component<
           <Slider
             min={0}
             max={1}
-            style={{width: "50vw"}}
+            style={{width: "80%"}}
             onChange={change}
             onDragStop={dragStop}
           />

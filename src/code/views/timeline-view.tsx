@@ -73,7 +73,8 @@ export class TimelineView extends React.Component<
         display: "flex",
         flexDirection: "row",
         margin: "1em",
-        alignItems: "center"
+        alignItems: "center",
+        width: "100%"
       },
       bar: {
         display: "inline-block",
