@@ -1,5 +1,33 @@
 [
   {
+    "id": "day-one-v6",
+    "name": "Day one test (v6)",
+    "eventUrl": "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v6.json",
+    "startTime": {
+      "year": 2016,
+      "month": 8,
+      "day": 21,
+      "hour": 5,
+      "minute": 0
+    },
+    "endTime": {
+      "year": 2016,
+      "month": 8,
+      "day": 21,
+      "hour": 9,
+      "minute": 0
+    },
+    "utcOffset": 5,
+    "mapConfig": {
+      "id": "Day One (v6)",
+      "lat": 42,
+      "long": 74,
+      "name": "Day One (v6)",
+      "zoom": 6
+    },
+    "stations": []
+  },
+  {
     "id": "day-one-12-23-1970",
     "name": "Day one test (v5)",
     "eventUrl": "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v5.json",

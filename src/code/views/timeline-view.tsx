@@ -2,6 +2,7 @@ import * as React from "react";
 import * as moment from 'moment';
 
 import { ComponentStyleMap } from "../utilities/component-style-map";
+import { simulationStore } from "../models/simulation";
 
 export interface TimelineViewProps {
   startTime: Date | null;
@@ -34,10 +35,17 @@ export class TimelineView extends React.Component<
         fontWeight: "bold"
       }
     };
+
+    let m = moment(time);
+    const scenario = simulationStore.selected && simulationStore.selected.scenario;
+    if (scenario && scenario.utcOffset) {
+      m = m.utcOffset(scenario.utcOffset);
+    }
+
     const dateFormat = "MMM D";
     const timeFormat = "hh:mm a";
-    const dateString = moment(time).format(dateFormat);
-    const timeString = moment(time).format(timeFormat);
+    const dateString = moment(m).format(dateFormat);
+    const timeString = moment(m).format(timeFormat);
     return (
       <div style={style.container}>
         <div style={style.date}>
