@@ -15,7 +15,7 @@ export const WeatherScenario = types.model('WeatherScenario', {
   startTime: types.maybe(types.Date),
   endTime: types.maybe(types.Date),
   utcOffset: types.maybe(types.number),
-  stations: types.array(StationSpec),
+  stations: types.maybe(types.array(StationSpec)),
   mapConfig: MapConfig
 }, {
   // volatile

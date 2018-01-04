@@ -3,6 +3,9 @@ body {
   font-family: helvetica, sans-serif;
   color: hsla(100,10%,25%,1);
   margin: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .component {

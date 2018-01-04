@@ -15,7 +15,7 @@ if they are not already installed  your development system.  Also install `live-
 ## Libraries used:
 * [Firebase](https://firebase.google.com/) is used for storing data and sending messages.
 * [React](https://facebook.github.io/react/) is the javascript view engine developed by Facebook.
-* [MobX](https://github.com/mobxjs/mobx) helps with passing state changes through components.
+* [MobX State Tree](https://github.com/mobxjs/mobx-state-tree) helps with passing state changes through components.
 * [Material-UI](http://www.material-ui.com/) is a react widget set developed by Google.
 * [React-Router](https://reacttraining.com/react-router/) url based view routing for react.
 

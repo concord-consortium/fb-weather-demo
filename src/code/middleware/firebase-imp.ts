@@ -1,12 +1,11 @@
 const firebase = require("firebase");
-import { Promise } from "es6-promise";
 
-const DEFAULT_SESSION = "default";
-const DEFAULT_VERSION_STRING = "1.2";
-const DEFAULT_ACTIVITY = "default";
+const DEFAULT_SIMULATION = "default";
+const DEFAULT_VERSION_STRING = "1.3.0-pre4";
 
 interface FirebaseUser {
   displayName: string;
+  uid: string;
 }
 interface FirebaseError {
   message: string;
@@ -19,16 +18,19 @@ interface FirebaseListener {
   setSessionList(sessions: string[]): void;
 }
 
-interface FirebaseData {
+export interface FirebaseData {
   val(): any;
   key: any;
   forEach: Function;
 }
+
 interface FirebaseDisconnectSerivce {
-  remove(): void;
+  remove(onComplete?: (error:any)=> void): Promise<any>;
+  set(value: any, onComplete?: (error:any)=> void): Promise<any>;
+  update(values:any, anyonComplete?: ()=> void): Promise<any>;
 }
 
-interface FirebaseRef {
+export interface FirebaseRef {
   off(event: string): void;
   off(): void;
   once(value: string): Promise<any>;
@@ -37,6 +39,7 @@ interface FirebaseRef {
   onDisconnect(): FirebaseDisconnectSerivce;
   remove(): void;
   update(data: any): void;
+  set(value:any): void;
   remove(key: string): void;
   child(path: string): FirebaseRef;
 }
@@ -46,23 +49,19 @@ interface FireBaseConfig {
 }
 
 export class FirebaseImp {
-  _session: string;
-  _activity: string;
-  sessionID: string;
+  simulationID: string;
   user: FirebaseUser;
   version: string;
   listeners: FirebaseListener[];
-  sessionNames: string[];
+  simulationMap: [{key:string, value:any}];
   config: FireBaseConfig;
-  connectionStatus: FirebaseRef;
-  baseRef: FirebaseRef;
   dataRef: FirebaseRef;
+  simulationsRef: FirebaseRef;
   pendingCallbacks: Function[];
   postConnect: Promise<FirebaseImp>;
 
   constructor() {
-    this._session = `${DEFAULT_SESSION}`;
-    this.activity = DEFAULT_ACTIVITY;
+    this.simulationID = `${DEFAULT_SIMULATION}`;
     this.version = DEFAULT_VERSION_STRING;
     this.pendingCallbacks = [];
     const configs = {
@@ -106,7 +105,7 @@ export class FirebaseImp {
       auth.onAuthStateChanged(function(user: FirebaseUser) {
         if (user) {
           log(user.displayName + " authenticated");
-          finishAuth({ result: { user: user } });
+          finishAuth({ user: user } );
           resolve(imp);
         } else {
           reqAuth();
@@ -147,13 +146,23 @@ export class FirebaseImp {
     return DEFAULT_VERSION_STRING.replace(/\./g, "_");
   }
 
-
-
   setDataRef() {
     const fn = function() {
       this.rebindFirebaseHandlers();
     };
     this.try(fn);
+  }
+
+  rebindFirebaseHandlers() {
+    this.log("registering listeners");
+    if (this.dataRef) {
+      try {
+        this.dataRef.off();
+      } catch (e) {
+        this.log("couldn't disable previous data handler");
+      }
+    }
+    this.dataRef = firebase.database().ref(this.basePath);
   }
 
   try(fn: Function) {
@@ -164,135 +173,17 @@ export class FirebaseImp {
     }
   }
 
-
-  get session() {
-    return this._session;
-  }
-
   get database() {
     return firebase.database();
   }
 
-  set activity(activityName: string) {
-    this._activity = activityName;
-  }
-
-  get activity() {
-    return this._activity;
-  }
-
-  load() {
-    this.dataRef.once("value").then(this.loadDataFromFirebase.bind(this));
-  }
-
-  rebindFirebaseHandlers() {
-    this.log("registering listeners");
-    // Unbind old listening:
-    if (this.dataRef) {
-      try {
-        this.dataRef.off();
-      } catch (e) {
-        this.log("couldn't disable previous data handler");
-      }
-    }
-    this.dataRef = firebase.database().ref(this.basePath);
-    // this.load();
-    const setData = this.loadDataFromFirebase.bind(this);
-    const log = this.log.bind(this);
-    this.dataRef.on("value", setData);
-
-    // TBD: Best way to listen to events with better granularity.
-    this.dataRef.on("child_changed", function(data: any) {
-      log("child_changed:" + data);
-    });
-    this.dataRef.on("child_added", function(data: any) {
-      log("child added: " + data);
-    });
-    this.dataRef.on("child_removed", function(data: any) {
-      log("child removed: " + data);
-    });
-  }
-
-  addListener(listener: FirebaseListener) {
-    this.listeners.push(listener);
-  }
-
-  removeListener(listener: FirebaseListener) {
-    const oldListeners = this.listeners;
-    this.listeners = oldListeners.filter(el => el !== listener);
-  }
-
-  saveToFirebase(data: any) {
-    if (this.dataRef && this.dataRef.update) {
-      this.dataRef.update(data);
-    }
-  }
-
   refForPath(path:string) {
-    if (this.dataRef && this.dataRef.child) {
-      return this.dataRef.child(path);
-    }
-    return null;
+    return new Promise( (resolve, reject) => {
+      this.postConnect.then( (imp) => {
+        resolve(imp.dataRef.child(path));
+      });
+    });
   }
-
-  saveToRelativePath(data:any, path:string) {
-    const ref = this.refForPath(path);
-    if(ref) {
-       ref.update(data);
-    }
-  }
-
-  loadDataFromFirebase(data: FirebaseData) {
-    const dataV = data.val();
-    if (dataV) {
-      this.log(dataV);
-      for (let listener of this.listeners) {
-        listener.setState(dataV);
-      }
-     }
-  }
-
-  // TODO: We don't do this anymore. Maybe we will for simulations …
-  //      Or we might do something better
-  //
-  // copySession(oldName: string, newName: string) {
-  //   const oldRef = firebase.database().ref(this.getNamedSessionPath(oldName));
-  //   const newRef = firebase.database().ref(this.getNamedSessionPath(newName));
-  //   oldRef.once("value").then(function(snap: FirebaseData) {
-  //     const value = snap.val();
-  //     value.presence = {}; // ugly but we need to remove presense data...
-  //     newRef.set(value);
-  //   });
-  //   this.sessionsListRef.push({ name: newName });
-  // }
-
-
-  // TODO: We don't do this anymore. Maybe we will for simulations …
-  //      Or we might do something better
-  //
-  // set session(sessionName: string) {
-  //   const fn = function() {
-  //     const self: FirebaseImp = this;
-  //     this.sessionsListRef.once("value").then(function(data: FirebaseData) {
-  //       const sessionNames = _.map(data.val(), "name");
-  //       if (!_.includes(sessionNames, sessionName)) {
-  //         self.sessionsListRef.push({ name: sessionName });
-  //       }
-  //       self._session = sessionName;
-  //       self.setDataRef();
-  //       for (let listener of self.listeners) {
-  //         listener.setSessionPath(self._session);
-  //       }
-  //       self.log(`
-  //         =========================================
-  //         CHANGED SESSION TO :  ${sessionName}
-  //         =========================================
-  //       `);
-  //     });
-  //   };
-  //   fn.bind(this);
-  //   this.try(fn);
-  // }
 
 }
 

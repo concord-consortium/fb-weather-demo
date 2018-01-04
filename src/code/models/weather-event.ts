@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import * as moment from 'moment';
+import { gWeatherScenarioSpec } from "./weather-scenario-spec";
 
 class WeatherEvent {
   url: string;
@@ -19,11 +20,9 @@ class WeatherEvent {
                 throw Error(response.statusText);
               })
               .then((jsonResponse) => {
-                // Github API base64-encodes content
-                if (jsonResponse.content) {
-                  return JSON.parse(atob(jsonResponse.content));
-                }
-                throw Error("Content not found");
+                return jsonResponse;
+              }).catch( (e) => {
+                console.log(e);
               })
               .then((stationData) => {
                 if (stationData) {
@@ -70,14 +69,11 @@ class WeatherEvent {
             .then((stations: any) => {
               if (stations) {
                 return stations.find((station: any) => {
-                                  return station.id === stationID;
+                                  return station.id.toLowerCase() === stationID.toLowerCase();
                                 });
               }
             });
   }
 }
 
-// use Github API until we sort out deployment
-export const gWeatherEventUrl =
-  "https://api.github.com/repos/concord-consortium/weather-events/contents/events/lake-michigan.json";
-export const gWeatherEvent = new WeatherEvent(gWeatherEventUrl);
+export const gWeatherEvent = new WeatherEvent(gWeatherScenarioSpec.eventUrl);

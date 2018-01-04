@@ -24,6 +24,22 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+.icon-cloud:before {
+  content: "\e900";
+}
+.icon-cloud-drizzle:before {
+  content: "\e901";
+}
+.icon-cloud-rain:before {
+  content: "\e902";
+}
+.icon-sun:before {
+  content: "\e903";
+}
+.icon-wind:before {
+  content: "\e904";
+}
 .icon-fast_forward:before {
   content: "\e01f";
 }
@@ -56,4 +72,7 @@
 }
 .icon-skip_previous:before {
   content: "\e045";
+}
+.icon-album:before {
+  content: "\e019";
 }

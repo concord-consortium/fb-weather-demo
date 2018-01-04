@@ -11,7 +11,7 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationListStore } from "../stores/simulation-store";
 import { gWeatherScenarioSpec } from "../models/weather-scenario-spec";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import * as _ from "lodash";
@@ -105,19 +105,19 @@ export class ChooseSimulationView extends React.Component<
 
   handleClose() {
     if (this.state.nowShowing === DialogType.Copy) {
-      simulationStore.copySimulation(
+      simulationListStore.copySimulation(
         this.state.oldSimulationName,
         this.state.newSimulationName
       );
     }
     if (this.state.nowShowing === DialogType.Rename) {
-      simulationStore.renameSimulation(this.state.newSimulationName);
+      simulationListStore.renameSimulation(this.state.newSimulationName);
     }
     if (this.state.nowShowing === DialogType.Delete) {
-      simulationStore.deleteSimulation(this.state.newSimulationName);
+      simulationListStore.deleteSimulation(this.state.newSimulationName);
     }
     if (this.state.nowShowing === DialogType.New) {
-      simulationStore.addSimulation(this.state.newSimulationName, gWeatherScenarioSpec);
+      simulationListStore.addSimulation(this.state.newSimulationName, gWeatherScenarioSpec);
     }
     this.setState({ nowShowing: DialogType.None });
   }
@@ -127,7 +127,7 @@ export class ChooseSimulationView extends React.Component<
   }
 
   render() {
-    const names = simulationStore.simulationList;
+    const names = simulationListStore.simulationList;
     const visList = _.map(names, (name: string) => {
       const pathString: string = `simulations/${name}`;
       return (

@@ -1,187 +1,142 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Card, CardText, CardMedia, CardTitle } from "material-ui/Card";
-import { Tab, Tabs } from "material-ui/Tabs";
-import { WeatherStationConfigView } from "./weather-station-config-view";
-import { PredictionFormView } from "./prediction-form-view";
+import { CardText } from "material-ui/Card";
 import { ComponentStyleMap } from "../utilities/component-style-map";
+import { simulationStore } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
-import { simulationStore } from "../stores/simulation-store";
-
+import { weatherColor, precipDiv } from "./weather-styler";
 export type StationTab = "configure" | "weather";
 
 export interface WeatherStationProps {
+  weatherStation: IWeatherStation | null;
 }
 export interface WeatherStationState {
-  tab: StationTab;
-  station?: IWeatherStation | null;
 }
 
 @observer
-export class WeatherStationView extends React.Component<
-                                          WeatherStationProps,
-                                          WeatherStationState> {
+export class WeatherStationView extends
+  React.Component<WeatherStationProps,WeatherStationState> {
   constructor(props: WeatherStationProps, context: any) {
     super(props);
-
-    const station = simulationStore.presenceStation;
-    this.state = {
-      tab: station ? "weather" : "configure",
-      station
-    };
   }
 
-  handleChangeStation = (station: IWeatherStation | null) => {
-    const presences = simulationStore.presences;
-    if (presences) {
-      presences.setStation(station);
-      if (station) {
-        this.setState({ tab: "weather", station });
-      }
-    }
-  }
 
   render() {
     let name = "";
     let callSign = "";
-    let imgUrl = "img/farm.jpg";
-    const time = simulationStore.timeString,
-          simulationName = simulationStore.simulationName,
-          weatherStation = this.state.station || simulationStore.presenceStation,
+    const {weatherStation} = this.props;
+    const simulation = simulationStore.selected;
+    const time = simulation.timeString,
+          simulationName = simulation.name,
           temperature = weatherStation && weatherStation.temperature,
-          unitTempStr = simulationStore.formatTemperature(temperature, { withUnit: true }),
-          windSpeed = weatherStation && weatherStation.windSpeed,
-          isNonZeroSpeed = windSpeed && isFinite(windSpeed),
-          windSpeedStr = simulationStore.formatWindSpeed(windSpeed, { withUnit: true }),
-          windDirection = weatherStation && weatherStation.windDirection,
-          arrowRotation = (windDirection != null) && isFinite(windDirection)
-                            ? windDirection + 90 : null,
-          arrowChar = isNonZeroSpeed && windDirection ? "\u279B" : "\xA0";
-
+          unitTempStr = simulation.formatTemperature(temperature, { withUnit: true });
+          // NP: Removed but saved in comments here for easy access.
+          // Its likely we are going to put this back in at some point.
+          // windSpeed = weatherStation && weatherStation.windSpeed,
+          // isNonZeroSpeed = windSpeed && isFinite(windSpeed);
+          // windSpeedStr = simulation.formatWindSpeed(windSpeed, { withUnit: true }),
+          // windDirection = weatherStation && weatherStation.windDirection,
+          // arrowRotation = (windDirection != null) && isFinite(windDirection)
+          //                   ? windDirection + 90 : null,
+          // arrowChar = isNonZeroSpeed && windDirection ? "\u279B" : "\xA0";
     if (weatherStation) {
       name = weatherStation.name;
       callSign = weatherStation.callSign;
-      imgUrl = weatherStation.imageUrl;
     }
-
+    const color = weatherColor(weatherStation);
     const styles: ComponentStyleMap = {
-      card: {
-      },
       info: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "flex-start"
-      },
-      callSign: {
-        fontSize: "16pt",
-        fontWeight: "bold"
+        display: "grid",
+        gridAutoColumns: "minmax(50px,200px)",
+        gridGap: "10px",
+        gridAutoRows: "minmax(50px, auto)",
       },
       name: {
-        fontSize: "16pt",
-        fontWeight: "bold"
+        fontSize: "1pt"
       },
       simulationName: {
-        fontSize: "14pt",
-        fontWeight: "bold"
+        gridRow: "1",
+        gridColumn: "1",
+        fontSize: "9pt",
+        alignSelf: "flex-end"
       },
-      media: {
-      },
-      image: {
-        height: 600,
-        maxHeight: 600,
-        objectFit: 'contain'
-      },
-      stats: {
+      graphic: {
+        backgroundColor: color,
+        gridRow: "2/5",
+        gridColumn: "1",
+        fontSize: "100px",
         display: "flex",
-        fontSize: "3rem",
-        color: "hsla(0, 0%, 100%, 0.9)"
+        alignItems: "center",
+        justifyContent: "center"
+      },
+      callSign: {
+        gridRow: "2",
+        gridColumn: "2",
+        fontSize: "24pt",
+        fontWeight: "bold",
+        alignSelf: "flex-start"
       },
       temp: {
-        minWidth: '6em'
+        gridRow: "3",
+        gridColumn: "2",
+        fontSize: "24pt",
+        fontWeight: "bold",
+        alignSelf: "center"
+      },
+      precip: {
+        gridRow: "4",
+        gridColumn: "2",
+        fontSize: "24pt",
+        fontWeight: "bold",
+        alignSelf: "flex-end"
       },
       time: {
-        color: "hsla(0, 0%, 80%, 0.9)"
+        gridRow: "5",
+        gridColumn: "1",
+        fontSize: "12pt",
+        color: "hsla(0, 0%, 10%, 0.9)"
       }
     };
-    const handleChangeTab = (newTab: StationTab) => {
-      this.setState({
-        tab: newTab
-      });
-    };
 
-    const settings = simulationStore.settings,
-          showTemperature = settings && settings.showTempValues,
-          showWindValues = settings && settings.showWindValues;
+    const settings = simulation.settings,
+          showTemperature = settings && settings.showTempValues;
 
     function renderTemperature() {
       return showTemperature
-              ? `Temp: ${unitTempStr}`
+              ? `Temp: ${unitTempStr || '29c'}`
               : null;
     }
-
-    function renderWindValues() {
-      return showWindValues
-              ? [
-                  <span key='speed'>
-                    {`Wind: ${windSpeedStr}\xA0`}
-                  </span>,
-                  <span key='direction'
-                        style={{ transform: `rotate(${arrowRotation}deg`, display: 'inline-block'}}>
-                    {arrowChar}
-                  </span>
-              ]
-              : null;
-    }
-
+    const precip = (weatherStation && weatherStation.precipitation)  ? "Rain" : "Clear";
     return (
-      <Card style={styles.card}>
-        <Tabs value={this.state.tab} onChange={handleChangeTab}>
-          <Tab label="Configure" value="configure">
-            <WeatherStationConfigView station={weatherStation} onChangeStation={this.handleChangeStation} />
-          </Tab>
-          <Tab label="Weather" value="weather">
-            <CardText>
-              <div style={styles.info}>
-                <div style={styles.callSign}>
-                  {callSign}
-                </div>
-                <div style={styles.name}>
-                {name}
-              </div>
-              <div style={styles.simulationName}>
-                {simulationName}
+      <div>
+        <CardText>
+          <div style={styles.info}>
+            <div style={styles.simulationName}>
+              Simulation: {simulationName}
+            </div>
+            <div style={styles.graphic}>
+              <div>
+                {precipDiv(weatherStation)}
               </div>
             </div>
-            </CardText>
-            <CardMedia style={styles.media}
-              overlay={
-                <div>
-                  <CardTitle>
-                    <div style={styles.stats}>
-                      <div style={styles.temp}>
-                        {renderTemperature()}
-                      </div>
-                      <div style={styles.wind}>
-                        {renderWindValues()}
-                      </div>
-                    </div>
-                  </CardTitle>
-                  <CardText style={styles.time}>
-                    {time}
-                  </CardText>
-                </div>
-              } >
-              <img style={styles.image} src={imgUrl} />
-            </CardMedia>
-          </Tab>
-          <Tab label="Predict" value="predict">
-            <CardText>
-              <PredictionFormView />
-            </CardText>
-          </Tab>
-        </Tabs>
-      </Card>
+            <div style={styles.callSign}>
+              {callSign}
+            </div>
+            <div style={styles.name}>
+              {name}
+            </div>
+            <div style={styles.time}>
+              {time}
+            </div>
+            <div style={styles.temp}>
+              {renderTemperature()}
+            </div>
+            <div style={styles.precip}>
+              {precip}
+            </div>
+        </div>
+        </CardText>
+      </div>
     );
   }
 }

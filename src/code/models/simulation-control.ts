@@ -1,19 +1,22 @@
 import { types } from "mobx-state-tree";
 import * as moment from 'moment';
-
-export const SimulationControl = types.model(
+import { simulationStore } from '../models/simulation';
+export const  SimulationControl = types.model(
   "SimulationControl",
   {
     // properties
     startTime: types.maybe(types.Date),
     isPlaying: types.optional(types.boolean, false),
     time: types.maybe(types.Date),
-    timeStep: types.optional(types.number, 60), // minutes per time step
-    speed: types.optional(types.number, 1),
-
-    // computed properties
+    halfTime: types.maybe(types.Date),
+    timeStep: types.optional(types.number, 15),      // minutes per time step
+    timeScale: types.optional(types.number, 60),     // wall-time to simulation time mulitplier.
+    updateIntervalS: types.optional(types.number, 5), // updates frame rate.
     get moment() {
       return moment(this.time);
+    },
+    get endTime():Date|null {
+      return simulationStore.selected.endTime;
     }
   }, {
     timer: null
@@ -30,21 +33,59 @@ export const SimulationControl = types.model(
     setTime(newTime: Date) {
       this.time = newTime;
     },
+    setHalfTime(newTime:Date) {
+      this.halfTime = newTime;
+      this.time = newTime;
+    },
+    setUpdateIntervalS(newValue:string) {
+      const parsed = parseInt(newValue,10) || 0;
+      this.updateIntervalS = parsed;
+    },
+    setTimeScale(newValue: string) {
+      const parsed = parseInt(newValue,10) || 0;
+      this.timeScale = parsed;
+    },
     rewind() {
       if (this.startTime) {
         this.time = this.startTime;
       }
     },
-    play() {
+    enableTimer(endTime: Date) {
+      const sleepMs = this.updateIntervalS * 1000;
+      let lastTime = new Date().getTime();
+      let newTime = new Date().getTime();
+
       if (!this.isPlaying) {
         this._clearTimer();
-
-        // by default we update the simulation by 30 min every half second
         this.timer = setInterval(() => {
-          this.advanceTime({ minutes: 30 });
-        }, 500);
-
+          if(endTime && this.time >= endTime) {
+            this.stop();
+          }
+          else {
+            newTime = new Date().getTime();
+            const elapsedS = (newTime - lastTime) / 1000;
+            lastTime = newTime;
+            const simSeconds = elapsedS * this.timeScale;
+            this.advanceTime({seconds: simSeconds});
+          }
+        }, sleepMs);
         this.isPlaying = true;
+      }
+    },
+    play() {
+      this.enableTimer(this.endTime);
+    },
+    playFirstHalf() {
+      this.rewind();
+      const endTime = this.halfTime || (simulationStore.selected.scenario.endTime);
+      this.enableTimer(endTime);
+    },
+    playSecondHalf() {
+      const endTime = simulationStore.selected.scenario.endTime;
+      if (!this.isPlaying) {
+        if(this.halfTime) {
+          this.enableTimer(endTime);
+        }
       }
     },
     stop() {

@@ -5,7 +5,7 @@ import { LeafletMapMarker } from "./leaflet-map-marker";
 
 import { IMapConfig } from "../models/map-config";
 import { IWeatherStation } from "../models/weather-station";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 interface LeafletMapProps {
   mapConfig: IMapConfig | null;
@@ -45,10 +45,10 @@ export class LeafletMapView extends React.Component<
       }
     };
     updateMap.bind(this);
-    const baseMap = (simulationStore.settings && simulationStore.settings.showBaseMap)
+    const simulation = simulationStore.selected;
+    const baseMap = (simulation.settings && simulation.settings.showBaseMap)
       ? <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
       : null;
-
     return (
       <div>
         <Map
@@ -56,8 +56,6 @@ export class LeafletMapView extends React.Component<
           onzoomend={updateMap}
           onmoveend={updateMap}
           zoom={mapConfig.zoom}
-          width={this.props.width}
-          height={this.props.height}
           zoomControl={this.props.interaction}
           attributionControl={false}
           dragging={this.props.interaction}
@@ -68,7 +66,8 @@ export class LeafletMapView extends React.Component<
         >
           {baseMap}
           {this.props.weatherStations.map(b => {
-              const selectedStation = simulationStore.selectedStation,
+              const simulation = simulationStore.selected;
+              const selectedStation = simulation.selectedStation,
                     selectedCallSign = selectedStation && selectedStation.callSign,
                     isSelected = b.callSign === selectedCallSign;
               return <LeafletMapMarker weatherStation={b} key={b.callSign} selected={isSelected}/>;

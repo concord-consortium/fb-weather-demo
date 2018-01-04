@@ -2,7 +2,7 @@ const weatherScenarioSpecs = require("../../json/weather-scenario-specs.json") |
 
 // preprocess scenarios, e.g. convert TimeSpecs to Dates
 weatherScenarioSpecs.forEach((spec: IWeatherScenarioSpec) => {
-  const mod = spec as any,
+  let mod = spec as any,
         s = spec.startTime,
         e = spec.endTime;
   mod.startTime = s ? new Date(Date.UTC(s.year, s.month - 1, s.day, s.hour, s.minute)) : null;
@@ -41,6 +41,6 @@ export interface IWeatherScenarioSpec {
   startTime?: ITimeSpec;
   endTime?: ITimeSpec;
   utcOffset?: number;
-  stations: IStationSpec[];
+  stations?: IStationSpec[];
   mapConfig: IMapConfigSpec;
 }

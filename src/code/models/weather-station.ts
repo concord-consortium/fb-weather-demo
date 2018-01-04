@@ -32,6 +32,10 @@ export const WeatherStation = types.model("WeatherStation",
     return this.state && this.state.temperature;
   },
 
+  get precipitation(): number | null {
+    return this.state && this.state.hourlyPrecipitation;
+  },
+
   get windSpeed(): number | null {
     return this.state && this.state.windSpeed;
   },
