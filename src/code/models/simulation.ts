@@ -83,7 +83,7 @@ export const Simulation = types.model('Simulation', {
       m = m.utcOffset(this.scenario.utcOffset);
     }
     // formatting rules see: https://momentjs.com/
-    return m.format(format || 'lll');
+    return m.format(format || 'HH:mm' || 'lll');
   },
 
   // formats a local time, i.e. with local UTC offset
