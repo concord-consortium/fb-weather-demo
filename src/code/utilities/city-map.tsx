@@ -3,7 +3,7 @@ import * as React from "react";
 export const CityMap:any = {
   "A-6": "Glenburg",
   "C-3": "Bump City",
-  "E-3": "PlainVille",
+  "E-3": "Plainville",
   "G-7": "Farmington"
 };
 
@@ -17,7 +17,7 @@ export function cityAnotation(cellName:string) {
           position: 'absolute',
           display: 'block',
           overflow:'visible',
-          fontSize: '12pt',
+          fontSize: '15pt',
           padding: '0.3em',
           paddingLeft: '0.5em',
           paddingRight: '0.5em',
