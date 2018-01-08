@@ -26,7 +26,9 @@ export type IFormatWindSpeedOptions = {
 };
 
 const kMetersPerSecToMPH = 2.23694,
-      kMetersPerSecToKPH = 3.6;
+      kMetersPerSecToKPH = 3.6,
+      // hard-coded defaults that override restored values
+      kOverrides = { tempUnit: TempUnits.Celsius, showCities: true };
 
 export const SimulationSettings = types.model('SimulationSettings', {
   id: types.optional(types.identifier(types.string), () => uuid()),
@@ -36,7 +38,7 @@ export const SimulationSettings = types.model('SimulationSettings', {
   showDeltaTemp: types.optional(types.boolean, false),
   tempUnit: types.optional(types.enumeration("TempUnit",
                                               [TempUnits.Celsius, TempUnits.Fahrenheit]),
-                                              TempUnits.Fahrenheit),
+                                              TempUnits.Celsius),
   showWindValues: types.optional(types.boolean, true),
   windSpeedUnit: types.optional(types.enumeration("WindUnit",
                                               [WindSpeedUnits.KPH, WindSpeedUnits.MPH]),
@@ -45,7 +47,7 @@ export const SimulationSettings = types.model('SimulationSettings', {
   showPredictions: types.optional(types.boolean, true),
   enabledPredictions: types.maybe(types.string),  // null disables predictions
   predictionInterval: types.optional(types.number, 60), // minutes
-  showCities: types.optional(types.boolean, false),
+  showCities: types.optional(types.boolean, true),
 
   get localUtcOffset() {
     return -(new Date().getTimezoneOffset());
@@ -112,6 +114,12 @@ export const SimulationSettings = types.model('SimulationSettings', {
     return w;
   }
 }, {
+
+  // hooks
+  preProcessSnapshot(snapshot: any) {
+    // replace restored values with new hard-coded values
+    return Object.assign({}, snapshot, kOverrides);
+  },
 
   setSetting(key: string, value: any) {
     switch(key) {
