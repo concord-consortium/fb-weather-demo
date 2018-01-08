@@ -19,25 +19,25 @@ export class PlaybackControlView extends React.Component<
 
     return(
       <div style={{marginBottom: "20px"}}>
-          <FloatingActionButton
+          {/* <FloatingActionButton
             iconClassName="icon-refresh"
             disabled={isPlaying}
             onTouchTap={simulation.rewind}
-          />
-          <FloatingActionButton
+          /> */}
+          {/* <FloatingActionButton
             iconClassName="icon-skip_previous"
             disabled={isPlaying}
             onTouchTap={simulation.stepBack}
-          />
+          /> */}
           <FloatingActionButton
             iconClassName={playPauseIcon}
             onTouchTap={playPauseAction}
           />
-          <FloatingActionButton
+          {/* <FloatingActionButton
             iconClassName="icon-skip_next"
             disabled={isPlaying}
             onTouchTap={simulation.stepForward}
-          />
+          /> */}
         </div>
     );
   }

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import RaisedButton from "material-ui/RaisedButton";
-import Slider from 'material-ui/Slider';
+//import Slider from 'material-ui/Slider';
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../models/simulation";
 
@@ -23,16 +23,17 @@ export class SegmentedControlView extends React.Component<
     const playFirstHalf = () =>  simulation.playFirstHalf();
     const playSecondHalf = () => simulation.playSecondHalf();
     const reset = () => simulation.rewind();
-    const dragStop = (o:any) => {
-      if (simulation) {
-        const newTime = this.state.splitTime;
-        if(newTime) {
-          simulation.setHalfTime(newTime);
-        }
-      }
-    };
+    // disable dragging (at least for now)
+    // const dragStop = (o:any) => {
+    //   if (simulation) {
+    //     const newTime = this.state.splitTime;
+    //     if(newTime) {
+    //       simulation.setHalfTime(newTime);
+    //     }
+    //   }
+    // };
 
-    const change   = (o:any, v:number) => this.setState ( {splitTime: v });
+    // const change   = (o:any, v:number) => this.setState ( {splitTime: v });
     const startTime = simulation && simulation.startTime;
     const endTime = simulation && simulation.endTime;
     const halfTime = simulation && simulation.halfTime;
@@ -41,7 +42,8 @@ export class SegmentedControlView extends React.Component<
       container: {
         display: "flex",
         flexDirection: "column",
-        maxWidth: "500px",
+        maxWidth: 500,
+        height: 120,
         alignItems: "center"
       }
     };
@@ -71,13 +73,13 @@ export class SegmentedControlView extends React.Component<
             currentTime={currentTime}
             endTime={endTime}
             />
-          <Slider
+          {/* <Slider
             min={0}
             max={1}
             style={{width: "80%"}}
             onChange={change}
             onDragStop={dragStop}
-          />
+          /> */}
         </div>
     );
   }
