@@ -2,9 +2,9 @@ import * as React from "react";
 import { IWeatherStation } from "../models/weather-station";
 
 export function weatherColor(station?:IWeatherStation|null) {
-  const coldColor = "#9DBCC9";
-  const hotColor = "#F0AEA6";
-  const normColor = "#F7F7CB";
+  const coldColor = "#50a9fa";
+  const hotColor = "#f05042";
+  const normColor = "#f9b33a";
 
   const hotTemp = 25;
   const coldTemp = 15;
