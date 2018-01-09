@@ -42,15 +42,10 @@ export class TimelineView extends React.Component<
       m = m.utcOffset(scenario.utcOffset);
     }
 
-    const dateFormat = "MMM D";
-    const timeFormat = "hh:mm a";
-    const dateString = moment(m).format(dateFormat);
+    const timeFormat = "HH:mm";
     const timeString = moment(m).format(timeFormat);
     return (
       <div style={style.container}>
-        <div style={style.date}>
-          {dateString}
-        </div>
         <div style={style.time}>
           {timeString}
         </div>

@@ -21,6 +21,8 @@ import { gFirebase } from "../middleware/firebase-imp";
 import * as _ from "lodash";
 import * as moment from 'moment';
 
+const kDefaultHalfTime = 0.75;
+
 export const Simulation = types.model('Simulation', {
   name: types.optional(types.string,  () => "busted"),
   id: types.optional(types.identifier(types.string), () => uuid()),
@@ -83,7 +85,7 @@ export const Simulation = types.model('Simulation', {
       m = m.utcOffset(this.scenario.utcOffset);
     }
     // formatting rules see: https://momentjs.com/
-    return m.format(format || 'lll');
+    return m.format(format || 'HH:mm' || 'lll');
   },
 
   // formats a local time, i.e. with local UTC offset
@@ -147,6 +149,7 @@ export const Simulation = types.model('Simulation', {
           const startTime = this.scenario.startTime || gWeatherEvent.startTime;
           if (!this.control.startTime) {
             this.control.setStartTime(startTime);
+            this.setHalfTime(kDefaultHalfTime);
           }
           if (!this.time) {
             this.setTime(startTime);

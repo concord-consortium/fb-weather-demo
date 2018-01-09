@@ -1,9 +1,9 @@
 import { types } from "mobx-state-tree";
 import { v1 as uuid } from "uuid";
 
-export const rowName = (n:number) => String.fromCharCode(65 + n);
-export const colName = (n:number) => n + 1;
-export const cellName = (row:number, column:number) => `${rowName(row)}-${colName(column)}`;
+export const rowName = (n:number) => String(n + 1);
+export const colName = (n:number) => String.fromCharCode(65 + n);
+export const cellName = (row:number, column:number) => `${colName(column)}-${rowName(row)}`;
 
 export const GridCell = types.model('GridCell', {
   id: types.optional(types.identifier(types.string), ()=> uuid()),

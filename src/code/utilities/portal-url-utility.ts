@@ -51,7 +51,7 @@ export class PortalUrlUtility {
     }
 
     async extractStudentInfo(params: StudentLaunchParams) {
-      this.classId = params.class_info_url.split("/").pop() || "💀";
+      this.classId = params.class_info_url && params.class_info_url.split("/").pop() || "💀";
       this.domain = extractDomain(params.domain);
     }
 

@@ -10,7 +10,7 @@ import { PlaybackOptionsView } from "./playback-options-view";
 import { PlaybackControlView } from "./playback-control-view";
 import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
-import { TeacherOptionsView } from "./teacher-options-view";
+//import { TeacherOptionsView } from "./teacher-options-view";
 
 import { IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
@@ -176,7 +176,7 @@ export class TeacherView extends React.Component<
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
           <Tab label="Options" value="configure">
             <PlaybackOptionsView />
-            <TeacherOptionsView />
+            {/* <TeacherOptionsView /> */}
           </Tab>
           <Tab label="Control" value="control">
             <CardTitle>
