@@ -15,11 +15,11 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:()=> vo
       updateFunc(newV);
       ref.on('value',updateFunc);
       onSnapshot(model, (newSnapshot:any) => {
-        const data = _.clone(newSnapshot);
+        let data = _.clone(newSnapshot);
         if(model.filterOutboundData) {
-          model.filterOutboundData(data);
+          data = model.filterOutboundData(data);
         }
-        ref.update(newSnapshot);
+        ref.update(data);
       });
       if(callBack) {
         setTimeout( ()=> {
