@@ -163,7 +163,7 @@ export const Simulation = types.model('Simulation', {
   },
   filterOutboundData(snapshot:any) {
     let copy = _.cloneDeep(snapshot);
-    const studentRemoveKeys= ["control", "settings", "scenario", "grid", "stations"];
+    const studentRemoveKeys= ["control", "settings"];
     const teacherRemoveKeys= ["presences"];
     // remove keys from object.
     const remove = (obj:any, keys:string[]) => {
