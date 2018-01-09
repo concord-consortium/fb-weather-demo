@@ -16,9 +16,9 @@ export const  SimulationControl = types.model(
     isPlaying: types.optional(types.boolean, false),
     time: types.maybe(types.Date),
     halfTime: types.maybe(types.Date),
-    timeStep: types.optional(types.number, 5),      // minutes per time step
-    timeScale: types.optional(types.number, 300),     // wall-time to simulation time multiplier.
-    updateIntervalS: types.optional(types.number, 1), // updates frame rate.
+    timeStep: types.optional(types.number, kOverrides.timeStep),    // minutes per time step
+    timeScale: types.optional(types.number, kOverrides.timeScale),  // wall-time to simulation time multiplier.
+    updateIntervalS: types.optional(types.number, kOverrides.updateIntervalS),  // updates frame rate.
     get moment() {
       return moment(this.time);
     },

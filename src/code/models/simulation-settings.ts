@@ -38,7 +38,7 @@ export const SimulationSettings = types.model('SimulationSettings', {
   showDeltaTemp: types.optional(types.boolean, false),
   tempUnit: types.optional(types.enumeration("TempUnit",
                                               [TempUnits.Celsius, TempUnits.Fahrenheit]),
-                                              TempUnits.Celsius),
+                                              kOverrides.tempUnit),
   showWindValues: types.optional(types.boolean, true),
   windSpeedUnit: types.optional(types.enumeration("WindUnit",
                                               [WindSpeedUnits.KPH, WindSpeedUnits.MPH]),
@@ -47,7 +47,7 @@ export const SimulationSettings = types.model('SimulationSettings', {
   showPredictions: types.optional(types.boolean, true),
   enabledPredictions: types.maybe(types.string),  // null disables predictions
   predictionInterval: types.optional(types.number, 60), // minutes
-  showCities: types.optional(types.boolean, true),
+  showCities: types.optional(types.boolean, kOverrides.showCities),
 
   get localUtcOffset() {
     return -(new Date().getTimezoneOffset());
