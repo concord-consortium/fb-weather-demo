@@ -6,7 +6,7 @@ import { cityAnotation } from "../utilities/city-map";
 import { GridView } from "./grid-view";
 import { weatherColor, precipDiv } from "./weather-styler";
 import { LeafletMapView } from "./leaflet-map-view";
-import { PlaybackOptionsView } from "./playback-options-view";
+// import { PlaybackOptionsView } from "./playback-options-view";
 import { PlaybackControlView } from "./playback-control-view";
 import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
@@ -164,6 +164,8 @@ export class TeacherView extends React.Component<
   render() {
     const simulation = simulationStore.selected;
     const time = simulation.timeString;
+    const userCount = simulation.presences.size;
+    const usersString = `${userCount} ${userCount === 1 ? 'user' : 'users'}`;
 
     const handleChangeTab = (value: TeacherViewTab) => {
       this.setState({
@@ -174,15 +176,18 @@ export class TeacherView extends React.Component<
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
-          <Tab label="Options" value="configure">
+          {/* <Tab label="Options" value="configure">
             <PlaybackOptionsView />
-            {/* <TeacherOptionsView /> */}
-          </Tab>
+            <TeacherOptionsView />
+          </Tab> */}
           <Tab label="Control" value="control">
             <CardTitle>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 'bold', fontSize: "14pt"}}> {time}</div>
-                <div>{simulation.name}</div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div>{simulation.name}</div>
+                  <div>{usersString}</div>
+                </div>
               </div>
             </CardTitle>
             <CardMedia

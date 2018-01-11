@@ -14,6 +14,9 @@ export const PresenceStore = types.model(
     get presenceList(): IPresence[] {
       return this.presences.values();
     },
+    get size() {
+      return this.presences.size;
+    },
     get groupNames() {
       return this.presenceList.map((p:IPresence) => p.groupName);
     },
