@@ -43,7 +43,7 @@ export class SegmentedControlView extends React.Component<
         display: "flex",
         flexDirection: "column",
         maxWidth: 500,
-        height: 120,
+        height: 110,
         alignItems: "center"
       }
     };
