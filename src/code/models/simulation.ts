@@ -12,7 +12,7 @@ import { PredictionStore } from "../stores/prediction-store";
 import { GroupStore } from "../stores/group-store";
 import { Grid } from "./grid";
 import { IGroup } from "./group";
-import { IPresence } from "./presence";
+import { ERole, IPresence } from "./presence";
 import { PresenceStore} from "../stores/presence-store";
 import { Firebasify } from "../middleware/firebase-decorator";
 import { v1 as uuid } from "uuid";
@@ -163,8 +163,8 @@ export const Simulation = types.model('Simulation', {
   },
   filterOutboundData(snapshot:any) {
     let copy = _.cloneDeep(snapshot);
-    const studentRemoveKeys= ["control", "settings"];
-    const teacherRemoveKeys= ["presences"];
+    const studentRemoveKeys = ["control", "presences", "settings"];
+    const teacherRemoveKeys = ["presences"];
     // remove keys from object.
     const remove = (obj:any, keys:string[]) => {
       let key;
@@ -183,8 +183,18 @@ export const Simulation = types.model('Simulation', {
     remove(copy, keysToRemove);
     return copy;
   },
+  outboundPresence(snapshot:any) {
+    const presences = snapshot && snapshot.presences && snapshot.presences.presences,
+          selectedPresence = this.selectedPresence,
+          selectedPresenceID = selectedPresence && selectedPresence.id;
+    return presences && selectedPresenceID && presences[selectedPresenceID];
+  },
   setIsTeacherView(teachermode:boolean) {
+    const presence: IPresence | null = this.selectedPresence;
     this.isTeacherView = teachermode;
+    if (presence) {
+      presence.setRole(teachermode ? ERole.teacher : ERole.student);
+    }
   },
   initPresence() {
     const self = this;
@@ -195,7 +205,8 @@ export const Simulation = types.model('Simulation', {
         return;
       }
       const path =`simulations/${self.id}`;
-      self.presences.createPresence(path, id);
+      const snapshot = { id, role: self.isTeacherView ? ERole.teacher : ERole.student };
+      self.presences.createPresence(path, snapshot);
     });
   },
   createGroups() {
