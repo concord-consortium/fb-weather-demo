@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { Presence, IPresence } from "../models/presence";
+import { Presence, IPresence, IPresenceSnapshot } from "../models/presence";
 import { gFirebase } from "../middleware/firebase-imp";
 import { IWeatherStation } from "../models/weather-station";
 
@@ -33,10 +33,10 @@ export const PresenceStore = types.model(
         this.selected.setStation(station);
       }
     },
-    createPresence(_path:string, id:string): IPresence {
+    createPresence(_path:string, snapshot:IPresenceSnapshot): IPresence {
       const firebase = gFirebase;
-      const presence = Presence.create({id:id});
-      const path = `${_path}/presences/presences/${id}`;
+      const presence = Presence.create(snapshot);
+      const path = `${_path}/presences/presences/${snapshot.id}`;
       const presref = firebase.dataRef.child(path);
       presref.onDisconnect().remove();
       this.presences.put(presence);

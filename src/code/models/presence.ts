@@ -38,6 +38,12 @@ export const Presence = types.model("Presence",
 },{
   // volatile
 },{
+  // hooks
+  afterCreate() {
+    if (this.role === ERole.teacher) {
+      this.wasTeacher = true;
+    }
+  },
   // actions
   setUsername(name:string) {
     this.username = name;
@@ -61,5 +67,5 @@ export const Presence = types.model("Presence",
     this.start = new Date().toISOString();
   }
 });
-
 export type IPresence = typeof Presence.Type;
+export type IPresenceSnapshot = typeof Presence.SnapshotType;

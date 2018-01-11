@@ -1,16 +1,7 @@
-const firebase = require("firebase");
+import * as firebase from "firebase";
 
 const DEFAULT_SIMULATION = "default";
 const DEFAULT_VERSION_STRING = "1.3.0-pre5";
-
-interface FirebaseUser {
-  displayName: string;
-  uid: string;
-}
-interface FirebaseError {
-  message: string;
-  email: string;
-}
 
 interface FirebaseListener {
   setState(state: any): void;
@@ -18,45 +9,24 @@ interface FirebaseListener {
   setSessionList(sessions: string[]): void;
 }
 
-export interface FirebaseData {
-  val(): any;
-  key: any;
-  forEach: Function;
-}
-
-interface FirebaseDisconnectSerivce {
-  remove(onComplete?: (error:any)=> void): Promise<any>;
-  set(value: any, onComplete?: (error:any)=> void): Promise<any>;
-  update(values:any, anyonComplete?: ()=> void): Promise<any>;
-}
-
-export interface FirebaseRef {
-  off(event: string): void;
-  off(): void;
-  once(value: string): Promise<any>;
-  push(value: any): void;
-  on(event: string, callback: Function): void;
-  onDisconnect(): FirebaseDisconnectSerivce;
-  remove(): void;
-  update(data: any): void;
-  set(value:any): void;
-  remove(key: string): void;
-  child(path: string): FirebaseRef;
-}
-
-interface FireBaseConfig {
-  [key: string]: string;
+interface FirebaseConfig {
+  apiKey: string;
+  authDomain: string;
+  databaseURL: string;
+  projectId?: string;
+  storageBucket: string;
+  messagingSenderId: string;
 }
 
 export class FirebaseImp {
   simulationID: string;
-  user: FirebaseUser;
+  user: firebase.User;
   version: string;
   listeners: FirebaseListener[];
   simulationMap: [{key:string, value:any}];
-  config: FireBaseConfig;
-  dataRef: FirebaseRef;
-  simulationsRef: FirebaseRef;
+  config: FirebaseConfig;
+  dataRef: firebase.database.Reference;
+  simulationsRef: firebase.database.Reference;
   pendingCallbacks: Function[];
   postConnect: Promise<FirebaseImp>;
 
@@ -64,7 +34,7 @@ export class FirebaseImp {
     this.simulationID = `${DEFAULT_SIMULATION}`;
     this.version = DEFAULT_VERSION_STRING;
     this.pendingCallbacks = [];
-    const configs = {
+    const configs: { [index: string]: FirebaseConfig } = {
       old: {
         apiKey: "AIzaSyAlgebbG2k820uai5qZT6T8yMONvuSl-wI",
         authDomain: "weather-dev-eae1d.firebaseapp.com",
@@ -102,7 +72,7 @@ export class FirebaseImp {
     let auth = firebase.auth();
     const imp = this;
     this.postConnect = new Promise(function(resolve:Function, reject:Function) {
-      auth.onAuthStateChanged(function(user: FirebaseUser) {
+      auth.onAuthStateChanged(function(user: firebase.User | null) {
         if (user) {
           log(user.displayName + " authenticated");
           finishAuth({ user: user } );
@@ -124,13 +94,13 @@ export class FirebaseImp {
       .catch(this.failAuth.bind(this));
   }
 
-  failAuth(error: FirebaseError) {
+  failAuth(error: firebase.auth.Error) {
     const errorMessage = error.message;
-    const email = error.email;
+    const email = (error as any).email || ""; // only some errors have email
     this.error(["could not authenticate", errorMessage, email].join(" "));
   }
 
-  finishAuth(result: { user: FirebaseUser }) {
+  finishAuth(result: { user: firebase.User }) {
     this.user = result.user;
     this.setDataRef();
     this.log("logged in");
