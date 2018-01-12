@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
-import { cityAnotation } from "../utilities/city-map";
+import { cityAnnotation } from "../utilities/city-map";
 import { GridView } from "./grid-view";
 import { weatherColor, precipDiv } from "./weather-styler";
 import { LeafletMapView } from "./leaflet-map-view";
@@ -141,7 +141,7 @@ export class TeacherView extends React.Component<
     const titleFunc = (cell:IGridCell) => {
       const station = simulation.stations && simulation.stations.getStation(cell.weatherStationId);
       const precip = precipDiv(station);
-      const city = showCities ? cityAnotation(cell.weatherStationId) : null;
+      const city = showCities ? cityAnnotation(cell.weatherStationId) : null;
       return (
         <div style={{}}>
           {city}
