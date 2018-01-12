@@ -22,7 +22,7 @@ export function precipDiv(station?:IWeatherStation|null) {
   const sunColor = "#8D7927";
   const raining = station && station.precipitation;
   const fontColor = raining ? rainColor : sunColor;
-  const style = { color: fontColor };
+  const style: React.CSSProperties = { position: 'relative', zIndex: 2, color: fontColor };
   const rainIcon = "icon-cloud-rain";
   // const sunIcon = "icon-sun";
   const sunIcon = "";

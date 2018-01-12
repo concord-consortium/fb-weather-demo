@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { IGridCell } from "../models/grid-cell";
 
 export interface GridCellProps {
-  cell:IGridCell;
+  cell: IGridCell;
   size?: number ;
   color?: string;
   textColor?: string;
@@ -49,6 +49,7 @@ export class GridCellView extends React.Component<
     const displayColor = colorFunc ? colorFunc(cell) : color;
     const cellStyle:React.CSSProperties = {
       display: "flex",
+      position: "relative",   // container for absolute positioning within cell
       alignContent: "center",
       justifyContent: "center",
       backgroundColor: displayColor,
