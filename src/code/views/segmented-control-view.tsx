@@ -20,8 +20,8 @@ export class SegmentedControlView extends React.Component<
   render() {
     const simulation = simulationStore.selected;
     const isPlaying = !!(simulation && simulation.isPlaying);
-    const playFirstHalf = () =>  simulation.playFirstHalf();
-    const playSecondHalf = () => simulation.playSecondHalf();
+    // const playFirstHalf = () =>  simulation.playFirstHalf();
+    // const playSecondHalf = () => simulation.playSecondHalf();
     const reset = () => simulation.rewind();
     // disable dragging (at least for now)
     // const dragStop = (o:any) => {
@@ -38,6 +38,10 @@ export class SegmentedControlView extends React.Component<
     const endTime = simulation && simulation.endTime;
     const halfTime = simulation && simulation.halfTime;
     const currentTime = simulation && simulation.time;
+    const isAtBeginning = currentTime && startTime && currentTime <= startTime;
+    const isAtEnd = currentTime && endTime && currentTime >= endTime;
+    const playPauseIcon = isPlaying ? "icon-pause" : "icon-play_arrow";
+    const playPauseAction = isPlaying ? simulation.stop : simulation.play;
     const style:ComponentStyleMap = {
       container: {
         display: "flex",
@@ -45,26 +49,33 @@ export class SegmentedControlView extends React.Component<
         maxWidth: 500,
         height: 110,
         alignItems: "center"
+      },
+      buttonStyle: {
+        padding: "0 4px"
+      },
+      iconStyle: {
+        color: "#FFF",
+        fontSize: 24
       }
     };
     return(
       <div style={style.container} >
           <div>
             <RaisedButton
-              disabled={isPlaying}
+              style={style.buttonStyle}
+              disabled={!simulation || isAtBeginning || isPlaying}
               onTouchTap={reset}
+              icon={<i className="icon-refresh" style={style.iconStyle} />}
               label="Reset"
               primary={true}
             />
             <RaisedButton
-              disabled={isPlaying}
-              onTouchTap={playFirstHalf}
-              label="Run first portion"
-            />
-            <RaisedButton
-              disabled={isPlaying}
-              onTouchTap={playSecondHalf}
-              label="Run second portion"
+              buttonStyle={style.buttonStyle}
+              disabled={!simulation || isAtEnd}
+              onTouchTap={playPauseAction}
+              icon={<i className={playPauseIcon} style={style.iconStyle} />}
+              label={isPlaying ? "Pause" : "Play"}
+              primary={true}
             />
           </div>
           <TimelineView

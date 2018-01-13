@@ -7,7 +7,7 @@ import { GridView } from "./grid-view";
 import { weatherColor, precipDiv } from "./weather-styler";
 import { LeafletMapView } from "./leaflet-map-view";
 // import { PlaybackOptionsView } from "./playback-options-view";
-import { PlaybackControlView } from "./playback-control-view";
+// import { PlaybackControlView } from "./playback-control-view";
 import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 //import { TeacherOptionsView } from "./teacher-options-view";
@@ -206,7 +206,7 @@ export class TeacherView extends React.Component<
                   */}
                 </div>
                   <SegmentedControlView />
-                  <PlaybackControlView />
+                  {/* <PlaybackControlView /> */}
                 {/*
                   import { PredictionSelectorView } from "../prediction-selection-view"
                   <PredictionSelectorView />
