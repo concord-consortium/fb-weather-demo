@@ -5,8 +5,8 @@ weatherScenarioSpecs.forEach((spec: IWeatherScenarioSpec) => {
   let mod = spec as any,
         s = spec.startTime,
         e = spec.endTime;
-  mod.startTime = s ? new Date(Date.UTC(s.year, s.month - 1, s.day, s.hour, s.minute)) : null;
-  mod.endTime = e ? new Date(Date.UTC(e.year, e.month - 1, e.day, e.hour, e.minute)) : null;
+  mod.startTime = s ? new Date(s.year, s.month - 1, s.day, s.hour, s.minute) : null;
+  mod.endTime = e ? new Date(e.year, e.month - 1, e.day, e.hour, e.minute) : null;
 });
 
 export const gWeatherScenarioSpec: IWeatherScenarioSpec =
