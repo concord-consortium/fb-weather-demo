@@ -34,7 +34,7 @@ class WeatherEvent {
                       _.forEach(station.rows, (row) => {
                         const timeStr = row[timeIndex],
                               // seems like weather station times are UTC?
-                              time = moment(timeStr, "M/D/YY H:m").utcOffset(0, true),
+                              time = moment(timeStr, "M/D/YYYY H:m"),
                               jsTime = time.toDate();
                         if (time.isValid()) {
                           row[timeIndex] = jsTime;
