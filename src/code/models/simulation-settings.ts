@@ -33,6 +33,7 @@ const kMetersPerSecToMPH = 2.23694,
 export const SimulationSettings = types.model('SimulationSettings', {
   id: types.optional(types.identifier(types.string), () => uuid()),
   showBaseMap: types.optional(types.boolean, true),
+  interpolationEnabled: types.optional(types.boolean, false),
   showTempColors: types.optional(types.boolean, false),
   showTempValues: types.optional(types.boolean, true),
   showDeltaTemp: types.optional(types.boolean, false),

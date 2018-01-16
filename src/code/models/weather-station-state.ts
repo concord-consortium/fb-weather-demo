@@ -9,11 +9,13 @@ export const kDefaultPrecision = {
 export class WeatherStationState {
   simulation: ISimulationControl;
   stationData: any;
+  interpolationEnabled: boolean;
   colIndices: { [key: string]: number; };
 
-  constructor(stationData: any, simulation: ISimulationControl) {
+  constructor(stationData: any, simulation: ISimulationControl, interpolationEnabled: boolean) {
     this.stationData = stationData;
     this.simulation = simulation;
+    this.interpolationEnabled = interpolationEnabled;
 
     this.colIndices = {};
     stationData.cols.forEach((name: string, index: number) => {
@@ -63,7 +65,9 @@ export class WeatherStationState {
     const lowTime = this.stationData.rows[indices.low][this.colIndices.time].getTime(),
           highTime = this.stationData.rows[indices.high][this.colIndices.time].getTime(),
           timeInterval = highTime - lowTime;
-    return timeInterval ? (simTime.getTime() - lowTime) / timeInterval : 0;
+    return this.interpolationEnabled && timeInterval
+              ? (simTime.getTime() - lowTime) / timeInterval
+              : 0;
   }
 
   interpolate(colIndex: number): number | null {

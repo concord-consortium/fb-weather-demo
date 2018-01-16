@@ -154,7 +154,7 @@ export const Simulation = types.model('Simulation', {
           if (!this.time) {
             this.setTime(startTime);
           }
-          station.setState(new WeatherStationState(stationData, this.control));
+          station.setState(new WeatherStationState(stationData, this.control, this.settings.interpolationEnabled));
         })
         .catch((err: any) => {
           console.log(`Error initializing weather station '${station.id}': ${err}`);
