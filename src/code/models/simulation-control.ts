@@ -3,8 +3,8 @@ import * as moment from 'moment';
 import { simulationStore } from '../models/simulation';
 
 const kOverrides = {
-  timeStep: 5,
-  timeScale: 300,
+  timeStep: 1,
+  timeScale: 60,
   updateIntervalS: 1
 };
 
