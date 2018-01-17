@@ -3,8 +3,8 @@ import * as moment from 'moment';
 import { simulationStore } from '../models/simulation';
 
 const kOverrides = {
-  timeStep: 5,
-  timeScale: 300,
+  timeStep: 1,
+  timeScale: 60,
   updateIntervalS: 1
 };
 
@@ -63,8 +63,8 @@ export const  SimulationControl = types.model(
     },
     enableTimer(endTime: Date) {
       const sleepMs = this.updateIntervalS * 1000;
-      let lastTime = new Date().getTime();
-      let newTime = new Date().getTime();
+      // let lastTime = new Date().getTime();
+      // let newTime;
 
       if (!this.isPlaying) {
         this._clearTimer();
@@ -73,9 +73,12 @@ export const  SimulationControl = types.model(
             this.stop();
           }
           else {
-            newTime = new Date().getTime();
-            const elapsedS = (newTime - lastTime) / 1000;
-            lastTime = newTime;
+            // newTime = new Date().getTime();
+            // this will skip increments if necessary to synchronize wall/simulation time
+            // const elapsedS = (newTime - lastTime) / 1000;
+            // lastTime = newTime;
+            // this will always increment by one second, even if simulation takes longer
+            const elapsedS = this.updateIntervalS;
             const simSeconds = elapsedS * this.timeScale;
             this.advanceTime({seconds: simSeconds});
           }

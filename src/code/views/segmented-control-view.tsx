@@ -42,6 +42,8 @@ export class SegmentedControlView extends React.Component<
     const isAtEnd = currentTime && endTime && currentTime >= endTime;
     const playPauseIcon = isPlaying ? "icon-pause" : "icon-play_arrow";
     const playPauseAction = isPlaying ? simulation.stop : simulation.play;
+    const skipToTime = simulation && currentTime < halfTime ? halfTime : endTime;
+    const skipAction = () => { if (skipToTime) { simulation.setTime(skipToTime); } };
     const style:ComponentStyleMap = {
       container: {
         display: "flex",
@@ -52,6 +54,9 @@ export class SegmentedControlView extends React.Component<
       },
       buttonStyle: {
         padding: "0 4px"
+      },
+      skipButtonStyle: {
+        marginLeft: 4
       },
       iconStyle: {
         color: "#FFF",
@@ -75,6 +80,14 @@ export class SegmentedControlView extends React.Component<
               onTouchTap={playPauseAction}
               icon={<i className={playPauseIcon} style={style.iconStyle} />}
               label={isPlaying ? "Pause" : "Play"}
+              primary={true}
+            />
+            <RaisedButton
+              buttonStyle={style.skipButtonStyle}
+              disabled={!simulation || isPlaying || isAtEnd}
+              onTouchTap={skipAction}
+              icon={<i className="icon-skip_next" style={style.iconStyle} />}
+              label={"Skip"}
               primary={true}
             />
           </div>

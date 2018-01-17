@@ -23,7 +23,7 @@ export class WeatherStationView extends
 
   render() {
     let name = "";
-    let callSign = "";
+    // let callSign = "";
     const {weatherStation} = this.props;
     const simulation = simulationStore.selected;
     const time = simulation.timeString,
@@ -41,7 +41,7 @@ export class WeatherStationView extends
           // arrowChar = isNonZeroSpeed && windDirection ? "\u279B" : "\xA0";
     if (weatherStation) {
       name = weatherStation.name;
-      callSign = weatherStation.callSign;
+      // callSign = weatherStation.callSign;
     }
     // const color = weatherColor(weatherStation);
     const styles: ComponentStyleMap = {
@@ -84,14 +84,14 @@ export class WeatherStationView extends
         alignSelf: "flex-start"
       },
       temp: {
-        gridRow: "4",
+        gridRow: "3",
         gridColumn: "2",
         fontSize: "36pt",
         fontWeight: "bold",
         alignSelf: "center"
       },
       precip: {
-        gridRow: "5",
+        gridRow: "4",
         gridColumn: "2",
         fontSize: "36pt",
         fontWeight: "bold",
@@ -123,9 +123,9 @@ export class WeatherStationView extends
             <div style={styles.time}>
               {time}
             </div>
-            <div style={styles.callSign}>
+            {/* <div style={styles.callSign}>
               {callSign}
-            </div>
+            </div> */}
             <div style={styles.name}>
               {name}
             </div>
