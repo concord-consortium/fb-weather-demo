@@ -12,7 +12,7 @@ import { PredictionStore } from "../stores/prediction-store";
 import { GroupStore } from "../stores/group-store";
 import { Grid } from "./grid";
 import { IGroup } from "./group";
-import { IPresence } from "./presence";
+import { ERole, IPresence } from "./presence";
 import { PresenceStore} from "../stores/presence-store";
 import { Firebasify } from "../middleware/firebase-decorator";
 import { v1 as uuid } from "uuid";
@@ -20,6 +20,8 @@ import { gFirebase } from "../middleware/firebase-imp";
 
 import * as _ from "lodash";
 import * as moment from 'moment';
+
+const kDefaultHalfTime = 0.75;
 
 export const Simulation = types.model('Simulation', {
   name: types.optional(types.string,  () => "busted"),
@@ -83,7 +85,7 @@ export const Simulation = types.model('Simulation', {
       m = m.utcOffset(this.scenario.utcOffset);
     }
     // formatting rules see: https://momentjs.com/
-    return m.format(format || 'lll');
+    return m.format(format || 'HH:mm' || 'lll');
   },
 
   // formats a local time, i.e. with local UTC offset
@@ -147,11 +149,12 @@ export const Simulation = types.model('Simulation', {
           const startTime = this.scenario.startTime || gWeatherEvent.startTime;
           if (!this.control.startTime) {
             this.control.setStartTime(startTime);
+            this.setHalfTime(kDefaultHalfTime);
           }
           if (!this.time) {
             this.setTime(startTime);
           }
-          station.setState(new WeatherStationState(stationData, this.control));
+          station.setState(new WeatherStationState(stationData, this.control, this.settings.interpolationEnabled));
         })
         .catch((err: any) => {
           console.log(`Error initializing weather station '${station.id}': ${err}`);
@@ -160,8 +163,8 @@ export const Simulation = types.model('Simulation', {
   },
   filterOutboundData(snapshot:any) {
     let copy = _.cloneDeep(snapshot);
-    const studentRemoveKeys= ["control", "settings", "scenario", "grid", "stations"];
-    const teacherRemoveKeys= ["presences"];
+    const studentRemoveKeys = ["control", "presences", "settings"];
+    const teacherRemoveKeys = ["presences"];
     // remove keys from object.
     const remove = (obj:any, keys:string[]) => {
       let key;
@@ -180,8 +183,18 @@ export const Simulation = types.model('Simulation', {
     remove(copy, keysToRemove);
     return copy;
   },
+  outboundPresence(snapshot:any) {
+    const presences = snapshot && snapshot.presences && snapshot.presences.presences,
+          selectedPresence = this.selectedPresence,
+          selectedPresenceID = selectedPresence && selectedPresence.id;
+    return presences && selectedPresenceID && presences[selectedPresenceID];
+  },
   setIsTeacherView(teachermode:boolean) {
+    const presence: IPresence | null = this.selectedPresence;
     this.isTeacherView = teachermode;
+    if (presence) {
+      presence.setRole(teachermode ? ERole.teacher : ERole.student);
+    }
   },
   initPresence() {
     const self = this;
@@ -192,20 +205,21 @@ export const Simulation = types.model('Simulation', {
         return;
       }
       const path =`simulations/${self.id}`;
-      self.presences.createPresence(path, id);
+      const snapshot = { id, role: self.isTeacherView ? ERole.teacher : ERole.student };
+      self.presences.createPresence(path, snapshot);
     });
   },
   createGroups() {
     const groupNames = [
-      "stallions",
-      "pumas",
-      "otters",
-      "lizards",
-      "moles",
-      "raccoons",
-      "alligators",
-      "goats",
-      "lambs"
+      "Group 1",
+      "Group 2",
+      "Group 3",
+      "Group 4",
+      "Group 5",
+      "Group 6",
+      "Group 7",
+      "Group 8",
+      "Group 9"
     ];
     this.groups.addGroups(groupNames);
   },

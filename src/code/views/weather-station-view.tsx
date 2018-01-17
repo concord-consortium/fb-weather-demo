@@ -4,7 +4,7 @@ import { CardText } from "material-ui/Card";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
-import { weatherColor, precipDiv } from "./weather-styler";
+// import { weatherColor, precipDiv } from "./weather-styler";
 export type StationTab = "configure" | "weather";
 
 export interface WeatherStationProps {
@@ -23,7 +23,7 @@ export class WeatherStationView extends
 
   render() {
     let name = "";
-    let callSign = "";
+    // let callSign = "";
     const {weatherStation} = this.props;
     const simulation = simulationStore.selected;
     const time = simulation.timeString,
@@ -41,9 +41,9 @@ export class WeatherStationView extends
           // arrowChar = isNonZeroSpeed && windDirection ? "\u279B" : "\xA0";
     if (weatherStation) {
       name = weatherStation.name;
-      callSign = weatherStation.callSign;
+      // callSign = weatherStation.callSign;
     }
-    const color = weatherColor(weatherStation);
+    // const color = weatherColor(weatherStation);
     const styles: ComponentStyleMap = {
       info: {
         display: "grid",
@@ -58,43 +58,44 @@ export class WeatherStationView extends
         gridRow: "1",
         gridColumn: "1",
         fontSize: "9pt",
-        alignSelf: "flex-end"
+        alignSelf: "flex-start"
       },
-      graphic: {
-        backgroundColor: color,
-        gridRow: "2/5",
-        gridColumn: "1",
-        fontSize: "100px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      },
-      callSign: {
+      // graphic: {
+      //   backgroundColor: color,
+      //   gridRow: "2/5",
+      //   gridColumn: "1",
+      //   fontSize: "100px",
+      //   display: "flex",
+      //   alignItems: "center",
+      //   justifyContent: "center"
+      // },
+      time: {
         gridRow: "2",
         gridColumn: "2",
-        fontSize: "24pt",
+        fontSize: "36pt",
+        fontWeight: "bold",
+        color: "hsla(0, 0%, 10%, 0.9)"
+      },
+      callSign: {
+        gridRow: "3",
+        gridColumn: "2",
+        fontSize: "36pt",
         fontWeight: "bold",
         alignSelf: "flex-start"
       },
       temp: {
         gridRow: "3",
         gridColumn: "2",
-        fontSize: "24pt",
+        fontSize: "36pt",
         fontWeight: "bold",
         alignSelf: "center"
       },
       precip: {
         gridRow: "4",
         gridColumn: "2",
-        fontSize: "24pt",
+        fontSize: "36pt",
         fontWeight: "bold",
         alignSelf: "flex-end"
-      },
-      time: {
-        gridRow: "5",
-        gridColumn: "1",
-        fontSize: "12pt",
-        color: "hsla(0, 0%, 10%, 0.9)"
       }
     };
 
@@ -103,7 +104,7 @@ export class WeatherStationView extends
 
     function renderTemperature() {
       return showTemperature
-              ? `Temp: ${unitTempStr || '29c'}`
+              ? `${unitTempStr || ''}`
               : null;
     }
     const precip = (weatherStation && weatherStation.precipitation)  ? "Rain" : "Clear";
@@ -112,21 +113,21 @@ export class WeatherStationView extends
         <CardText>
           <div style={styles.info}>
             <div style={styles.simulationName}>
-              Simulation: {simulationName}
+              {simulationName}
             </div>
-            <div style={styles.graphic}>
+            {/* <div style={styles.graphic}>
               <div>
                 {precipDiv(weatherStation)}
               </div>
-            </div>
-            <div style={styles.callSign}>
-              {callSign}
-            </div>
-            <div style={styles.name}>
-              {name}
-            </div>
+            </div> */}
             <div style={styles.time}>
               {time}
+            </div>
+            {/* <div style={styles.callSign}>
+              {callSign}
+            </div> */}
+            <div style={styles.name}>
+              {name}
             </div>
             <div style={styles.temp}>
               {renderTemperature()}

@@ -2,15 +2,15 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
-import { cityAnotation } from "../utilities/city-map";
+import { cityAnnotation } from "../utilities/city-map";
 import { GridView } from "./grid-view";
 import { weatherColor, precipDiv } from "./weather-styler";
 import { LeafletMapView } from "./leaflet-map-view";
-import { PlaybackOptionsView } from "./playback-options-view";
-import { PlaybackControlView } from "./playback-control-view";
+// import { PlaybackOptionsView } from "./playback-options-view";
+// import { PlaybackControlView } from "./playback-control-view";
 import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
-import { TeacherOptionsView } from "./teacher-options-view";
+//import { TeacherOptionsView } from "./teacher-options-view";
 
 import { IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
@@ -141,7 +141,7 @@ export class TeacherView extends React.Component<
     const titleFunc = (cell:IGridCell) => {
       const station = simulation.stations && simulation.stations.getStation(cell.weatherStationId);
       const precip = precipDiv(station);
-      const city = showCities ? cityAnotation(cell.weatherStationId) : null;
+      const city = showCities ? cityAnnotation(cell.weatherStationId) : null;
       return (
         <div style={{}}>
           {city}
@@ -164,6 +164,8 @@ export class TeacherView extends React.Component<
   render() {
     const simulation = simulationStore.selected;
     const time = simulation.timeString;
+    const userCount = simulation.presences.size;
+    const usersString = `${userCount} ${userCount === 1 ? 'user' : 'users'}`;
 
     const handleChangeTab = (value: TeacherViewTab) => {
       this.setState({
@@ -174,15 +176,18 @@ export class TeacherView extends React.Component<
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
-          <Tab label="Options" value="configure">
+          {/* <Tab label="Options" value="configure">
             <PlaybackOptionsView />
             <TeacherOptionsView />
-          </Tab>
+          </Tab> */}
           <Tab label="Control" value="control">
             <CardTitle>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 'bold', fontSize: "14pt"}}> {time}</div>
-                <div>{simulation.name}</div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div>{simulation.name}</div>
+                  <div>{usersString}</div>
+                </div>
               </div>
             </CardTitle>
             <CardMedia
@@ -201,7 +206,7 @@ export class TeacherView extends React.Component<
                   */}
                 </div>
                   <SegmentedControlView />
-                  <PlaybackControlView />
+                  {/* <PlaybackControlView /> */}
                 {/*
                   import { PredictionSelectorView } from "../prediction-selection-view"
                   <PredictionSelectorView />

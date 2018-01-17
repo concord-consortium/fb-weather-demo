@@ -29,11 +29,10 @@ export class GridHeaderView extends React.Component<
     const border = "none";
     const cellStyle:React.CSSProperties = {
       display: "flex",
-      alignContent: "center",
       justifyContent: "center",
       color: textColor,
       alignItems: "center",
-      width: `${this.props.size}px`,
+      width: `${(this.props.size ? this.props.size : 60) + 2}px`,
       height: `${this.props.size}px`,
       border: border,
       fontSize: "20pt",

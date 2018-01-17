@@ -1,6 +1,13 @@
 import { types } from "mobx-state-tree";
 import * as moment from 'moment';
 import { simulationStore } from '../models/simulation';
+
+const kOverrides = {
+  timeStep: 1,
+  timeScale: 60,
+  updateIntervalS: 1
+};
+
 export const  SimulationControl = types.model(
   "SimulationControl",
   {
@@ -9,9 +16,9 @@ export const  SimulationControl = types.model(
     isPlaying: types.optional(types.boolean, false),
     time: types.maybe(types.Date),
     halfTime: types.maybe(types.Date),
-    timeStep: types.optional(types.number, 15),      // minutes per time step
-    timeScale: types.optional(types.number, 60),     // wall-time to simulation time mulitplier.
-    updateIntervalS: types.optional(types.number, 5), // updates frame rate.
+    timeStep: types.optional(types.number, kOverrides.timeStep),    // minutes per time step
+    timeScale: types.optional(types.number, kOverrides.timeScale),  // wall-time to simulation time multiplier.
+    updateIntervalS: types.optional(types.number, kOverrides.updateIntervalS),  // updates frame rate.
     get moment() {
       return moment(this.time);
     },
@@ -21,12 +28,17 @@ export const  SimulationControl = types.model(
   }, {
     timer: null
   }, {
-    // actions
+    // hooks
+    preProcessSnapshot(snapshot: any) {
+      // replace restored values with new hard-coded values
+      return Object.assign({}, snapshot, kOverrides);
+    },
     afterCreate() {
       if (this.isPlaying) {
         this.play();
       }
     },
+    // actions
     setStartTime(newTime: Date) {
       this.startTime = newTime;
     },
@@ -35,7 +47,6 @@ export const  SimulationControl = types.model(
     },
     setHalfTime(newTime:Date) {
       this.halfTime = newTime;
-      this.time = newTime;
     },
     setUpdateIntervalS(newValue:string) {
       const parsed = parseInt(newValue,10) || 0;
@@ -52,8 +63,8 @@ export const  SimulationControl = types.model(
     },
     enableTimer(endTime: Date) {
       const sleepMs = this.updateIntervalS * 1000;
-      let lastTime = new Date().getTime();
-      let newTime = new Date().getTime();
+      // let lastTime = new Date().getTime();
+      // let newTime;
 
       if (!this.isPlaying) {
         this._clearTimer();
@@ -62,9 +73,12 @@ export const  SimulationControl = types.model(
             this.stop();
           }
           else {
-            newTime = new Date().getTime();
-            const elapsedS = (newTime - lastTime) / 1000;
-            lastTime = newTime;
+            // newTime = new Date().getTime();
+            // this will skip increments if necessary to synchronize wall/simulation time
+            // const elapsedS = (newTime - lastTime) / 1000;
+            // lastTime = newTime;
+            // this will always increment by one second, even if simulation takes longer
+            const elapsedS = this.updateIntervalS;
             const simSeconds = elapsedS * this.timeScale;
             this.advanceTime({seconds: simSeconds});
           }
@@ -73,11 +87,12 @@ export const  SimulationControl = types.model(
       }
     },
     play() {
-      this.enableTimer(this.endTime);
+      const stopTime = this.time < this.halfTime ? this.halfTime : this.endTime;
+      this.enableTimer(stopTime);
     },
     playFirstHalf() {
       this.rewind();
-      const endTime = this.halfTime || (simulationStore.selected.scenario.endTime);
+      const endTime = this.halfTime || simulationStore.selected.scenario.endTime;
       this.enableTimer(endTime);
     },
     playSecondHalf() {
