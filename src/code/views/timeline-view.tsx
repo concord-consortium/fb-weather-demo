@@ -7,7 +7,7 @@ import { simulationStore } from "../models/simulation";
 export interface TimelineViewProps {
   startTime: Date | null;
   currentTime: Date | null;
-  halfTime: Date | null;
+  breakTime: Date | null;
   endTime: Date | null;
 }
 export interface TimelineViewState {
@@ -36,14 +36,14 @@ export class TimelineView extends React.Component<
       }
     };
 
-    let m = moment(time);
+    let m = moment.utc(time);
     const scenario = simulationStore.selected && simulationStore.selected.scenario;
     if (scenario && scenario.utcOffset) {
       m = m.utcOffset(scenario.utcOffset);
     }
 
     const timeFormat = "HH:mm";
-    const timeString = moment(m).format(timeFormat);
+    const timeString = m.format(timeFormat);
     return (
       <div style={style.container}>
         <div style={style.time}>
@@ -54,10 +54,10 @@ export class TimelineView extends React.Component<
   }
 
   render() {
-    const {startTime, currentTime, halfTime, endTime } = this.props;
+    const {startTime, currentTime, breakTime, endTime } = this.props;
     const start      = (startTime && startTime.getTime() || 0);
     const end        = (endTime   && endTime.getTime()   || 0);
-    const split      = (halfTime  && halfTime.getTime()  || 0);
+    const split      = (breakTime  && breakTime.getTime()  || 0);
     const current    = (currentTime && currentTime.getTime() || 0);
     const duration   = end - start;
     const splitFrac    = (split - start) / duration;
@@ -105,7 +105,7 @@ export class TimelineView extends React.Component<
           <div style={style.filling} />
           <div style={style.splitMarker}>
             <div style={{position:"relative", top: "12px", left: "-55px"}}>
-              {this.renderMoment(halfTime as Date)}
+              {this.renderMoment(breakTime as Date)}
             </div>
           </div>
         </div>

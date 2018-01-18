@@ -1,29 +1,32 @@
 import { types } from "mobx-state-tree";
 import * as moment from 'moment';
-import { simulationStore } from '../models/simulation';
 
 const kOverrides = {
-  timeStep: 1,
-  timeScale: 60,
-  updateIntervalS: 1
-};
+        timeStep: 1,
+        timeScale: 60,
+        updateInterval: 1
+      };
 
 export const  SimulationControl = types.model(
   "SimulationControl",
   {
     // properties
-    startTime: types.maybe(types.Date),
+    startTime: types.maybe(types.Date), // UTC date
     isPlaying: types.optional(types.boolean, false),
-    time: types.maybe(types.Date),
-    halfTime: types.maybe(types.Date),
+    playOffset: types.optional(types.number, 0),  // seconds from start
+    breakOffset: types.optional(types.number, 0), // seconds from start
+    duration: types.optional(types.number, 0),    // seconds
     timeStep: types.optional(types.number, kOverrides.timeStep),    // minutes per time step
     timeScale: types.optional(types.number, kOverrides.timeScale),  // wall-time to simulation time multiplier.
-    updateIntervalS: types.optional(types.number, kOverrides.updateIntervalS),  // updates frame rate.
-    get moment() {
-      return moment(this.time);
+    updateInterval: types.optional(types.number, kOverrides.updateInterval),  // updates frame rate.
+    get time(): Date | null {
+      return this.startTime && moment.utc(this.startTime).add({ seconds: this.playOffset }).toDate();
+    },
+    get breakTime(): Date | null {
+      return this.startTime && moment.utc(this.startTime).add({ seconds: this.breakOffset }).toDate();
     },
     get endTime():Date|null {
-      return simulationStore.selected.endTime;
+      return this.startTime && moment.utc(this.startTime).add({ seconds: this.duration }).toDate();
     }
   }, {
     timer: null
@@ -39,81 +42,52 @@ export const  SimulationControl = types.model(
       }
     },
     // actions
-    setStartTime(newTime: Date) {
-      this.startTime = newTime;
-    },
-    setTime(newTime: Date) {
-      this.time = newTime;
-    },
-    setHalfTime(newTime:Date) {
-      this.halfTime = newTime;
-    },
-    setUpdateIntervalS(newValue:string) {
-      const parsed = parseInt(newValue,10) || 0;
-      this.updateIntervalS = parsed;
-    },
-    setTimeScale(newValue: string) {
-      const parsed = parseInt(newValue,10) || 0;
-      this.timeScale = parsed;
-    },
-    rewind() {
-      if (this.startTime) {
-        this.time = this.startTime;
+    setTimeRange(startTime: Date, duration: number, breakProportion?: number) {
+      this.startTime = moment.utc(startTime).utcOffset(0, true).toDate();
+      this.duration = duration;
+      if (breakProportion != null) {
+        this.breakOffset = breakProportion * duration;
       }
     },
-    enableTimer(endTime: Date) {
-      const sleepMs = this.updateIntervalS * 1000;
-      // let lastTime = new Date().getTime();
-      // let newTime;
+    setTime(time: Date) {
+      if (this.startTime && time) {
+        const diff = Math.max(0, (time.getTime() - this.startTime.getTime()) / 1000);
+        this.playOffset = Math.min(this.duration, diff);
+      }
+    },
+    rewind() {
+      this.playOffset = 0;
+    },
+    setUpdateInterval(updateInterval: number) {
+      this.updateInterval = updateInterval;
+    },
+    setTimeScale(timeScale: number) {
+      this.timeScale = timeScale;
+    },
+    enableTimer(stopOffset: number) {
+      const sleepMs = this.updateInterval * 1000;
 
       if (!this.isPlaying) {
         this._clearTimer();
         this.timer = setInterval(() => {
-          if(endTime && this.time >= endTime) {
+          if (stopOffset && this.playOffset >= stopOffset) {
             this.stop();
           }
           else {
-            // newTime = new Date().getTime();
-            // this will skip increments if necessary to synchronize wall/simulation time
-            // const elapsedS = (newTime - lastTime) / 1000;
-            // lastTime = newTime;
-            // this will always increment by one second, even if simulation takes longer
-            const elapsedS = this.updateIntervalS;
-            const simSeconds = elapsedS * this.timeScale;
-            this.advanceTime({seconds: simSeconds});
+            const simSeconds = this.updateInterval * this.timeScale;
+            this.advanceTime(simSeconds);
           }
         }, sleepMs);
         this.isPlaying = true;
       }
     },
     play() {
-      const stopTime = this.time < this.halfTime ? this.halfTime : this.endTime;
-      this.enableTimer(stopTime);
-    },
-    playFirstHalf() {
-      this.rewind();
-      const endTime = this.halfTime || simulationStore.selected.scenario.endTime;
-      this.enableTimer(endTime);
-    },
-    playSecondHalf() {
-      const endTime = simulationStore.selected.scenario.endTime;
-      if (!this.isPlaying) {
-        if(this.halfTime) {
-          this.enableTimer(endTime);
-        }
-      }
+      const stopOffset = this.playOffset < this.breakOffset ? this.breakOffset : this.duration;
+      this.enableTimer(stopOffset);
     },
     stop() {
       this._clearTimer();
       this.isPlaying = false;
-    },
-    stepForward() {
-      const m = this.moment.add({ minutes: this.timeStep });
-      this.setTime(m.toDate());
-    },
-    stepBack() {
-      const m = this.moment.subtract({ minutes: this.timeStep });
-      this.setTime(m.toDate());
     },
 
     _clearTimer() {
@@ -123,11 +97,8 @@ export const  SimulationControl = types.model(
       }
     },
 
-    // interval from moment.js, e.g. { minutes: 10 }
-    advanceTime(interval: any) {
-      if (this.time) {
-        this.time = this.moment.add(interval).toDate();
-      }
+    advanceTime(seconds: number) {
+      this.playOffset += seconds;
     }
   }
 );

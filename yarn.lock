@@ -78,6 +78,12 @@
     "@types/react" "*"
     "@types/react-addons-linked-state-mixin" "*"
 
+"@types/moment@^2.13.0":
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/@types/moment/-/moment-2.13.0.tgz#604ebd189bc3bc34a1548689404e61a2a4aac896"
+  dependencies:
+    moment "*"
+
 "@types/node@*":
   version "8.0.53"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.53.tgz#396b35af826fa66aad472c8cb7b8d5e277f4e6d8"
@@ -4316,9 +4322,9 @@ mobx@^3.2.2:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.3.1.tgz#c38fc1a287a0dda3f5d4b85efe1137fedd9dcdf0"
 
-moment@^2.18.1:
-  version "2.19.2"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.19.2.tgz#8a7f774c95a64550b4c7ebd496683908f9419dbe"
+moment@*, moment@^2.20.1:
+  version "2.20.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
 
 morgan@^1.6.1:
   version "1.9.0"
