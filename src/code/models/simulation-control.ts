@@ -7,10 +7,8 @@ const kOverrides = {
         updateInterval: 1
       };
 
-export const  SimulationControl = types.model(
-  "SimulationControl",
-  {
-    // properties
+export const  SimulationControl = types
+  .model("SimulationControl", {
     startTime: types.maybe(types.Date), // UTC date
     isPlaying: types.optional(types.boolean, false),
     playOffset: types.optional(types.number, 0),  // seconds from start
@@ -19,87 +17,111 @@ export const  SimulationControl = types.model(
     timeStep: types.optional(types.number, kOverrides.timeStep),    // minutes per time step
     timeScale: types.optional(types.number, kOverrides.timeScale),  // wall-time to simulation time multiplier.
     updateInterval: types.optional(types.number, kOverrides.updateInterval),  // updates frame rate.
+  })
+  .volatile(self => ({
+    timer: null as (number | null)
+  }))
+  .views(self => ({
     get time(): Date | null {
-      return this.startTime && moment.utc(this.startTime).add({ seconds: this.playOffset }).toDate();
+      return self.startTime && moment.utc(self.startTime).add({ seconds: self.playOffset }).toDate();
     },
     get breakTime(): Date | null {
-      return this.startTime && moment.utc(this.startTime).add({ seconds: this.breakOffset }).toDate();
+      return self.startTime && moment.utc(self.startTime).add({ seconds: self.breakOffset }).toDate();
     },
     get endTime():Date|null {
-      return this.startTime && moment.utc(this.startTime).add({ seconds: this.duration }).toDate();
+      return self.startTime && moment.utc(self.startTime).add({ seconds: self.duration }).toDate();
     }
-  }, {
-    timer: null
-  }, {
-    // hooks
-    preProcessSnapshot(snapshot: any) {
-      // replace restored values with new hard-coded values
-      return Object.assign({}, snapshot, kOverrides);
-    },
-    afterCreate() {
-      if (this.isPlaying) {
-        this.play();
-      }
-    },
-    // actions
-    setTimeRange(startTime: Date, duration: number, breakProportion?: number) {
-      this.startTime = moment.utc(startTime).utcOffset(0, true).toDate();
-      this.duration = duration;
-      if (breakProportion != null) {
-        this.breakOffset = breakProportion * duration;
-      }
-    },
-    setTime(time: Date) {
-      if (this.startTime && time) {
-        const diff = Math.max(0, (time.getTime() - this.startTime.getTime()) / 1000);
-        this.playOffset = Math.min(this.duration, diff);
-      }
-    },
-    rewind() {
-      this.playOffset = 0;
-    },
-    setUpdateInterval(updateInterval: number) {
-      this.updateInterval = updateInterval;
-    },
-    setTimeScale(timeScale: number) {
-      this.timeScale = timeScale;
-    },
-    enableTimer(stopOffset: number) {
-      const sleepMs = this.updateInterval * 1000;
+  }))
+  .preProcessSnapshot(snapshot =>
+    Object.assign({}, snapshot, kOverrides)
+  )
+  .actions(self => {
 
-      if (!this.isPlaying) {
-        this._clearTimer();
-        this.timer = setInterval(() => {
-          if (stopOffset && this.playOffset >= stopOffset) {
-            this.stop();
-          }
-          else {
-            const simSeconds = this.updateInterval * this.timeScale;
-            this.advanceTime(simSeconds);
-          }
+    // private/internal API
+    function _setPlayOffset(offset: number) {
+      self.playOffset = Math.min(Math.max(0, offset), self.duration);
+    }
+
+    function _clearTimer() {
+      if (self.timer) {
+        clearInterval(self.timer);
+        self.timer = null;
+      }
+    }
+
+    function _stop() {
+      _clearTimer();
+      self.isPlaying = false;
+    }
+
+    return {
+      setTimeRange(startTime: Date, duration: number, breakProportion?: number) {
+        self.startTime = moment.utc(startTime).utcOffset(0, true).toDate();
+        self.duration = duration;
+        if (breakProportion != null) {
+          self.breakOffset = breakProportion * duration;
+        }
+      },
+      setTime(time: Date) {
+        if (self.startTime && time) {
+          _setPlayOffset((time.getTime() - self.startTime.getTime()) / 1000);
+        }
+      },
+      rewind() {
+        self.isPlaying = false;
+        self.playOffset = 0;
+      },
+      setUpdateInterval(updateInterval: number) {
+        self.updateInterval = updateInterval;
+      },
+      setTimeScale(timeScale: number) {
+        self.timeScale = timeScale;
+      },
+      advanceTime(seconds: number) {
+        _setPlayOffset(self.playOffset + seconds);
+      },
+      clearTimer() {
+        _clearTimer();
+      },
+      stop() {
+        _stop();
+      },
+      timerTick(stopOffset: number) {
+        if (stopOffset && self.playOffset >= stopOffset) {
+          _stop();
+        }
+        else {
+          const simSeconds = self.updateInterval * self.timeScale;
+          _setPlayOffset(self.playOffset + simSeconds);
+        }
+      }
+    };
+  })
+  .actions(self => {
+
+    function _enableTimer(stopOffset: number) {
+      const sleepMs = self.updateInterval * 1000;
+
+      if (!self.isPlaying) {
+        self.clearTimer();
+        self.timer = window.setInterval(() => {
+          self.timerTick(stopOffset);
         }, sleepMs);
-        this.isPlaying = true;
+        self.isPlaying = true;
       }
-    },
-    play() {
-      const stopOffset = this.playOffset < this.breakOffset ? this.breakOffset : this.duration;
-      this.enableTimer(stopOffset);
-    },
-    stop() {
-      this._clearTimer();
-      this.isPlaying = false;
-    },
-
-    _clearTimer() {
-      if (this.timer) {
-        clearInterval(this.timer);
-        this.timer = null;
-      }
-    },
-
-    advanceTime(seconds: number) {
-      this.playOffset += seconds;
     }
-  }
-);
+
+    return {
+      play() {
+        const stopOffset = self.playOffset < self.breakOffset ? self.breakOffset : self.duration;
+        _enableTimer(stopOffset);
+      },
+      stepForward() {
+        self.advanceTime(self.timeStep * 60);
+      },
+      stepBack() {
+        self.advanceTime(-self.timeStep * 60);
+      }
+    };
+  });
 export type ISimulationControl = typeof SimulationControl.Type;

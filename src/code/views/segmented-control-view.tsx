@@ -26,10 +26,10 @@ export class SegmentedControlView extends React.Component<
     const breakTime = simulation && simulation.breakTime;
     const currentTime = simulation && simulation.time;
     const isAtBeginning = currentTime && startTime && currentTime <= startTime;
-    const isAtEnd = currentTime && endTime && currentTime >= endTime;
+    const isAtEnd = currentTime && endTime ? currentTime >= endTime : false;
     const playPauseIcon = isPlaying ? "icon-pause" : "icon-play_arrow";
     const playPauseAction = isPlaying ? simulation.stop : simulation.play;
-    const skipToTime = simulation && currentTime < breakTime ? breakTime : endTime;
+    const skipToTime = currentTime && breakTime && currentTime < breakTime ? breakTime : endTime;
     const skipAction = () => { if (skipToTime) { simulation.setTime(skipToTime); } };
     const style:ComponentStyleMap = {
       container: {

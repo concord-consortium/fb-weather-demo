@@ -3,13 +3,6 @@ import { WeatherStationState, kDefaultPrecision } from "./weather-station-state"
 
 export { kDefaultPrecision };
 
-// TBD we need to change this data def.
-const WeatherDatum = types.model("Datum", {
-  time: types.number,
-  value: types.number,
-});
-type IWeatherDatum = typeof WeatherDatum.Type;
-
 interface WeatherUpdateProps {
   name?: string;
   imageUrl?: string;
@@ -18,70 +11,66 @@ interface WeatherUpdateProps {
   long?: number;
 }
 
-export const WeatherStation = types.model("WeatherStation",
-{
-  // properties
-  name: types.string,
-  imageUrl: types.string,
-  id: types.identifier(types.string),
-  callSign: types.string,
-  lat: types.maybe(types.number),
-  long: types.maybe(types.number),
+export const WeatherStation = types
+  .model("WeatherStation", {
+    name: types.string,
+    imageUrl: types.string,
+    id: types.identifier(types.string),
+    callSign: types.string,
+    lat: types.maybe(types.number),
+    long: types.maybe(types.number)
+  })
+  .volatile(self => ({
+    state: null as any as WeatherStationState | null
+  }))
+  .views(self => ({
+    get temperature(): number | null {
+      return self.state && self.state.temperature;
+    },
 
-  get temperature(): number | null {
-    return this.state && this.state.temperature;
-  },
+    get precipitation(): number | null {
+      return self.state && self.state.hourlyPrecipitation;
+    },
 
-  get precipitation(): number | null {
-    return this.state && this.state.hourlyPrecipitation;
-  },
+    get windSpeed(): number | null {
+      return self.state && self.state.windSpeed;
+    },
 
-  get windSpeed(): number | null {
-    return this.state && this.state.windSpeed;
-  },
+    get windDirection(): number | null {
+      return self.state && self.state.windDirection;
+    },
 
-  get windDirection(): number | null {
-    return this.state && this.state.windDirection;
-  },
-
-  strWindDirection(precision = kDefaultPrecision.windDirection): string {
-    return this.state && this.state.strWindDirection();
-  }
-},{
-  // volatile
-  state: null as any as WeatherStationState | null
-},{
-  // actions
-  setLocation(location: { lat: number, long: number }) {
-    this.lat = location.lat;
-    this.long = location.long;
-  },
-  setState(state: WeatherStationState) {
-    this.state = state;
-  },
-  update(props:WeatherUpdateProps) {
-    if(props.name !== undefined) {
-      this.name = props.name;
+    strWindDirection(precision = kDefaultPrecision.windDirection): string {
+      return self.state && self.state.strWindDirection() || "";
     }
-    if(props.imageUrl !== undefined) {
-      this.imageUrl = props.imageUrl;
+  }))
+  .actions(self => ({
+    setLocation(location: { lat: number, long: number }) {
+      self.lat = location.lat;
+      self.long = location.long;
+    },
+    setState(state: WeatherStationState) {
+      self.state = state;
+    },
+    update(props:WeatherUpdateProps) {
+      if(props.name !== undefined) {
+        self.name = props.name;
+      }
+      if(props.imageUrl !== undefined) {
+        self.imageUrl = props.imageUrl;
+      }
+      if(props.callSign !== undefined) {
+        self.callSign = props.callSign;
+      }
+      if(props.lat !== undefined) {
+        self.lat = props.lat;
+      }
+      if(props.long !== undefined) {
+        self.long = props.long;
+      }
+    },
+    delete() {
+      destroy(self);
     }
-    if(props.callSign !== undefined) {
-      this.callSign = props.callSign;
-    }
-    if(props.lat !== undefined) {
-      this.lat = props.lat;
-    }
-    if(props.long !== undefined) {
-      this.long = props.long;
-    }
-  },
-  delete() {
-    destroy(this);
-  },
-  setData(newData:IWeatherDatum) {
-    this.data = newData;
-  }
-});
-
+  }));
 export type IWeatherStation = typeof WeatherStation.Type;

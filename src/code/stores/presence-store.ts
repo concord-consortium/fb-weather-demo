@@ -3,34 +3,37 @@ import { Presence, IPresence, IPresenceSnapshot } from "../models/presence";
 import { gFirebase } from "../middleware/firebase-imp";
 import { IWeatherStation } from "../models/weather-station";
 
-export const PresenceStore = types.model(
-  "PresenceStore",
-  {
+export const PresenceStore = types
+  .model("PresenceStore", {
     id: types.optional(types.identifier(types.string), "store"),
-    presences: types.optional(types.map(Presence), {}),
-    get weatherStation(): IWeatherStation | null {
-      return this.selected && this.selected.weatherStation;
+    presences: types.optional(types.map(Presence), {})
+  })
+  .views(self => ({
+    get selected(): IPresence | undefined{
+      return self.presences.get(gFirebase.user.uid);
     },
     get presenceList(): IPresence[] {
-      return this.presences.values();
+      return self.presences.values();
+    }
+  }))
+  .views(self => ({
+      get weatherStation(): IWeatherStation | null {
+      return self.selected && self.selected.weatherStation || null;
     },
     get size() {
-      return this.presences.size;
+      return self.presences.size;
     },
     get groupNames() {
-      return this.presenceList.map((p:IPresence) => p.groupName);
+      return self.presenceList.map((p:IPresence) => p.groupName);
     },
     get groupName() {
-      return this.selected ? this.selected.groupName : "";
-    },
-    get selected() {
-      return this.presences.get(gFirebase.user.uid);
+      return self.selected && self.selected.groupName || "";
     }
-  },{
-  },{
+  }))
+  .actions(self => ({
     setStation(station:IWeatherStation | null) {
-      if(this.selected) {
-        this.selected.setStation(station);
+      if(self.selected) {
+        self.selected.setStation(station);
       }
     },
     createPresence(_path:string, snapshot:IPresenceSnapshot): IPresence {
@@ -39,10 +42,8 @@ export const PresenceStore = types.model(
       const path = `${_path}/presences/presences/${snapshot.id}`;
       const presref = firebase.dataRef.child(path);
       presref.onDisconnect().remove();
-      this.presences.put(presence);
+      self.presences.put(presence);
       return presence;
     }
-  }
-);
-
+  }));
 export type IPresenceStore = typeof PresenceStore.Type;
