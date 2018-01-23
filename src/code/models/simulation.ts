@@ -23,254 +23,267 @@ import * as moment from 'moment';
 
 const kBreakProportion = 0.75;
 
-export const Simulation = types.model('Simulation', {
-  name: types.optional(types.string,  () => "busted"),
-  id: types.optional(types.identifier(types.string), () => uuid()),
-  scenario: types.optional(WeatherScenario,      () => WeatherScenario.create(gWeatherScenarioSpec)),
-  control: types.optional(SimulationControl,     () => SimulationControl.create()),
-  settings: types.optional(SimulationSettings,   () => SimulationSettings.create()),
-  presences: types.optional(PresenceStore,       () => PresenceStore.create()),
-  predictions: types.optional(PredictionStore,   () => PredictionStore.create()),
-  stations: types.optional(WeatherStationStore,  () => WeatherStationStore.create()),
-  grid: types.optional(Grid,                     () => Grid.create()),
-  groups: types.optional(GroupStore,             () => GroupStore.create()),
-
-  get isPlaying(): boolean {
-    return this.control.isPlaying;
-  },
-  get time(): Date {
-    return this.control.time;
-  },
-  get startTime(): Date {
-    return this.control.startTime;
-  },
-  get breakTime(): Date {
-    return this.control.breakTime;
-  },
-  get endTime(): Date {
-    return this.control.endTime;
-  },
-  get timeString(): string {
-    return this.formatTime(this.time);
-  },
-  get mapConfig(): IMapConfig {
-    return this.scenario && this.scenario.mapConfig;
-  },
-  get group(): IGroup {
-    return this.groups.selected;
-  },
-  get selectedPresence(): IPresence | null {
-    return this.presences.selected;
-  },
-  get groupName(): string {
-    return this.presences.groupName;
-  },
-  get groupList(): IGroup[] | null {
-    return this.groups && this.groups.groups;
-  },
-  get selectedGroup(): IGroup  | null {
-    return this.groups && this.groups.getGroup(this.groupName);
-  },
-  get availableGroups() {
-    const groupNames = this.presences.groupNames;
-    const groupList = this.groupList;
-    return _.filter(groupList, (g:IGroup) => {
-      return !(_.includes(groupNames, g.name));
-    });
-  },
-  formatTime(time: Date | null, format?: string): string {
-    if (time == null) { return ""; }
-    let m = moment.utc(time);
-    if (this.scenario.utcOffset) {
-      m = m.utcOffset(this.scenario.utcOffset);
+export const Simulation = types
+  .model('Simulation', {
+    name: types.optional(types.string,  () => "busted"),
+    id: types.optional(types.identifier(types.string), () => uuid()),
+    scenario: types.optional(WeatherScenario,      () => WeatherScenario.create(gWeatherScenarioSpec)),
+    control: types.optional(SimulationControl,     () => SimulationControl.create()),
+    settings: types.optional(SimulationSettings,   () => SimulationSettings.create()),
+    presences: types.optional(PresenceStore,       () => PresenceStore.create()),
+    predictions: types.optional(PredictionStore,   () => PredictionStore.create()),
+    stations: types.optional(WeatherStationStore,  () => WeatherStationStore.create()),
+    grid: types.optional(Grid,                     () => Grid.create()),
+    groups: types.optional(GroupStore,             () => GroupStore.create())
+  })
+  .volatile(self => ({
+    isTeacherView: false
+  }))
+  .views(self => ({
+    get isPlaying(): boolean {
+      return self.control.isPlaying;
+    },
+    get time(): Date | null {
+      return self.control.time;
+    },
+    get startTime(): Date | null {
+      return self.control.startTime;
+    },
+    get breakTime(): Date | null {
+      return self.control.breakTime;
+    },
+    get endTime(): Date | null {
+      return self.control.endTime;
+    },
+    formatTime(time: Date | null, format?: string): string {
+      if (time == null) { return ""; }
+      let m = moment.utc(time);
+      if (self.scenario.utcOffset) {
+        m = m.utcOffset(self.scenario.utcOffset);
+      }
+      // formatting rules see: https://momentjs.com/
+      return m.format(format || 'HH:mm' || 'lll');
     }
-    // formatting rules see: https://momentjs.com/
-    return m.format(format || 'HH:mm' || 'lll');
-  },
+  }))
+  .views(self => ({
+    get timeString(): string {
+      return self.formatTime(self.time);
+    },
+    get mapConfig(): IMapConfig {
+      return self.scenario && self.scenario.mapConfig;
+    },
+    // the group selected in the store
+    get group(): IGroup | null {
+      return self.groups.selectedGroup || null;
+    },
+    get selectedPresence(): IPresence | null {
+      return self.presences.selected || null;
+    },
+    get groupName(): string {
+      return self.presences.groupName;
+    },
+    get groupList(): IGroup[] | null {
+      return self.groups && self.groups.groups;
+    },
+    get selectedGroup(): IGroup | null {
+      return self.groups && self.groups.getGroup(self.presences.groupName) || null;
+    },
+    get availableGroups() {
+      const groupNames = self.presences.groupNames;
+      const groupList = self.groups && self.groups.groups;
+      return _.filter(groupList, (g:IGroup) => {
+        return !(_.includes(groupNames, g.name));
+      });
+    },
 
-  // formats a local time, i.e. with local UTC offset
-  formatLocalTime(time: Date | null, format?: string): string {
-    return (this.settings && this.settings.formatLocalTime(time, format)) || "";
-  },
-  formatTemperature(temp: number | null, options: IFormatTempOptions): string {
-    return this.settings ? this.settings.formatTemperature(temp, options) : "";
-  },
-  parseTemperature(temp: string): number | null {
-    return this.settings && this.settings.parseTemperature(temp);
-  },
-  formatWindSpeed(windSpeed: number | null, options: IFormatWindSpeedOptions): string {
-    return this.settings ? this.settings.formatWindSpeed(windSpeed, options) : "";
-  },
-  parseWindSpeed(windSpeed: string): number | null {
-    return this.settings && this.settings.parseWindSpeed(windSpeed);
-  },
-  formatWindDirection(windSpeed: number | null, options: IFormatWindSpeedOptions): string {
-    return this.settings ? this.settings.formatWindDirection(windSpeed, options) : "";
-  },
-  parseWindDirection(windDirection: string): number | null {
-    return this.settings && this.settings.parseWindDirection(windDirection);
-  },
-  get selectedStation(): IWeatherStation | null {
-    const stations = this.stations;
-    return stations && stations.selected;
-  },
-  get presenceStation(): IWeatherStation | null {
-    const selectedPresence = this.selectedPresence;
-    return selectedPresence && selectedPresence.weatherStation;
-  },
-},{
-  // volatile:
-  isTeacherView: false,
-}, {
-  afterCreate() {
-    if (_.size(this.stations.stations) === 0) {
-      // create stations from scenario
-      const stations = this.scenario.stations.map((spec: IStationSpec) => {
-                          return WeatherStation.create({
-                                    name: spec.name,
-                                    imageUrl: spec.imageUrl,
-                                    id: uuid(),
-                                    callSign: spec.id
-                                  });
-                        });
-      this.stations.addStations(stations);
+    // formats a local time, i.e. with local UTC offset
+    formatLocalTime(time: Date | null, format?: string): string {
+      return (self.settings && self.settings.formatLocalTime(time, format)) || "";
+    },
+    formatTemperature(temp: number | null, options: IFormatTempOptions): string {
+      return self.settings && (temp != null) ? self.settings.formatTemperature(temp, options) : "";
+    },
+    parseTemperature(temp: string): number | null {
+      return self.settings && self.settings.parseTemperature(temp);
+    },
+    formatWindSpeed(windSpeed: number | null, options: IFormatWindSpeedOptions): string {
+      return self.settings && (windSpeed != null) ? self.settings.formatWindSpeed(windSpeed, options) : "";
+    },
+    parseWindSpeed(windSpeed: string): number | null {
+      return self.settings && self.settings.parseWindSpeed(windSpeed);
+    },
+    formatWindDirection(windSpeed: number | null, options: IFormatWindSpeedOptions): string {
+      return self.settings && (windSpeed != null) ? self.settings.formatWindDirection(windSpeed, options) : "";
+    },
+    parseWindDirection(windDirection: string): number | null {
+      return self.settings && self.settings.parseWindDirection(windDirection);
+    },
+    get selectedStation(): IWeatherStation | null {
+      const stations = self.stations;
+      return stations && stations.selected;
+    },
+    get presenceStation(): IWeatherStation | null {
+      const selectedPresence = self.presences.selected;
+      return selectedPresence && selectedPresence.weatherStation || null;
     }
-    // create any missing stations … not included with scenario
-    this.grid.createCells(this.stations);
-    this.createGroups();
-    // initialize stations from WeatherEvent
-    this.stations.stations.forEach((station: IWeatherStation) => {
-      gWeatherEvent.stationData(station.callSign)
-        .then((stationData: any) => {
-          if ((station.lat == null) || (station.long == null)) {
-            station.setLocation({ lat: stationData.lat, long: stationData.long });
-          }
+  }))
+  .actions(self => {
 
-          const startTime = this.scenario.startTime || gWeatherEvent.startTime,
-                duration = this.scenario.duration || gWeatherEvent.duration;
-          if (!this.control.startTime) {
-            this.control.setTimeRange(startTime, duration, kBreakProportion);
-          }
-          if (!this.time) {
-            this.setTime(startTime);
-          }
-          station.setState(new WeatherStationState(stationData, this.control, this.settings.interpolationEnabled));
-        })
-        .catch((err: any) => {
-          console.log(`Error initializing weather station '${station.id}': ${err}`);
+    function _createGroups() {
+      const groupNames = [
+        "Group 1",
+        "Group 2",
+        "Group 3",
+        "Group 4",
+        "Group 5",
+        "Group 6",
+        "Group 7",
+        "Group 8",
+        "Group 9"
+      ];
+      self.groups.addGroups(groupNames);
+    }
+
+    return {
+      afterCreate() {
+        if (_.size(self.stations.stations) === 0) {
+          // create stations from scenario
+          const stations = self.scenario.stations &&
+                            self.scenario.stations.map((spec: IStationSpec) => {
+                              return WeatherStation.create({
+                                        name: spec.name,
+                                        imageUrl: spec.imageUrl,
+                                        id: uuid(),
+                                        callSign: spec.id
+                                      });
+                            });
+          self.stations.addStations(stations || []);
+        }
+        // create any missing stations … not included with scenario
+        self.grid.createCells(self.stations);
+        _createGroups();
+        // initialize stations from WeatherEvent
+        self.stations.stations.forEach((station: IWeatherStation) => {
+          gWeatherEvent.stationData(station.callSign)
+            .then((stationData: any) => {
+              if ((station.lat == null) || (station.long == null)) {
+                station.setLocation({ lat: stationData.lat, long: stationData.long });
+              }
+
+              const startTime = self.scenario.startTime || gWeatherEvent.startTime,
+                    duration = self.scenario.duration || gWeatherEvent.duration;
+              if (!self.control.startTime) {
+                self.control.setTimeRange(startTime, duration, kBreakProportion);
+              }
+              if (!self.time) {
+                self.control.setTime(startTime);
+              }
+              station.setState(new WeatherStationState(stationData, self.control, self.settings.interpolationEnabled));
+            })
+            .catch((err: any) => {
+              console.log(`Error initializing weather station '${station.id}': ${err}`);
+            });
         });
-    });
-  },
-  filterOutboundData(snapshot:any) {
-    let copy = _.cloneDeep(snapshot);
-    const studentRemoveKeys = ["control", "presences", "settings"];
-    const teacherRemoveKeys = ["presences"];
-    // remove keys from object.
-    const remove = (obj:any, keys:string[]) => {
-      let key;
-      for (key in obj) {
-        if(_.includes(keys,key)){
-          delete obj[key];
+      },
+      filterOutboundData(snapshot:any) {
+        let copy = _.cloneDeep(snapshot);
+        const studentRemoveKeys = ["control", "presences", "settings"];
+        const teacherRemoveKeys = ["presences"];
+        // remove keys from object.
+        const remove = (obj:any, keys:string[]) => {
+          let key;
+          for (key in obj) {
+            if(_.includes(keys,key)){
+              delete obj[key];
+            }
+            else if (typeof obj === "object") {
+              remove(obj[key], keys);
+            }
+          }
+        };
+        // remove the control tree from student snapshot
+        // to prevent the replay of timestamp changes.
+        const keysToRemove = self.isTeacherView ? teacherRemoveKeys : studentRemoveKeys;
+        remove(copy, keysToRemove);
+        return copy;
+      },
+      outboundPresence(snapshot:any) {
+        const presences = snapshot && snapshot.presences && snapshot.presences.presences,
+              selectedPresence = self.selectedPresence,
+              selectedPresenceID = selectedPresence && selectedPresence.id;
+        return presences && selectedPresenceID && presences[selectedPresenceID];
+      },
+      setIsTeacherView(teachermode:boolean) {
+        const presence: IPresence | null = self.selectedPresence;
+        self.isTeacherView = teachermode;
+        if (presence) {
+          presence.setRole(teachermode ? ERole.teacher : ERole.student);
         }
-        else if (typeof obj === "object") {
-          remove(obj[key], keys);
-        }
+      },
+      initPresence() {
+        const firebase = gFirebase;
+        gFirebase.postConnect.then( () => {
+          const id = firebase.user.uid;
+          if(self.presences.selected && self.presences.selected.id === id) {
+            return;
+          }
+          const path =`simulations/${self.id}`;
+          const snapshot = { id, role: self.isTeacherView ? ERole.teacher : ERole.student };
+          self.presences.createPresence(path, snapshot);
+        });
+      },
+      // SimulationControl wrappers
+      setTime(time: Date) {
+        self.control.setTime(time);
+      },
+      rewind() {
+        self.control.rewind();
+      },
+      play() {
+        self.control.play();
+      },
+      stop() {
+        self.control.stop();
+      },
+      stepForward() {
+        self.control.stepForward();
+      },
+      stepBack() {
+        self.control.stepBack();
       }
     };
-    // remove the control tree from student snapshot
-    // to prevent the replay of timestamp changes.
-    const keysToRemove = this.isTeacherView ? teacherRemoveKeys : studentRemoveKeys;
-    remove(copy, keysToRemove);
-    return copy;
-  },
-  outboundPresence(snapshot:any) {
-    const presences = snapshot && snapshot.presences && snapshot.presences.presences,
-          selectedPresence = this.selectedPresence,
-          selectedPresenceID = selectedPresence && selectedPresence.id;
-    return presences && selectedPresenceID && presences[selectedPresenceID];
-  },
-  setIsTeacherView(teachermode:boolean) {
-    const presence: IPresence | null = this.selectedPresence;
-    this.isTeacherView = teachermode;
-    if (presence) {
-      presence.setRole(teachermode ? ERole.teacher : ERole.student);
-    }
-  },
-  initPresence() {
-    const self = this;
-    const firebase = gFirebase;
-    gFirebase.postConnect.then( () => {
-      const id = firebase.user.uid;
-      if(self.presences.selected && self.presences.selected.id === id) {
-        return;
-      }
-      const path =`simulations/${self.id}`;
-      const snapshot = { id, role: self.isTeacherView ? ERole.teacher : ERole.student };
-      self.presences.createPresence(path, snapshot);
-    });
-  },
-  createGroups() {
-    const groupNames = [
-      "Group 1",
-      "Group 2",
-      "Group 3",
-      "Group 4",
-      "Group 5",
-      "Group 6",
-      "Group 7",
-      "Group 8",
-      "Group 9"
-    ];
-    this.groups.addGroups(groupNames);
-  },
-  // SimulationControl wrappers
-  setTime(time: Date) {
-    this.control.setTime(time);
-  },
-
-  rewind() {
-    this.control.rewind();
-  },
-  play() {
-    this.control.play();
-  },
-  stop() {
-    this.control.stop();
-  },
-  stepForward() {
-    this.control.stepForward();
-  },
-  stepBack() {
-    this.control.stepBack();
-  }
-});
-
+  });
 export type ISimulation = typeof Simulation.Type;
 
-
-const SimulationStore = types.model(
-  {
+const SimulationStore = types
+  .model('SimulationStore', {
     simulationsMap: types.optional(types.map(Simulation), {})
-  },
-  {
-    selected: () => Simulation.create({id:"fake", name:"fake"})
-  },
-  {
+  })
+  .volatile(self => ({
+    selected: Simulation.create({id:"fake", name:"fake"})
+  }))
+  .views(self => ({
+    get selectedSimulation(): ISimulation {
+      return self.selected;
+    },
+    get(name:string): ISimulation | undefined {
+      return self.simulationsMap.get(name);
+    },
+  }))
+  .actions(self => ({
     add(name:string) {
       const newSimulation = Simulation.create({name:name, id:name});
-      this.simulationsMap.put(newSimulation);
+      self.simulationsMap.put(newSimulation);
       return newSimulation;
-    },
-    get(name:string):ISimulation | undefined {
-      return this.simulationsMap.get(name);
-    },
-    select(name:string){
-      this.selected = this.get(name) || this.add(name);
-      Firebasify(this.selected, `simulations/${name}`, () => {
-        this.selected.initPresence();
-      });
-      return this.selected;
     }
-  });
-
-export const simulationStore  = SimulationStore.create();
+  }))
+  .actions(self => ({
+    select(name:string){
+      self.selected = self.get(name) || self.add(name);
+      Firebasify(self.selected, `simulations/${name}`, () => {
+        self.selected.initPresence();
+      });
+      return self.selected;
+    }
+  }));
+export const simulationStore = SimulationStore.create();

@@ -28,159 +28,164 @@ export type IFormatWindSpeedOptions = {
 const kMetersPerSecToMPH = 2.23694,
       kMetersPerSecToKPH = 3.6,
       // hard-coded defaults that override restored values
-      kOverrides = { tempUnit: TempUnits.Celsius, showCities: true },
-      kTimeZoneOffset = new Date().getTimezoneOffset();
+      kOverrides = { tempUnit: TempUnits.Celsius, showCities: true };
 
-export const SimulationSettings = types.model('SimulationSettings', {
-  id: types.optional(types.identifier(types.string), () => uuid()),
-  showBaseMap: types.optional(types.boolean, true),
-  interpolationEnabled: types.optional(types.boolean, false),
-  showTempColors: types.optional(types.boolean, false),
-  showTempValues: types.optional(types.boolean, true),
-  showDeltaTemp: types.optional(types.boolean, false),
-  tempUnit: types.optional(types.enumeration("TempUnit",
-                                              [TempUnits.Celsius, TempUnits.Fahrenheit]),
-                                              kOverrides.tempUnit),
-  showWindValues: types.optional(types.boolean, true),
-  windSpeedUnit: types.optional(types.enumeration("WindUnit",
-                                              [WindSpeedUnits.KPH, WindSpeedUnits.MPH]),
-                                              WindSpeedUnits.MPH),
-  showStationNames: types.optional(types.boolean, true),
-  showPredictions: types.optional(types.boolean, true),
-  enabledPredictions: types.maybe(types.string),  // null disables predictions
-  predictionInterval: types.optional(types.number, 60), // minutes
-  showCities: types.optional(types.boolean, kOverrides.showCities),
+export const SimulationSettings = types
+  .model('SimulationSettings', {
+    id: types.optional(types.identifier(types.string), () => uuid()),
+    showBaseMap: types.optional(types.boolean, true),
+    interpolationEnabled: types.optional(types.boolean, false),
+    showTempColors: types.optional(types.boolean, false),
+    showTempValues: types.optional(types.boolean, true),
+    showDeltaTemp: types.optional(types.boolean, false),
+    tempUnit: types.optional(types.enumeration("TempUnit",
+                                                [TempUnits.Celsius, TempUnits.Fahrenheit]),
+                                                kOverrides.tempUnit),
+    showWindValues: types.optional(types.boolean, true),
+    windSpeedUnit: types.optional(types.enumeration("WindUnit",
+                                                [WindSpeedUnits.KPH, WindSpeedUnits.MPH]),
+                                                WindSpeedUnits.MPH),
+    showStationNames: types.optional(types.boolean, true),
+    showPredictions: types.optional(types.boolean, true),
+    enabledPredictions: types.maybe(types.string),  // null disables predictions
+    predictionInterval: types.optional(types.number, 60), // minutes
+    showCities: types.optional(types.boolean, kOverrides.showCities)
+  })
+  .views(self => {
 
-  formatLocalTime(time: Date | null, format?: string): string {
-    if (time == null) { return ""; }
-    return moment(time).utcOffset(kTimeZoneOffset).format(format || 'HH:mm' || 'lll');
-  },
+    const localUtcOffset = -(new Date().getTimezoneOffset());
 
-  formatTemperature(temp: number, options?: IFormatTempOptions): string {
-    if ((temp == null) || !isFinite(temp)) { return ""; }
-    const o = options || {},
-          d = o.asDifference ? 0 : 32,
-          t = this.tempUnit === TempUnits.Fahrenheit ? temp * 9 / 5 + d : temp;
-    let s = t.toFixed(o.precision || 0);
-
-    // eliminate "-0"
-    if (s === "-0") { s = "0"; }
-    // format positive differences with '+'
-    if (o.asDifference && (s !== "0") && (s[0] !== '-')) {
-      s = '+' + s;
+    function _windSpeedConversion() {
+      return self.windSpeedUnit === WindSpeedUnits.KPH
+              ? kMetersPerSecToKPH : kMetersPerSecToMPH;
     }
-    return s
-            + (o.withDegree ? "°" : "")
-            + (o.withUnit ? `°${this.tempUnit}` : "");
-  },
 
-  parseTemperature(temp: string): number | null {
-    const t = parseFloat(temp);
-    if ((t == null) || !isFinite(t)) { return null; }
-    // convert to Celsius for internal storage
-    return this.tempUnit === TempUnits.Fahrenheit ? (t - 32) * 5 / 9 : t;
-  },
+    return {
+      formatLocalTime(time: Date | null, format?: string): string {
+        if (time == null) { return ""; }
+        return moment(time).utcOffset(localUtcOffset).format(format || 'HH:mm' || 'lll');
+      },
 
-  get windSpeedConversion() {
-    return this.windSpeedUnit === WindSpeedUnits.KPH
-            ? kMetersPerSecToKPH : kMetersPerSecToMPH;
-  },
+      formatTemperature(temp: number, options?: IFormatTempOptions): string {
+        if ((temp == null) || !isFinite(temp)) { return ""; }
+        const o = options || {},
+              d = o.asDifference ? 0 : 32,
+              t = self.tempUnit === TempUnits.Fahrenheit ? temp * 9 / 5 + d : temp;
+        let s = t.toFixed(o.precision || 0);
 
-  formatWindSpeed(windSpeed: number, options?: IFormatWindSpeedOptions): string {
-    if ((windSpeed == null) || !isFinite(windSpeed)) { return ""; }
-    const w = windSpeed * this.windSpeedConversion,
-          o = options || {};
-    return `${w.toFixed(o.precision || 0)}${o.withUnit ? ' ' + this.windSpeedUnit : ''}`;
-  },
+        // eliminate "-0"
+        if (s === "-0") { s = "0"; }
+        // format positive differences with '+'
+        if (o.asDifference && (s !== "0") && (s[0] !== '-')) {
+          s = '+' + s;
+        }
+        return s
+                + (o.withDegree ? "°" : "")
+                + (o.withUnit ? `°${self.tempUnit}` : "");
+      },
 
-  parseWindSpeed(windSpeed: string): number | null {
-    const w = parseFloat(windSpeed);
-    if ((w == null) || !isFinite(w)) { return null; }
-    return w / this.windSpeedConversion;
-  },
+      parseTemperature(temp: string): number | null {
+        const t = parseFloat(temp);
+        if ((t == null) || !isFinite(t)) { return null; }
+        // convert to Celsius for internal storage
+        return self.tempUnit === TempUnits.Fahrenheit ? (t - 32) * 5 / 9 : t;
+      },
 
-  formatWindDirection(windDirection: number, options?: IFormatWindSpeedOptions): string {
-    if ((windDirection == null) || !isFinite(windDirection)) { return ""; }
-    const w = windDirection,
-          o = options || {};
-    return `${w.toFixed(o.precision || 0)}`;
-  },
+      formatWindSpeed(windSpeed: number, options?: IFormatWindSpeedOptions): string {
+        if ((windSpeed == null) || !isFinite(windSpeed)) { return ""; }
+        const w = windSpeed * _windSpeedConversion(),
+              o = options || {};
+        return `${w.toFixed(o.precision || 0)}${o.withUnit ? ' ' + self.windSpeedUnit : ''}`;
+      },
 
-  parseWindDirection(windDirection: string): number | null {
-    const w = parseFloat(windDirection);
-    if ((w == null) || !isFinite(w)) { return null; }
-    return w;
-  }
-}, {
+      parseWindSpeed(windSpeed: string): number | null {
+        const w = parseFloat(windSpeed);
+        if ((w == null) || !isFinite(w)) { return null; }
+        return w / _windSpeedConversion();
+      },
 
-  // hooks
-  preProcessSnapshot(snapshot: any) {
+      formatWindDirection(windDirection: number, options?: IFormatWindSpeedOptions): string {
+        if ((windDirection == null) || !isFinite(windDirection)) { return ""; }
+        const w = windDirection,
+              o = options || {};
+        return `${w.toFixed(o.precision || 0)}`;
+      },
+
+      parseWindDirection(windDirection: string): number | null {
+        const w = parseFloat(windDirection);
+        if ((w == null) || !isFinite(w)) { return null; }
+        return w;
+      }
+    };
+  })
+  .preProcessSnapshot(snapshot =>
     // replace restored values with new hard-coded values
-    return Object.assign({}, snapshot, kOverrides);
-  },
+    Object.assign({}, snapshot, kOverrides)
+  )
+  .actions(self => ({
+    setShowBaseMap(showBaseMap: boolean) {
+      self.showBaseMap = showBaseMap;
+    },
 
-  setSetting(key: string, value: any) {
-    switch(key) {
-      case 'showBaseMap': this.setShowBaseMap(value as boolean); break;
-      case 'showTempColors': this.setShowTempColors(value as boolean); break;
-      case 'showTempValues': this.setShowTempValues(value as boolean); break;
-      case 'showWindValues': this.setShowWindValues(value as boolean); break;
-      case 'showDeltaTemp': this.setShowDeltaTemp(value as boolean); break;
-      case 'showStationNames': this.setShowStationNames(value as boolean); break;
-      case 'showPredictions': this.setShowPredictions(value as boolean); break;
-      case 'enabledPredictions': this.setEnabledPredictions(value as string); break;
-      case 'predictionInterval': this.setPredictionInterval(value as number); break;
-      case 'showCities': this.setShowCities(value as boolean); break;
-      default:
-        console.log(`Invalid setting name: '${key}'`);
+    setShowTempColors(showTempColors: boolean) {
+      self.showTempColors = showTempColors;
+    },
+
+    setShowTempValues(showTempValues: boolean) {
+      self.showTempValues = showTempValues;
+      if (!showTempValues && (self.enabledPredictions === PredictionType.eTemperature)) {
+        self.enabledPredictions = null;
+      }
+    },
+
+    setShowDeltaTemp(showDeltaTemp: boolean) {
+      self.showDeltaTemp = showDeltaTemp;
+    },
+
+    setShowWindValues(showWindValues: boolean) {
+      self.showWindValues = showWindValues;
+      if (!showWindValues && ((self.enabledPredictions === PredictionType.eWindSpeed) ||
+                              (self.enabledPredictions === PredictionType.eWindDirection))) {
+        self.enabledPredictions = null;
+      }
+    },
+
+    setShowStationNames(showStationNames: boolean) {
+      self.showStationNames = showStationNames;
+    },
+
+    setShowPredictions(showPredictions: boolean) {
+      self.showPredictions = showPredictions;
+    },
+
+    setEnabledPredictions(enabledPredictions: string) {
+      self.enabledPredictions = enabledPredictions;
+    },
+
+    setPredictionInterval(predictionInterval: number) {
+      self.predictionInterval = predictionInterval;
+    },
+
+    setShowCities(showEm:boolean) {
+      self.showCities = showEm;
     }
-  },
-
-  setShowBaseMap(showBaseMap: boolean) {
-    this.showBaseMap = showBaseMap;
-  },
-
-  setShowTempColors(showTempColors: boolean) {
-    this.showTempColors = showTempColors;
-  },
-
-  setShowTempValues(showTempValues: boolean) {
-    this.showTempValues = showTempValues;
-    if (!showTempValues && (this.enabledPredictions === PredictionType.eTemperature)) {
-      this.enabledPredictions = null;
+  }))
+  .actions(self => ({
+    setSetting(key: string, value: any) {
+      switch(key) {
+        case 'showBaseMap': self.setShowBaseMap(value as boolean); break;
+        case 'showTempColors': self.setShowTempColors(value as boolean); break;
+        case 'showTempValues': self.setShowTempValues(value as boolean); break;
+        case 'showWindValues': self.setShowWindValues(value as boolean); break;
+        case 'showDeltaTemp': self.setShowDeltaTemp(value as boolean); break;
+        case 'showStationNames': self.setShowStationNames(value as boolean); break;
+        case 'showPredictions': self.setShowPredictions(value as boolean); break;
+        case 'enabledPredictions': self.setEnabledPredictions(value as string); break;
+        case 'predictionInterval': self.setPredictionInterval(value as number); break;
+        case 'showCities': self.setShowCities(value as boolean); break;
+        default:
+          console.log(`Invalid setting name: '${key}'`);
+      }
     }
-  },
-
-  setShowDeltaTemp(showDeltaTemp: boolean) {
-    this.showDeltaTemp = showDeltaTemp;
-  },
-
-  setShowWindValues(showWindValues: boolean) {
-    this.showWindValues = showWindValues;
-    if (!showWindValues && ((this.enabledPredictions === PredictionType.eWindSpeed) ||
-                            (this.enabledPredictions === PredictionType.eWindDirection))) {
-      this.enabledPredictions = null;
-    }
-  },
-
-  setShowStationNames(showStationNames: boolean) {
-    this.showStationNames = showStationNames;
-  },
-
-  setShowPredictions(showPredictions: boolean) {
-    this.showPredictions = showPredictions;
-  },
-
-  setEnabledPredictions(enabledPredictions: string) {
-    this.enabledPredictions = enabledPredictions;
-  },
-
-  setPredictionInterval(predictionInterval: number) {
-    this.predictionInterval = predictionInterval;
-  },
-
-  setShowCities(showEm:boolean) {
-    this.showCities = showEm;
-  }
-});
+  }));
 export type ISimulationSettings = typeof SimulationSettings.Type;

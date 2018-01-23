@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { IGrid } from "../models/grid";
 import { IGridCell } from "../models/grid-cell";
-import { rowName, colName} from "../models/grid-cell";
+import { rName, cName} from "../models/grid-cell";
 import { GridCellView } from "./grid-cell-view";
 import { GridHeaderView } from "./grid-header-view";
 import * as _ from "lodash";
@@ -46,20 +46,20 @@ export class GridView extends React.Component<
           {
             _.range(grid.columns).map( (column:number) =>
               <GridHeaderView
-                key={`${colName(column)}`}
+                key={`${cName(column)}`}
                 size={size}
-                label={`${colName(column)}`}
+                label={`${cName(column)}`}
               />)
           }
         </div>
       );
       for(let row = 0; row < grid.rows; row++) {
         let rowDivs = [];
-        rowDivs.push(<GridHeaderView key={row} label={rowName(row)} />);
+        rowDivs.push(<GridHeaderView key={row} label={rName(row)} />);
         for(let column = 0; column < grid.columns; column++) {
-          const cell = grid.gridCellAt(row,column);
+          const cell = grid.gridCellAt(row, column);
           const onCellClick = this.props.onCellClick;
-          const clickHandler = onCellClick ? (e:any) => onCellClick(cell) :  undefined;
+          const clickHandler = cell && onCellClick ? (e:any) => onCellClick(cell) :  undefined;
           if(cell) {
             rowDivs.push(
               <GridCellView

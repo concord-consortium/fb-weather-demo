@@ -11,7 +11,7 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
-import { simulationListStore } from "../stores/simulation-store";
+import { simulationListStore } from "../stores/simulation-list-store";
 import { gWeatherScenarioSpec } from "../models/weather-scenario-spec";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import * as _ from "lodash";

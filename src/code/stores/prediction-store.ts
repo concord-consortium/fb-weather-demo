@@ -3,52 +3,65 @@ import { Prediction, IPrediction } from "../models/prediction";
 import { IWeatherStation } from "../models/weather-station";
 import { simulationStore } from "../models/simulation";
 
-export const PredictionStore = types.model("PredictionStore", {
-  predictions: types.optional(types.array(Prediction), []),
-  get prediction(): IPrediction | null {
-    const station = simulationStore.selected.presenceStation;
-    let prediction = null;
-    if (station) {
-      prediction = this.predictions.filter((p:IPrediction) => p.station === station)[0];
+export const PredictionStore = types
+  .model("PredictionStore", {
+    predictions: types.optional(types.array(Prediction), [])
+  })
+  .views(self => ({
+    get prediction(): IPrediction | null {
+      const station = simulationStore.selectedSimulation.presenceStation;
+      let prediction = null;
+      if (station) {
+        prediction = self.predictions.filter((p:IPrediction) => p.station === station)[0];
+      }
+      return prediction;
     }
-    return prediction;
-  },
-  get teacherPredictions(): IPrediction[] {
-    const station = simulationStore.selected.selectedStation;
-    let predictions = [];
-    if (station) {
-      predictions = this.predictions.filter((p:IPrediction) => p.station === station).reverse();
-    }
-    return predictions;
-  },
-  get value(): number | null {
-    const prediction:IPrediction | null = this.prediction;
-    if(prediction) {
-      return prediction.predictedValue;
-    }
-    return null;
-  },
-  get description(): string | null {
-    const prediction:IPrediction | null = this.prediction;
-    if(prediction) {
-      return prediction.description;
-    }
-    return null;
-  },
-  predictionsFor(station:IWeatherStation):IPrediction[] {
-    return this.predictions.filter((p:IPrediction)  => p.station === station).reverse();
-  },
-  predictionFor(station:IWeatherStation): IPrediction | null {
-    return this.predictionsFor(station)[0] || null;
-  }
-},{
-  addPrediction(prediction:IPrediction) {
-    const station = simulationStore.selected.presenceStation;
-    if (station) {
-      prediction.setStation(station);
-      this.predictions.push(prediction);
-    }
-  }
-});
+  }))
+  .views(self => {
 
+    function _predictionsForStation(station:IWeatherStation): IPrediction[] {
+      return self.predictions.filter((p:IPrediction)  => p.station === station).reverse();
+    }
+
+    return {
+      get teacherPredictions(): IPrediction[] {
+        const station = simulationStore.selectedSimulation.selectedStation;
+        let predictions: IPrediction[] = [];
+        if (station) {
+          predictions = self.predictions.filter((p:IPrediction) => p.station === station).reverse();
+        }
+        return predictions;
+      },
+      get value(): number | null {
+        const prediction:IPrediction | null = self.prediction;
+        if(prediction) {
+          return prediction.predictedValue;
+        }
+        return null;
+      },
+      get description(): string | null {
+        const prediction:IPrediction | null = self.prediction;
+        if(prediction) {
+          return prediction.description;
+        }
+        return null;
+      },
+      predictionsFor(station:IWeatherStation):IPrediction[] {
+        return _predictionsForStation(station);
+      },
+      predictionFor(station:IWeatherStation): IPrediction | null {
+        const predictions = _predictionsForStation(station);
+        return predictions && predictions.length && predictions[0] || null;
+      }
+    };
+  })
+  .actions(self => ({
+    addPrediction(prediction:IPrediction) {
+      const station = simulationStore.selectedSimulation.presenceStation;
+      if (station) {
+        prediction.setStation(station);
+        self.predictions.push(prediction);
+      }
+    }
+  }));
 export type IPredictionStore = typeof PredictionStore.Type;
