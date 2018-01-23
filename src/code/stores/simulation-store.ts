@@ -163,12 +163,6 @@ export const SimulationStore = types.model(
     play() {
       if(this.selected) { this.selected.play(); }
     },
-    playFirstHalf() {
-      if(this.selected) { this.selected.playFirstHalf(); }
-    },
-    playSecondHalf(){
-      if(this.selected) { this.selected.playSecondHalf(); }
-    },
     stop() {
       if(this.selected) { this.selected.stop(); }
     },

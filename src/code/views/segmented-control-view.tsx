@@ -1,7 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import RaisedButton from "material-ui/RaisedButton";
-//import Slider from 'material-ui/Slider';
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../models/simulation";
 
@@ -20,29 +19,17 @@ export class SegmentedControlView extends React.Component<
   render() {
     const simulation = simulationStore.selected;
     const isPlaying = !!(simulation && simulation.isPlaying);
-    // const playFirstHalf = () =>  simulation.playFirstHalf();
-    // const playSecondHalf = () => simulation.playSecondHalf();
     const reset = () => simulation.rewind();
-    // disable dragging (at least for now)
-    // const dragStop = (o:any) => {
-    //   if (simulation) {
-    //     const newTime = this.state.splitTime;
-    //     if(newTime) {
-    //       simulation.setHalfTime(newTime);
-    //     }
-    //   }
-    // };
 
-    // const change   = (o:any, v:number) => this.setState ( {splitTime: v });
     const startTime = simulation && simulation.startTime;
     const endTime = simulation && simulation.endTime;
-    const halfTime = simulation && simulation.halfTime;
+    const breakTime = simulation && simulation.breakTime;
     const currentTime = simulation && simulation.time;
     const isAtBeginning = currentTime && startTime && currentTime <= startTime;
     const isAtEnd = currentTime && endTime && currentTime >= endTime;
     const playPauseIcon = isPlaying ? "icon-pause" : "icon-play_arrow";
     const playPauseAction = isPlaying ? simulation.stop : simulation.play;
-    const skipToTime = simulation && currentTime < halfTime ? halfTime : endTime;
+    const skipToTime = simulation && currentTime < breakTime ? breakTime : endTime;
     const skipAction = () => { if (skipToTime) { simulation.setTime(skipToTime); } };
     const style:ComponentStyleMap = {
       container: {
@@ -93,17 +80,10 @@ export class SegmentedControlView extends React.Component<
           </div>
           <TimelineView
             startTime={startTime}
-            halfTime={halfTime}
+            breakTime={breakTime}
             currentTime={currentTime}
             endTime={endTime}
-            />
-          {/* <Slider
-            min={0}
-            max={1}
-            style={{width: "80%"}}
-            onChange={change}
-            onDragStop={dragStop}
-          /> */}
+          />
         </div>
     );
   }

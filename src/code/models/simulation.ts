@@ -21,7 +21,7 @@ import { gFirebase } from "../middleware/firebase-imp";
 import * as _ from "lodash";
 import * as moment from 'moment';
 
-const kDefaultHalfTime = 0.75;
+const kBreakProportion = 0.75;
 
 export const Simulation = types.model('Simulation', {
   name: types.optional(types.string,  () => "busted"),
@@ -42,13 +42,13 @@ export const Simulation = types.model('Simulation', {
     return this.control.time;
   },
   get startTime(): Date {
-      return this.control.startTime;
+    return this.control.startTime;
+  },
+  get breakTime(): Date {
+    return this.control.breakTime;
   },
   get endTime(): Date {
-    return this.scenario.endTime;
-  },
-  get halfTime(): Date {
-    return this.control.halfTime;
+    return this.control.endTime;
   },
   get timeString(): string {
     return this.formatTime(this.time);
@@ -80,7 +80,7 @@ export const Simulation = types.model('Simulation', {
   },
   formatTime(time: Date | null, format?: string): string {
     if (time == null) { return ""; }
-    let m = moment(time);
+    let m = moment.utc(time);
     if (this.scenario.utcOffset) {
       m = m.utcOffset(this.scenario.utcOffset);
     }
@@ -146,10 +146,10 @@ export const Simulation = types.model('Simulation', {
             station.setLocation({ lat: stationData.lat, long: stationData.long });
           }
 
-          const startTime = this.scenario.startTime || gWeatherEvent.startTime;
+          const startTime = this.scenario.startTime || gWeatherEvent.startTime,
+                duration = this.scenario.duration || gWeatherEvent.duration;
           if (!this.control.startTime) {
-            this.control.setStartTime(startTime);
-            this.setHalfTime(kDefaultHalfTime);
+            this.control.setTimeRange(startTime, duration, kBreakProportion);
           }
           if (!this.time) {
             this.setTime(startTime);
@@ -228,28 +228,8 @@ export const Simulation = types.model('Simulation', {
     this.control.setTime(time);
   },
 
-  proportionalTime(portion:number) {
-    const max = this.scenario.endTime && this.scenario.endTime.getTime();
-    const min = this.scenario.startTime && this.scenario.startTime.getTime();
-    const rangeMSeconds = max - min;
-    const adjustmentSeconds = rangeMSeconds * portion;
-    return new Date(min + adjustmentSeconds);
-  },
-
-  setProportionalTime(portion:number) {
-    this.control.setTime(this.proportionalTime(portion));
-  },
-  setHalfTime(portion: number) {
-    this.control.setHalfTime(this.proportionalTime(portion));
-  },
   rewind() {
     this.control.rewind();
-  },
-  playFirstHalf() {
-    this.control.playFirstHalf();
-  },
-  playSecondHalf() {
-    this.control.playSecondHalf();
   },
   play() {
     this.control.play();

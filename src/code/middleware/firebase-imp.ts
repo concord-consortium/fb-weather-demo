@@ -1,7 +1,7 @@
 import * as firebase from "firebase";
 
 const DEFAULT_SIMULATION = "default";
-const DEFAULT_VERSION_STRING = "1.3.0-pre5";
+const DEFAULT_VERSION_STRING = "1.3.0-pre6";
 
 interface FirebaseListener {
   setState(state: any): void;

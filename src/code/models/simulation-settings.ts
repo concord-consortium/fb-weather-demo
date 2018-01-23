@@ -28,7 +28,8 @@ export type IFormatWindSpeedOptions = {
 const kMetersPerSecToMPH = 2.23694,
       kMetersPerSecToKPH = 3.6,
       // hard-coded defaults that override restored values
-      kOverrides = { tempUnit: TempUnits.Celsius, showCities: true };
+      kOverrides = { tempUnit: TempUnits.Celsius, showCities: true },
+      kTimeZoneOffset = new Date().getTimezoneOffset();
 
 export const SimulationSettings = types.model('SimulationSettings', {
   id: types.optional(types.identifier(types.string), () => uuid()),
@@ -50,13 +51,9 @@ export const SimulationSettings = types.model('SimulationSettings', {
   predictionInterval: types.optional(types.number, 60), // minutes
   showCities: types.optional(types.boolean, kOverrides.showCities),
 
-  get localUtcOffset() {
-    return -(new Date().getTimezoneOffset());
-  },
-
   formatLocalTime(time: Date | null, format?: string): string {
     if (time == null) { return ""; }
-    return moment(time).utcOffset(this.localUtcOffset).format(format || 'HH:mm' || 'lll');
+    return moment(time).utcOffset(kTimeZoneOffset).format(format || 'HH:mm' || 'lll');
   },
 
   formatTemperature(temp: number, options?: IFormatTempOptions): string {

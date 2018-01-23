@@ -12,8 +12,8 @@ export const WeatherScenario = types.model('WeatherScenario', {
   id: types.identifier(types.string),
   name: types.string,
   eventUrl: types.string,
-  startTime: types.maybe(types.Date),
-  endTime: types.maybe(types.Date),
+  startTime: types.maybe(types.Date),   // UTC Date
+  duration: types.maybe(types.number),  // seconds
   utcOffset: types.maybe(types.number),
   stations: types.maybe(types.array(StationSpec)),
   mapConfig: MapConfig
@@ -22,3 +22,4 @@ export const WeatherScenario = types.model('WeatherScenario', {
 }, {
 });
 export type IWeatherScenario = typeof WeatherScenario.Type;
+export type IWeatherScenarioSnapshot = typeof WeatherScenario.SnapshotType;
