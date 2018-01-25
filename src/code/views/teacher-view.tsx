@@ -16,8 +16,8 @@ import { IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
 
 
-require("!style-loader!css-loader!react-treeview/react-treeview.css");
-require("!style-loader!css-loader!../../html/treeview.css");
+// require("!style-loader!css-loader!react-treeview/react-treeview.css");
+// require("!style-loader!css-loader!../../html/treeview.css");
 
 export type TeacherViewTab = "control" | "configure";
 export const MAP_TYPE_GRID = "MAP_TYPE_GRID";
