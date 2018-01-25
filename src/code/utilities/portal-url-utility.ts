@@ -1,5 +1,9 @@
 import * as queryString from "query-string";
 
+export const kDefaultDomain = 'default',
+             kDefaultClass = 'simulation',
+             kDefaultSimulationName = `${kDefaultDomain}-${kDefaultClass}`;
+
 interface StudentLaunchParams {
   domain: string;
   class_info_url: string;
@@ -14,10 +18,23 @@ interface TeacherReportParams {
   token: string;
 }
 
-function isTeacherParams(params: StudentLaunchParams | TeacherReportParams): params is TeacherReportParams {
-  return ((params as TeacherReportParams).offering !==  undefined);
+interface DebugParams {
+  student?: boolean | null;
 }
 
+type UnionParams = StudentLaunchParams | TeacherReportParams | DebugParams;
+
+function isStudentParams(params: UnionParams): params is StudentLaunchParams {
+  return ((params as StudentLaunchParams).class_info_url != null);
+}
+
+function isTeacherParams(params: UnionParams): params is TeacherReportParams {
+  return ((params as TeacherReportParams).offering != null);
+}
+
+function isStudentDebugParams(params: UnionParams): params is DebugParams {
+  return ((params as DebugParams).student !== undefined);
+}
 
 function extractDomain(url:string) {
   const domainMatcher = /https?:\/\/([^\/]*)/i;
@@ -25,26 +42,32 @@ function extractDomain(url:string) {
   if(matches && matches.length > 0) {
     return matches[1].replace(/\./g,"_");
   }
-  return "fake_domain";
+  return kDefaultDomain;
 }
 
 export class PortalUrlUtility {
-    params: StudentLaunchParams | TeacherReportParams;
+    params: UnionParams;
     domain: string;
     classId: string;
     isTeacher: boolean;
+    isStudent: boolean;
 
     constructor() {
       const q = queryString;
       this.params = q.parse(window.location.search);
-      this.isTeacher = isTeacherParams(this.params);
+      // passing 'student' URL parameter indicates student -- primarily for debugging
+      this.isStudent = isStudentParams(this.params) || isStudentDebugParams(this.params);
+      // default to teacher unless student is specified
+      this.isTeacher = isTeacherParams(this.params) || !this.isStudent;
+      this.domain = kDefaultDomain;
+      this.classId = kDefaultClass;
     }
 
     async getFirebaseKey():Promise<string> {
-      if (this.isTeacher) {
+      if (isTeacherParams(this.params)) {
         await this.extractTeacherInfo(this.params as TeacherReportParams);
       }
-      else {
+      else if (isStudentParams(this.params)) {
         await this.extractStudentInfo(this.params as StudentLaunchParams);
       }
       return `${this.domain}-${this.classId}`;
@@ -61,7 +84,6 @@ export class PortalUrlUtility {
       const response = await fetch(params.offering, headers);
       const reportData = await response.json();
       this.classId = `${reportData[0].clazz_id}`;
-      this.domain  = extractDomain((this.params as TeacherReportParams).offering);
+      this.domain = extractDomain((this.params as TeacherReportParams).offering);
     }
-
 }
