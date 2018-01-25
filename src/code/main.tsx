@@ -6,13 +6,13 @@ import * as injectTapEventPlugin from "react-tap-event-plugin";
 import { gFirebase, FirebaseImp } from "./middleware/firebase-imp";
 
 import { TeacherView } from "./views/teacher-view";
-import { WeatherStationView } from "./views/weather-station-view";
+// import { WeatherStationView } from "./views/weather-station-view";
 import { StudentTabsView } from "./views/student-tabs-view";
-import { ClassView } from "./views/class-view";
-import { ChooseView } from "./views/choose-view";
+// import { ClassView } from "./views/class-view";
+// import { ChooseView } from "./views/choose-view";
 import { PortalView } from "./views/portal-view";
-import { ChooseSimulationView } from "./views/choose-simulation-view";
-import { SetupGridView } from "./views/setup-grid-view";
+// import { ChooseSimulationView } from "./views/choose-simulation-view";
+// import { SetupGridView } from "./views/setup-grid-view";
 import { simulationStore } from "./models/simulation";
 
 require("!style-loader!css-loader!leaflet/dist/leaflet.css");
@@ -93,7 +93,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
         <Route
           path="/"
           component={AppView}
-          >
+        >
           <IndexRedirect to="/portal-launch" />
           <Route path="/portal-launch" component={PortalView} />
           <Route path="/simulations"
@@ -101,18 +101,18 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
                 onEnter={onEnterSimulation}
           >
             {/* <IndexRedirect to="choose" /> */}
-            <Route path="choose" component={ChooseSimulationView} />
+            {/* <Route path="choose" component={ChooseSimulationView} /> */}
             <Route path="/simulations/:simulationName">
-              <IndexRedirect to="show/choose" />
+              {/* <IndexRedirect to="show/teacher" /> */}
               <Route path="show">
-                <IndexRedirect to="choose" />
-                <Route path="student" onEnter={setStudentMode}  component={StudentTabsView} />
-                <Route path="chooseCell" component={StudentTabsView} />
-                <Route path="station" component={WeatherStationView} />
+                <IndexRedirect to="teacher" />
+                <Route path="student" onEnter={setStudentMode} component={StudentTabsView} />
+                {/* <Route path="chooseCell" component={StudentTabsView} />
+                <Route path="station" component={WeatherStationView} /> */}
                 <Route path="teacher" onEnter={setTeacherMode} component={TeacherView} />
-                <Route path="classroom" component={ClassView} />
-                <Route path="setup" component={SetupGridView} />
-                <Route path="choose" component={ChooseView} />
+                {/* <Route path="classroom" component={ClassView} /> */}
+                {/* <Route path="setup" component={SetupGridView} /> */}
+                {/* <Route path="choose" component={ChooseView} /> */}
               </Route>
             </Route>
           </Route>
