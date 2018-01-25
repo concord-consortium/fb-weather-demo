@@ -1,12 +1,15 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import RaisedButton from "material-ui/RaisedButton";
-import { Card, CardActions, CardText, CardTitle } from "material-ui/Card";
-import { Link } from "react-router";
+import { Card, CardText, CardTitle } from "material-ui/Card";
+import { withRouter } from "react-router";
 
-import { PortalUrlUtility  } from "../utilities/portal-url-utility";
+import { PortalUrlUtility, kDefaultSimulationName } from "../utilities/portal-url-utility";
+import { gFirebase } from "../middleware/firebase-imp";
+import * as firebase from "firebase";
 
-export interface PortalViewProps { }
+export interface PortalViewProps {
+  router: any;
+}
 
 export interface PortalViewState {
   simulationKey: string;
@@ -14,13 +17,14 @@ export interface PortalViewState {
 }
 
 @observer
-export class PortalView extends React.Component<
+class _PortalView extends React.Component<
   PortalViewProps,
   PortalViewState
 > {
   constructor(props: PortalViewProps, ctx: any) {
     super(props);
-    this.state = {simulationKey: 'fake', showTeacher: true};
+    // default to teacher
+    this.state = {simulationKey: kDefaultSimulationName, showTeacher: true};
   }
 
   componentDidMount() {
@@ -28,17 +32,32 @@ export class PortalView extends React.Component<
     const showTeacher = portalUrlUtility.isTeacher;
     portalUrlUtility.getFirebaseKey().then( (key) => {
       this.setState({simulationKey:key, showTeacher: showTeacher});
+      if (showTeacher) {
+        // advance to teacher view
+        this.props.router.push(this.nextUrl(key));
+      }
+      else {
+        // students must wait until teacher has started simulation
+        gFirebase.refForPath(`simulations/${key}`)
+          .then((ref:firebase.database.Reference) => {
+            const handleSnapshot = (snapshot: firebase.database.DataSnapshot | null) => {
+              if (snapshot && snapshot.val()) {
+                // remove handler once simulation exists
+                ref.off('value', handleSnapshot);
+                // advance to student/weather station view
+                this.props.router.push(this.nextUrl(key));
+              }
+            };
+            // attach handler for detecting simulation existence
+            ref.on('value', handleSnapshot);
+          });
+      }
     });
   }
 
-  nextUrl() {
-    const simulation = this.state.simulationKey;
+  nextUrl(key: string) {
     const view = this.state.showTeacher ? "teacher" : "student";
-    return `/simulations/${simulation}/show/${view}`;
-  }
-
-  linkToSim() {
-    return <Link to={this.nextUrl()} />;
+    return `/simulations/${key}/show/${view}`;
   }
 
   render() {
@@ -46,17 +65,10 @@ export class PortalView extends React.Component<
       <Card>
         <CardTitle>Start Simulation</CardTitle>
         <CardText style={{}}>
-          When the class is ready press the "Start" button below.
+          Waiting for simulation to begin...
         </CardText>
-        <CardActions>
-          <RaisedButton
-            primary={true}
-            containerElement={this.linkToSim()}
-          >
-          Start
-          </RaisedButton>
-        </CardActions>
       </Card>
     );
   }
 }
+export const PortalView = withRouter(_PortalView);
