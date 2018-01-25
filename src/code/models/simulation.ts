@@ -15,7 +15,7 @@ import { IGroup } from "./group";
 import { ERole, IPresence } from "./presence";
 import { PresenceStore} from "../stores/presence-store";
 import { Firebasify } from "../middleware/firebase-decorator";
-import { v1 as uuid } from "uuid";
+import { v4 as uuid } from "uuid";
 import { gFirebase } from "../middleware/firebase-imp";
 
 import * as _ from "lodash";

@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { v1 as uuid } from "uuid";
+import { v4 as uuid } from "uuid";
 import { IWeatherStation } from "./weather-station";
 import { simulationStore } from "./simulation";
 

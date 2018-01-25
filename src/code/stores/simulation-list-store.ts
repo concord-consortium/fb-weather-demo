@@ -1,7 +1,7 @@
 import { types } from "mobx-state-tree";
 import { Simulation, ISimulation } from "../models/simulation";
 import { IWeatherScenarioSpec } from "../models/weather-scenario-spec";
-import { v1 as uuid } from "uuid";
+import { v4 as uuid } from "uuid";
 
 const _ = require("lodash");
 const SimulationName = types.model({
