@@ -53,7 +53,7 @@ export class ChooseGroupView
     const {onDone} = this.props;
     return (
       <div>
-        <RaisedButton primary={true} onTouchTap={onDone}>
+        <RaisedButton primary={true} onClick={onDone}>
             <div style={style}>Choose {this.state.chosenGroup}</div>
         </RaisedButton>
       </div>

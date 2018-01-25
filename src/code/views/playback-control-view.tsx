@@ -22,21 +22,21 @@ export class PlaybackControlView extends React.Component<
           {/* <FloatingActionButton
             iconClassName="icon-refresh"
             disabled={isPlaying}
-            onTouchTap={simulation.rewind}
+            onClick={simulation.rewind}
           /> */}
           {/* <FloatingActionButton
             iconClassName="icon-skip_previous"
             disabled={isPlaying}
-            onTouchTap={simulation.stepBack}
+            onClick={simulation.stepBack}
           /> */}
           <FloatingActionButton
             iconClassName={playPauseIcon}
-            onTouchTap={playPauseAction}
+            onClick={playPauseAction}
           />
           {/* <FloatingActionButton
             iconClassName="icon-skip_next"
             disabled={isPlaying}
-            onTouchTap={simulation.stepForward}
+            onClick={simulation.stepForward}
           /> */}
         </div>
     );

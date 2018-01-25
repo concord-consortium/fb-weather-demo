@@ -56,7 +56,7 @@ export class SegmentedControlView extends React.Component<
             <RaisedButton
               style={style.buttonStyle}
               disabled={!simulation || isAtBeginning || isPlaying}
-              onTouchTap={reset}
+              onClick={reset}
               icon={<i className="icon-refresh" style={style.iconStyle} />}
               label="Reset"
               primary={true}
@@ -64,7 +64,7 @@ export class SegmentedControlView extends React.Component<
             <RaisedButton
               buttonStyle={style.buttonStyle}
               disabled={!simulation || isAtEnd}
-              onTouchTap={playPauseAction}
+              onClick={playPauseAction}
               icon={<i className={playPauseIcon} style={style.iconStyle} />}
               label={isPlaying ? "Pause" : "Play"}
               primary={true}
@@ -72,7 +72,7 @@ export class SegmentedControlView extends React.Component<
             <RaisedButton
               buttonStyle={style.skipButtonStyle}
               disabled={!simulation || isPlaying || isAtEnd}
-              onTouchTap={skipAction}
+              onClick={skipAction}
               icon={<i className="icon-skip_next" style={style.iconStyle} />}
               label={"Skip"}
               primary={true}

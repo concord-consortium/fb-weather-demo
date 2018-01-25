@@ -36,7 +36,7 @@ export class ChooseCellView
     };
     const {onDone} = this.props;
     return(<div>
-        <RaisedButton primary={true} onTouchTap={onDone}>
+        <RaisedButton primary={true} onClick={onDone}>
             <div style={style}>Choose {chosenCell.displayName}</div>
         </RaisedButton>
       </div>
