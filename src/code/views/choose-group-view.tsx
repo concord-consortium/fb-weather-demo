@@ -64,8 +64,8 @@ export class ChooseGroupView
 
   render() {
 
-    const optionFor = (animal:string) => {
-                        return  <MenuItem value={animal} key={animal} primaryText={animal} />;
+    const optionFor = (group:string) => {
+                        return  <MenuItem value={group} key={group} primaryText={group} />;
                       },
           chooseButton = this.renderChooseButton(),
           simulation = simulationStore.selected,
