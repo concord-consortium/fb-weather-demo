@@ -74,8 +74,10 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
       callback: Function | undefined
     ) {
       const simulation = simulationStore.selected;
-      simulation.setIsTeacherView(true);
-      if(callback) { callback(); }
+      if (simulation) {
+        simulation.setIsTeacherView(true);
+        if(callback) { callback(); }
+      }
     };
 
     const setStudentMode = function (
@@ -84,8 +86,10 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
       callback: Function | undefined
     ) {
       const simulation = simulationStore.selected;
-      simulation.setIsTeacherView(false);
-      if(callback) { callback(); }
+      if (simulation) {
+        simulation.setIsTeacherView(false);
+        if(callback) { callback(); }
+      }
     };
 
     ReactDOM.render(

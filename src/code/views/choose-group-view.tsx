@@ -28,19 +28,20 @@ const styles: ComponentStyleMap = {
   }
 };
 
-
 @observer
 export class ChooseGroupView
   extends React.Component<ChooseGroupProps, ChooseGroupState> {
   constructor(props: ChooseGroupProps, context: any) {
     super(props);
-    const chosenGroup = simulationStore.selected.groupName || "";
+    const simulation = simulationStore.selected,
+          chosenGroup = simulation && simulation.groupName || "";
     this.state = {chosenGroup: chosenGroup};
   }
 
   setGroup(event:any, index:number, name:string) {
     this.setState({chosenGroup: name});
-    const presence = simulationStore.selected.selectedPresence;
+    const simulation = simulationStore.selected,
+          presence = simulation && simulation.selectedPresence;
     if(presence) {
       presence.setGroupName(name);
     }
@@ -64,11 +65,12 @@ export class ChooseGroupView
   render() {
 
     const optionFor = (animal:string) => {
-      return  <MenuItem value={animal} key={animal} primaryText={animal} />;
-    };
-    const chooseButton = this.renderChooseButton();
-    const availableGroups = simulationStore.selected.availableGroups;
-    const selectedGroup = simulationStore.selected.selectedGroup;
+                        return  <MenuItem value={animal} key={animal} primaryText={animal} />;
+                      },
+          chooseButton = this.renderChooseButton(),
+          simulation = simulationStore.selected,
+          availableGroups = simulation && simulation.availableGroups,
+          selectedGroup = simulation && simulation.selectedGroup;
     let groupOptions:string[] = [];
     if(availableGroups) {
       groupOptions = availableGroups.map((g:IGroup) => g.name);

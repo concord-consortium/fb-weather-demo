@@ -33,7 +33,8 @@ export const Prediction = types
   })
   .views(self => ({
     get station(): IWeatherStation | null {
-      const stations = simulationStore.selectedSimulation.stations;
+      const simulation = simulationStore.selected,
+            stations = simulation && simulation.stations;
       return (stations && self.stationID && stations.getStationByID(self.stationID)) || null;
     },
 
@@ -55,13 +56,15 @@ export const Prediction = types
     },
 
     formatPredictedValue(options: any): string {
+      const simulation = simulationStore.selected;
+      if (!simulation) { return ""; }
       switch(self.type) {
         case PredictionType.eTemperature:
-          return simulationStore.selectedSimulation.formatTemperature(self.predictedValue, options);
+          return simulation.formatTemperature(self.predictedValue, options);
         case PredictionType.eWindSpeed:
-          return simulationStore.selectedSimulation.formatWindSpeed(self.predictedValue, options);
+          return simulation.formatWindSpeed(self.predictedValue, options);
         case PredictionType.eWindDirection:
-          return simulationStore.selectedSimulation.formatWindDirection(self.predictedValue, options);
+          return simulation.formatWindDirection(self.predictedValue, options);
       }
       return "";
     }

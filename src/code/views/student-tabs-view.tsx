@@ -37,9 +37,9 @@ export class StudentTabsView extends React.Component<
   }
 
   enabledTabs() {
-    const simulation = simulationStore.selected;
-    const group = simulation.selectedGroup;
-    const weatherStation = simulation.presenceStation;
+    const simulation = simulationStore.selected,
+          group = simulation && simulation.selectedGroup,
+          weatherStation = simulation && simulation.presenceStation;
     if(!group) {
       return [StudentTab.GroupTab];
     }
@@ -60,27 +60,27 @@ export class StudentTabsView extends React.Component<
     const handleChangeTab = (newTab: StudentTab) => {
       this.setState({selectedTab: newTab});
     };
-    const simulation = simulationStore.selected;
-    const enabledTabs = this.enabledTabs();
-    const disabled = (tab:StudentTab) => ! _.includes(enabledTabs, tab);
-    const cellDisabled    = disabled(StudentTab.CellTab);
-    const weatherDisabled = disabled(StudentTab.WeatherTab);
-    const groupTabLabel   = simulation.groupName || StudentTab.GroupTab;
-    const weatherTabLabel = weatherDisabled ? "––" : "Current Conditions";
+    const simulation = simulationStore.selected,
+          enabledTabs = this.enabledTabs(),
+          disabled = (tab:StudentTab) => ! _.includes(enabledTabs, tab),
+          cellDisabled    = disabled(StudentTab.CellTab),
+          weatherDisabled = disabled(StudentTab.WeatherTab),
+          groupTabLabel   = simulation && simulation.groupName || StudentTab.GroupTab,
+          weatherTabLabel = weatherDisabled ? "––" : "Current Conditions";
     const cellTabLabel    =
-      (simulation.presenceStation && `Location: ${simulation.presenceStation.name}`)
+      (simulation && simulation.presenceStation && `Location: ${simulation.presenceStation.name}`)
       || StudentTab.CellTab;
     const onGroupChosen = () => {
-      const simulation = simulationStore.selected;
-      const presence = simulation.selectedPresence;
+      const simulation = simulationStore.selected,
+            presence = simulation && simulation.selectedPresence;
       if(presence) {
         presence.setStationId("");
         this.setState({selectedTab: StudentTab.CellTab});
       }
     };
     const onCellChosen = () => {
-      const simulation = simulationStore.selected;
-      const presence = simulation.selectedPresence;
+      const simulation = simulationStore.selected,
+            presence = simulation && simulation.selectedPresence;
       if(presence) {
         this.setState({selectedTab: StudentTab.WeatherTab});
       }
@@ -98,7 +98,7 @@ export class StudentTabsView extends React.Component<
           <Tab
             label={weatherTabLabel} disabled={weatherDisabled} value={StudentTab.WeatherTab}>
             <CardText>
-              <WeatherStationView weatherStation={simulation.presenceStation} />
+              <WeatherStationView weatherStation={simulation && simulation.presenceStation} />
             </CardText>
           </Tab>
         </Tabs>

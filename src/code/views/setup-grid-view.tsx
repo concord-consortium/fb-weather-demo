@@ -42,8 +42,8 @@ export class SetupGridView extends React.Component<
   SetupGridState
 > {
   constructor(props: SetupGridProps, ctx: any) {
-    const simulation = simulationStore.selected;
-    const grid = simulation.grid;
+    const simulation = simulationStore.selected,
+          grid = simulation && simulation.grid;
     super(props, ctx);
     if(grid) {
       this.state = {
@@ -54,8 +54,8 @@ export class SetupGridView extends React.Component<
   }
 
   renderControls() {
-    const simulation = simulationStore.selected;
-    const grid = simulation.grid;
+    const simulation = simulationStore.selected,
+          grid = simulation && simulation.grid;
     if(grid) {
       const updateRows = (e:any, value:string) => {
         this.setState({rows: value});
@@ -88,9 +88,9 @@ export class SetupGridView extends React.Component<
   }
 
   renderDone() {
-    const simulation = simulationStore.selected;
-    const simulationName = simulation.name;
-    const path: string = `/simulations/${simulationName}`;
+    const simulation = simulationStore.selected,
+          simulationName = simulation && simulation.name,
+          path: string = `/simulations/${simulationName}`;
     return (
       <div>
         <RaisedButton
@@ -103,9 +103,9 @@ export class SetupGridView extends React.Component<
   }
 
   render() {
-    const simulation = simulationStore.selected;
-    const grid = simulation.grid;
-    const controls = this.renderControls();
+    const simulation = simulationStore.selected,
+          grid = simulation && simulation.grid,
+          controls = this.renderControls();
     if(grid == null) { return <div/>; }
     return (
       <Card style={styles.card}>

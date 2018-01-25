@@ -12,10 +12,12 @@ export class PlaybackControlView extends React.Component<
                                   PlaybackControlViewState> {
 
   render() {
-    const simulation = simulationStore.selected;
-    const isPlaying = !!(simulation.isPlaying);
-    const playPauseIcon = isPlaying ? "icon-pause_circle_filled" : "icon-play_circle_filled";
-    const playPauseAction = isPlaying ? simulation.stop : simulation.play;
+    const simulation = simulationStore.selected,
+          isPlaying = !!(simulation && simulation.isPlaying),
+          play = () => simulation && simulation.play,
+          stop = () => simulation && simulation.stop,
+          playPauseIcon = isPlaying ? "icon-pause_circle_filled" : "icon-play_circle_filled",
+          playPauseAction = isPlaying ? stop : play;
 
     return(
       <div style={{marginBottom: "20px"}}>
