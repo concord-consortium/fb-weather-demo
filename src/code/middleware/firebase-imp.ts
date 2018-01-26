@@ -1,7 +1,9 @@
 import * as firebase from "firebase";
+import { urlParams } from "../utilities/url-params";
 
 const DEFAULT_SIMULATION = "default";
 const DEFAULT_VERSION_STRING = "1.3.0-pre6";
+const kDatabaseSuffix = urlParams.isTesting ? '-test' : '';
 
 interface FirebaseListener {
   setState(state: any): void;
@@ -113,7 +115,8 @@ export class FirebaseImp {
   }
 
   get basePath() {
-    return DEFAULT_VERSION_STRING.replace(/\./g, "_");
+    const versionString = DEFAULT_VERSION_STRING.replace(/\./g, "_");
+    return `${versionString}${kDatabaseSuffix}`;
   }
 
   setDataRef() {
