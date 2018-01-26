@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { v1 as uuid } from "uuid";
+import { v4 as uuid } from "uuid";
 
 export const rName = (n:number) => String(n + 1);
 export const cName = (n:number) => String.fromCharCode(65 + n);

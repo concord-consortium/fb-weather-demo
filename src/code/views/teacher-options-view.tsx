@@ -11,11 +11,11 @@ interface SettingToggleProps {
 }
 
 const SettingToggle: React.SFC<SettingToggleProps> = (props) => {
-  const settings = simulationStore.selected.settings;
+  const settings = simulationStore.selected && simulationStore.selected.settings;
   const toggleStyle = { marginBottom: 16 };
   const value = settings ? (settings as any)[props.name] : false;
   const handleToggle = (e: React.MouseEvent<{}>, isInputChecked: boolean) => {
-    const settings = simulationStore.selected.settings;
+    const settings = simulationStore.selected && simulationStore.selected.settings;
     if (settings) {
       settings.setSetting(props.name, isInputChecked);
     }

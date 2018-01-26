@@ -16,8 +16,8 @@ import { IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
 
 
-require("!style-loader!css-loader!react-treeview/react-treeview.css");
-require("!style-loader!css-loader!../../html/treeview.css");
+// require("!style-loader!css-loader!react-treeview/react-treeview.css");
+// require("!style-loader!css-loader!../../html/treeview.css");
 
 export type TeacherViewTab = "control" | "configure";
 export const MAP_TYPE_GRID = "MAP_TYPE_GRID";
@@ -107,19 +107,20 @@ export class TeacherView extends React.Component<
   }
 
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
-    const simulation = simulationStore.selected;
-    const settings = simulation.settings;
+    const simulation = simulationStore.selected,
+          settings = simulation && simulation.settings;
     if (settings) {
       settings.setSetting('enabledPredictions', value);
     }
   }
 
   renderLeafletMap() {
-    const simulation = simulationStore.selected;
-    const weatherStations = (simulation.stations && simulation.stations.stations) || [];
+    const simulation = simulationStore.selected,
+          weatherStations = simulation && simulation.stations &&
+                              simulation.stations.stations || [];
     return (
       <LeafletMapView
-        mapConfig={simulation.mapConfig}
+        mapConfig={simulation && simulation.mapConfig}
         interaction={false}
         weatherStations={weatherStations}
         width={600}
@@ -129,17 +130,19 @@ export class TeacherView extends React.Component<
   }
 
   renderGridMap() {
-    const simulation = simulationStore.selected;
-    const grid = simulation.grid;
+    const simulation = simulationStore.selected,
+          grid = simulation && simulation.grid;
 
     const colorFunc = (cell:IGridCell) => {
-      const station = simulation.stations && simulation.stations.getStation(cell.weatherStationId);
+      const station = simulation && simulation.stations &&
+                      simulation.stations.getStation(cell.weatherStationId);
       return weatherColor(station);
     };
 
-    const showCities = simulation.settings.showCities;
+    const showCities = simulation && simulation.settings.showCities;
     const titleFunc = (cell:IGridCell) => {
-      const station = simulation.stations && simulation.stations.getStation(cell.weatherStationId);
+      const station = simulation && simulation.stations &&
+                      simulation.stations.getStation(cell.weatherStationId);
       const precip = precipDiv(station);
       const city = showCities ? cityAnnotation(cell.weatherStationId) : null;
       return (
@@ -162,10 +165,10 @@ export class TeacherView extends React.Component<
   }
 
   render() {
-    const simulation = simulationStore.selected;
-    const time = simulation.timeString;
-    const userCount = simulation.presences.size;
-    const usersString = `${userCount} ${userCount === 1 ? 'user' : 'users'}`;
+    const simulation = simulationStore.selected,
+          time = simulation && simulation.timeString,
+          userCount = simulation && simulation.presences.size,
+          usersString = `${userCount} ${userCount === 1 ? 'user' : 'users'}`;
 
     const handleChangeTab = (value: TeacherViewTab) => {
       this.setState({
@@ -185,7 +188,7 @@ export class TeacherView extends React.Component<
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 'bold', fontSize: "14pt"}}> {time}</div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div>{simulation.name}</div>
+                  <div>{simulation && simulation.name || ""}</div>
                   <div>{usersString}</div>
                 </div>
               </div>

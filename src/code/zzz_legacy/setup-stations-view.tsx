@@ -206,7 +206,7 @@ export class SetupStationsView extends React.Component<
           <RaisedButton
             label="done"
             primary={true}
-            onTouchTap={() => {
+            onClick={() => {
               {
                 this.updateWeatherStation();
                 if (simulationStore.stations) {
@@ -218,7 +218,7 @@ export class SetupStationsView extends React.Component<
           <RaisedButton
             label="delete"
             secondary={true}
-            onTouchTap={() => {
+            onClick={() => {
               this.updateWeatherStation();
               if (simulationStore.stations) {
                 simulationStore.stations.deselect();
@@ -238,7 +238,7 @@ export class SetupStationsView extends React.Component<
         <FlatButton
           label="Add weather station"
           primary={true}
-          onTouchTap={() => {
+          onClick={() => {
             {/* const simulationStations = simulationStore.stations,
                   station = simulationStations && simulationStations.addStation();
             this.updateWeatherStation(station); */}
@@ -274,7 +274,7 @@ export class SetupStationsView extends React.Component<
                     </div>
                   </div>
                 }
-                onTouchTap={() => {
+                onClick={() => {
                   this.updateWeatherStation(base);
                   if (simulationStations) {
                     simulationStations.select(base);

@@ -9,7 +9,8 @@ export const PredictionStore = types
   })
   .views(self => ({
     get prediction(): IPrediction | null {
-      const station = simulationStore.selectedSimulation.presenceStation;
+      const simulation = simulationStore.selected,
+            station = simulation && simulation.presenceStation;
       let prediction = null;
       if (station) {
         prediction = self.predictions.filter((p:IPrediction) => p.station === station)[0];
@@ -25,7 +26,8 @@ export const PredictionStore = types
 
     return {
       get teacherPredictions(): IPrediction[] {
-        const station = simulationStore.selectedSimulation.selectedStation;
+        const simulation = simulationStore.selected,
+              station = simulation && simulation.selectedStation;
         let predictions: IPrediction[] = [];
         if (station) {
           predictions = self.predictions.filter((p:IPrediction) => p.station === station).reverse();
@@ -57,7 +59,8 @@ export const PredictionStore = types
   })
   .actions(self => ({
     addPrediction(prediction:IPrediction) {
-      const station = simulationStore.selectedSimulation.presenceStation;
+      const simulation = simulationStore.selected,
+            station = simulation && simulation.presenceStation;
       if (station) {
         prediction.setStation(station);
         self.predictions.push(prediction);

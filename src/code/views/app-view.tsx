@@ -29,12 +29,14 @@ export class AppView extends React.Component<AppViewProps, AppViewState> {
 
 
   render() {
+    const simulation = simulationStore.selected,
+          simulationName = simulation && simulation.name;
     return (
       <MuiThemeProvider>
         <div>
           <div style={{ display: "none", fontSize: "9pt", color: "gray" }}>
             <Link to="/simulations">
-              {simulationStore.selected.name}
+              {simulationName}
             </Link>
           </div>
           {this.props.children}

@@ -19,7 +19,10 @@ export class SegmentedControlView extends React.Component<
   render() {
     const simulation = simulationStore.selected;
     const isPlaying = !!(simulation && simulation.isPlaying);
-    const reset = () => simulation.rewind();
+    const reset = () => simulation && simulation.rewind();
+    const play = () => simulation && simulation.play();
+    const stop = () => simulation && simulation.stop();
+    const setTime = (time: Date) => simulation && simulation.setTime(time);
 
     const startTime = simulation && simulation.startTime;
     const endTime = simulation && simulation.endTime;
@@ -28,9 +31,9 @@ export class SegmentedControlView extends React.Component<
     const isAtBeginning = currentTime && startTime && currentTime <= startTime;
     const isAtEnd = currentTime && endTime ? currentTime >= endTime : false;
     const playPauseIcon = isPlaying ? "icon-pause" : "icon-play_arrow";
-    const playPauseAction = isPlaying ? simulation.stop : simulation.play;
+    const playPauseAction = isPlaying ? stop : play;
     const skipToTime = currentTime && breakTime && currentTime < breakTime ? breakTime : endTime;
-    const skipAction = () => { if (skipToTime) { simulation.setTime(skipToTime); } };
+    const skipAction = () => { if (skipToTime) { setTime(skipToTime); } };
     const style:ComponentStyleMap = {
       container: {
         display: "flex",
@@ -56,7 +59,7 @@ export class SegmentedControlView extends React.Component<
             <RaisedButton
               style={style.buttonStyle}
               disabled={!simulation || isAtBeginning || isPlaying}
-              onTouchTap={reset}
+              onClick={reset}
               icon={<i className="icon-refresh" style={style.iconStyle} />}
               label="Reset"
               primary={true}
@@ -64,7 +67,7 @@ export class SegmentedControlView extends React.Component<
             <RaisedButton
               buttonStyle={style.buttonStyle}
               disabled={!simulation || isAtEnd}
-              onTouchTap={playPauseAction}
+              onClick={playPauseAction}
               icon={<i className={playPauseIcon} style={style.iconStyle} />}
               label={isPlaying ? "Pause" : "Play"}
               primary={true}
@@ -72,7 +75,7 @@ export class SegmentedControlView extends React.Component<
             <RaisedButton
               buttonStyle={style.skipButtonStyle}
               disabled={!simulation || isPlaying || isAtEnd}
-              onTouchTap={skipAction}
+              onClick={skipAction}
               icon={<i className="icon-skip_next" style={style.iconStyle} />}
               label={"Skip"}
               primary={true}

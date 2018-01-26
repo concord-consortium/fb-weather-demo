@@ -24,12 +24,12 @@ export class WeatherStationView extends
   render() {
     let name = "";
     // let callSign = "";
-    const {weatherStation} = this.props;
-    const simulation = simulationStore.selected;
-    const time = simulation.timeString,
-          simulationName = simulation.name,
+    const {weatherStation} = this.props,
+          simulation = simulationStore.selected,
+          time = simulation && simulation.timeString,
+          simulationName = simulation && simulation.name,
           temperature = weatherStation && weatherStation.temperature,
-          unitTempStr = simulation.formatTemperature(temperature, { withUnit: true });
+          unitTempStr = simulation && simulation.formatTemperature(temperature, { withUnit: true });
           // NP: Removed but saved in comments here for easy access.
           // Its likely we are going to put this back in at some point.
           // windSpeed = weatherStation && weatherStation.windSpeed,
@@ -99,7 +99,7 @@ export class WeatherStationView extends
       }
     };
 
-    const settings = simulation.settings,
+    const settings = simulation && simulation.settings,
           showTemperature = settings && settings.showTempValues;
 
     function renderTemperature() {

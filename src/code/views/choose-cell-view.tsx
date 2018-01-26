@@ -36,7 +36,7 @@ export class ChooseCellView
     };
     const {onDone} = this.props;
     return(<div>
-        <RaisedButton primary={true} onTouchTap={onDone}>
+        <RaisedButton primary={true} onClick={onDone}>
             <div style={style}>Choose {chosenCell.displayName}</div>
         </RaisedButton>
       </div>
@@ -45,12 +45,13 @@ export class ChooseCellView
 
   render() {
     const simulation = simulationStore.selected;
-    const grid = simulation.grid;
-    const group = simulation.selectedGroup;
+    const grid = simulation && simulation.grid;
+    const group = simulation && simulation.selectedGroup;
     const groupName = group && group.name;
-    const presence = simulation.selectedPresence;
-    const presences = simulation.presences.presenceList;
-    const chosenCell = presence && simulation.grid.cellMap.get(presence.weatherStationID || "xxx");
+    const presence = simulation && simulation.selectedPresence;
+    const presences = simulation && simulation.presences.presenceList;
+    const chosenCell = presence && simulation &&
+            simulation.grid.cellMap.get(presence.weatherStationID || "xxx");
     const occupiedStations = _.map(presences,  (value,key) => (value as IPresence).weatherStationID);
 
     const stationId = presence && presence.weatherStationID;
@@ -68,7 +69,7 @@ export class ChooseCellView
       if(cell.weatherStationId === stationId) {
         return myTeamCellColor;
       }
-      if(simulationStore.selected.presences &&
+      if(simulationStore.selected && simulationStore.selected.presences &&
         _.includes(occupiedStations, cell.id)) {
         return teamCellColor;
       }

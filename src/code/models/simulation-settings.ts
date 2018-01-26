@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { v1 as uuid } from "uuid";
+import { v4 as uuid } from "uuid";
 import { PredictionType } from "../models/prediction";
 import * as moment from "moment";
 

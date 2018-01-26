@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { v1 as uuid } from "uuid";
+import { v4 as uuid } from "uuid";
 import { IWeatherStation } from "./weather-station";
 import { simulationStore } from "../models/simulation";
 import { IWeatherStationStore } from "../stores/weather-station-store";
@@ -29,12 +29,14 @@ export const Presence = types
   })
   .views(self => ({
     get weatherStation(): IWeatherStation | null {
-      const stations: IWeatherStationStore | null = simulationStore.selectedSimulation.stations,
+      const simulation = simulationStore.selected,
+            stations: IWeatherStationStore | null = simulation && simulation.stations,
             stationId = self.weatherStationID;
       return stations && stationId && stations.getStationByID(stationId) || null;
     },
     get group(): IGroup | null {
-      const groups = simulationStore.selectedSimulation.groups;
+      const simulation = simulationStore.selected,
+            groups = simulation && simulation.groups;
       return groups && self.groupName && groups.getGroup(self.groupName) || null;
     }
   }))

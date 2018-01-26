@@ -3,7 +3,7 @@ import { cellName, GridCell } from "./grid-cell";
 import { WeatherStation } from "./weather-station";
 import { IWeatherStationStore } from "../stores/weather-station-store";
 
-import { v1 as uuid } from "uuid";
+import { v4 as uuid } from "uuid";
 
 // const gridSizeInDegrees = 1;
 const defaultNumRows = 7;

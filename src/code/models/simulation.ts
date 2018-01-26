@@ -15,7 +15,7 @@ import { IGroup } from "./group";
 import { ERole, IPresence } from "./presence";
 import { PresenceStore} from "../stores/presence-store";
 import { Firebasify } from "../middleware/firebase-decorator";
-import { v1 as uuid } from "uuid";
+import { v4 as uuid } from "uuid";
 import { gFirebase } from "../middleware/firebase-imp";
 
 import * as _ from "lodash";
@@ -260,12 +260,9 @@ const SimulationStore = types
     simulationsMap: types.optional(types.map(Simulation), {})
   })
   .volatile(self => ({
-    selected: Simulation.create({id:"fake", name:"fake"})
+    selected: null as (ISimulation | null)
   }))
   .views(self => ({
-    get selectedSimulation(): ISimulation {
-      return self.selected;
-    },
     get(name:string): ISimulation | undefined {
       return self.simulationsMap.get(name);
     },
@@ -278,12 +275,15 @@ const SimulationStore = types
     }
   }))
   .actions(self => ({
-    select(name:string){
-      self.selected = self.get(name) || self.add(name);
-      Firebasify(self.selected, `simulations/${name}`, () => {
-        self.selected.initPresence();
-      });
-      return self.selected;
+    select(name:string) {
+      const simulation = self.get(name) || self.add(name);
+      if (simulation) {
+        self.selected = simulation;
+        Firebasify(self.selected, `simulations/${name}`, () => {
+          simulation.initPresence();
+        });
+      }
+      return simulation;
     }
   }));
 export const simulationStore = SimulationStore.create();
