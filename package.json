@@ -26,6 +26,7 @@
   "author": "npaessel@concord.org",
   "license": "MIT",
   "dependencies": {
+    "clipboard": "^1.7.1",
     "firebase": "^4.9.0",
     "leaflet": "^1.0.3",
     "lodash": "^4.17.4",
@@ -46,6 +47,7 @@
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
+    "@types/clipboard": "^1.5.36",
     "@types/jest": "^21.1.5",
     "@types/lodash": "^4.14.72",
     "@types/material-ui": "^0.20.5",

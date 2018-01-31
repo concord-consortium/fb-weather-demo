@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Clipboard from "clipboard";
 import { observer } from "mobx-react";
 import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
@@ -14,6 +15,7 @@ import { ComponentStyleMap } from "../utilities/component-style-map";
 
 import { IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
+import { urlParams } from "../utilities/url-params";
 
 
 // require("!style-loader!css-loader!react-treeview/react-treeview.css");
@@ -99,6 +101,8 @@ export class TeacherView extends React.Component<
                                   TeacherViewProps,
                                   TeacherViewState> {
 
+  clipboard: Clipboard;
+
   constructor(props: TeacherViewProps, ctxt: any) {
     super(props, ctxt);
     this.state = {
@@ -111,6 +115,18 @@ export class TeacherView extends React.Component<
           settings = simulation && simulation.settings;
     if (settings) {
       settings.setSetting('enabledPredictions', value);
+    }
+  }
+
+  componentDidMount() {
+    if (urlParams.isTesting && Clipboard.isSupported()) {
+      this.clipboard = new Clipboard('.clipboard-button');
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.clipboard) {
+      this.clipboard.destroy();
     }
   }
 
@@ -167,6 +183,15 @@ export class TeacherView extends React.Component<
   render() {
     const simulation = simulationStore.selected,
           time = simulation && simulation.timeString,
+          teacherUrl = window.location.href,
+          studentUrl = urlParams.isTesting
+                        ? teacherUrl.replace('show/teacher', 'show/student')
+                        : '',
+          studentUrlBtn = studentUrl
+                            ? <button className="clipboard-button" data-clipboard-text={studentUrl}>
+                                Copy student URL to clipboard
+                              </button>
+                            : null,
           userCount = simulation && simulation.presences.size,
           usersString = `${userCount} ${userCount === 1 ? 'user' : 'users'}`;
 
@@ -190,6 +215,7 @@ export class TeacherView extends React.Component<
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <div>{simulation && simulation.name || ""}</div>
                   <div>{usersString}</div>
+                  {studentUrlBtn}
                 </div>
               </div>
             </CardTitle>
