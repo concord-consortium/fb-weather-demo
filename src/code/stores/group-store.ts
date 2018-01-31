@@ -23,7 +23,11 @@ export const GroupStore = types
     },
 
     get groups(): IGroup[] {
-      return self.groupMap.values();
+      return self.groupMap.values().sort((group1: IGroup, group2: IGroup) => {
+        if (group1.name < group2.name) { return -1; }
+        if (group1.name > group2.name) { return 1; }
+        return 0;
+      });
     }
   }))
   .actions(self => ({
