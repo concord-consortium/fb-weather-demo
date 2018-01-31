@@ -21,6 +21,11 @@ interface TestingParams {
 
 type UnionParams = StudentLaunchParams | TeacherReportParams | TestingParams;
 
+function isTestingLaunchUrl() {
+  return ((window.location.hostname.indexOf('localhost') >= 0) ||
+          (window.location.hostname.indexOf('learn.staging') >= 0));
+}
+
 function isPortalStudentParams(params: UnionParams): params is StudentLaunchParams {
   return ((params as StudentLaunchParams).class_info_url != null);
 }
@@ -45,7 +50,8 @@ const params = queryString.parse(window.location.search),
       isTeacher = !isStudent,
       // if `test` URL parameter is present, or if we're not launched from portal,
       // then we're testing, i.e. writing to `-test` database rather than production.
-      isTesting = hasTestTestingParam(params) || (!isPortalTeacher && !isPortalStudent);
+      isTesting = isTestingLaunchUrl() || hasTestTestingParam(params) ||
+                    (!isPortalTeacher && !isPortalStudent);
 
 export const urlParams = {
   params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting

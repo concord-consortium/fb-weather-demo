@@ -1,9 +1,10 @@
 import { urlParams, StudentLaunchParams, TeacherReportParams } from "./url-params";
 import { v4 as uuid } from "uuid";
 
-export const kDefaultSimulationName = uuid(),
-             kDefaultDomain = kDefaultSimulationName.substr(0, 23),
-             kDefaultClass = kDefaultSimulationName.substr(25);
+export const defaultSimulationName = uuid(),
+             defaultDomain = defaultSimulationName.substr(0, 18),
+             defaultClass = defaultSimulationName.substr(19, 4),
+             defaultOffering = defaultSimulationName.substr(24);
 
 function extractDomain(url:string) {
   const domainMatcher = /https?:\/\/([^\/]*)/i;
@@ -17,10 +18,15 @@ function extractDomain(url:string) {
 export class PortalUrlUtility {
     domain: string;
     classId: string;
+    offeringId: string;
+    offeringUrl?: string;
+    activityName?: string;
+    activityUrl?: string;
 
     constructor() {
-      this.domain = kDefaultDomain;
-      this.classId = kDefaultClass;
+      this.domain = defaultDomain;
+      this.classId = defaultClass;
+      this.offeringId = defaultOffering;
     }
 
     get isTeacher() {
@@ -34,7 +40,7 @@ export class PortalUrlUtility {
       else if (urlParams.isPortalStudent) {
         await this.extractStudentInfo(urlParams.params as StudentLaunchParams);
       }
-      return `${this.domain}-${this.classId}`;
+      return `${this.domain}-${this.classId}-${this.offeringId}`;
     }
 
     async extractStudentInfo(params: StudentLaunchParams) {
@@ -47,7 +53,17 @@ export class PortalUrlUtility {
       const headers = ({headers: {Authorization: authorizationHeader}});
       const response = await fetch(params.offering, headers);
       const reportData = await response.json();
-      this.classId = `${reportData[0].clazz_id}`;
+      // class reports return an array; offering reports return a single entry
+      const reportEntry = Array.isArray(reportData) ? reportData[0] : reportData;
+      const match = /offerings\/([^\/]*)/.exec(params.offering);
+      this.classId = `${reportEntry.clazz_id}`;
+      if (match && match[1]) {
+        this.offeringId = match[1];
+      }
+      this.offeringUrl = params.offering;
+      this.activityName = reportData.activity;
+      this.activityUrl = reportData.activity_url;
+
       this.domain = extractDomain((urlParams.params as TeacherReportParams).offering);
     }
 }

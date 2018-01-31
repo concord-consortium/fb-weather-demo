@@ -1,5 +1,6 @@
 import { types } from "mobx-state-tree";
 import { SimulationControl } from "./simulation-control";
+import { SimulationMetadata, gSimulationMetadata } from "./simulation-metadata";
 import { SimulationSettings, IFormatTempOptions, IFormatWindSpeedOptions } from "../models/simulation-settings";
 import { IMapConfig } from "./map-config";
 import { gWeatherEvent } from "./weather-event";
@@ -25,8 +26,9 @@ const kBreakProportion = 0.75;
 
 export const Simulation = types
   .model('Simulation', {
-    name: types.optional(types.string,  () => "busted"),
+    name: types.optional(types.string,  () => "shall-not-be-named"),
     id: types.optional(types.identifier(types.string), () => uuid()),
+    metadata: types.optional(SimulationMetadata,   () => SimulationMetadata.create(gSimulationMetadata)),
     scenario: types.optional(WeatherScenario,      () => WeatherScenario.create(gWeatherScenarioSpec)),
     control: types.optional(SimulationControl,     () => SimulationControl.create()),
     settings: types.optional(SimulationSettings,   () => SimulationSettings.create()),

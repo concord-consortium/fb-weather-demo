@@ -3,9 +3,17 @@ import { observer } from "mobx-react";
 import { Card, CardText, CardTitle } from "material-ui/Card";
 import { withRouter } from "react-router";
 
-import { PortalUrlUtility, kDefaultSimulationName } from "../utilities/portal-url-utility";
+import { PortalUrlUtility, defaultSimulationName } from "../utilities/portal-url-utility";
+import { captureSimulationMetadata } from "../models/simulation-metadata";
 import { gFirebase } from "../middleware/firebase-imp";
 import * as firebase from "firebase";
+
+function windowLocationOrigin() {
+  // cf. https://tosbourn.com/a-fix-for-window-location-origin-in-internet-explorer/
+  return window.location.origin ||
+          (window.location.protocol + "//" + window.location.hostname +
+          (window.location.port ? ':' + window.location.port: ''));
+}
 
 export interface PortalViewProps {
   router: any;
@@ -24,7 +32,7 @@ class _PortalView extends React.Component<
   constructor(props: PortalViewProps, ctx: any) {
     super(props);
     // default to teacher
-    this.state = {simulationKey: kDefaultSimulationName, showTeacher: true};
+    this.state = {simulationKey: defaultSimulationName, showTeacher: true};
   }
 
   componentDidMount() {
@@ -33,6 +41,17 @@ class _PortalView extends React.Component<
     portalUrlUtility.getFirebaseKey().then( (key) => {
       this.setState({simulationKey:key, showTeacher: showTeacher});
       if (showTeacher) {
+        const launchTime = new Date();
+        captureSimulationMetadata({
+          launchOrigin: windowLocationOrigin(),
+          classId: portalUrlUtility.classId,
+          offeringId: portalUrlUtility.offeringId,
+          offeringUrl: portalUrlUtility.offeringUrl,
+          activityName: portalUrlUtility.activityName,
+          activityUrl: portalUrlUtility.activityUrl,
+          launchTime: launchTime.toString(),
+          utcLaunchTime: launchTime.toISOString()
+        });
         // advance to teacher view
         this.props.router.push(this.nextUrl(key));
       }
