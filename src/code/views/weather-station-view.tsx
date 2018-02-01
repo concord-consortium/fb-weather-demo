@@ -112,12 +112,14 @@ export class WeatherStationView extends
       }
     };
 
-    const settings = simulation && simulation.settings,
+    const kRedXChar = "\u274C",
+          kSpace = "\u00A0",  // non-breaking space
+          settings = simulation && simulation.settings,
           showTemperature = settings && settings.showTempValues,
           hasPresence = !!(simulation && simulation.selectedPresence),
           temperatureStr = hasPresence
                             ? (showTemperature ? `${unitTempStr || ''}` : null)
-                            : "Good \u00A0bye!",
+                            : `Good ${kSpace}bye!`,
           precip = weatherStation
                     ? (weatherStation.precipitation  ? "Rain" : "Clear")
                     : "",
@@ -127,7 +129,7 @@ export class WeatherStationView extends
                             style={styles.button}
                             disabled={!hasPresence}
                             onClick={this.handleExit}
-                            label="\u274C\u00A0\u00A0Sign Out"
+                            label={`${kRedXChar}${kSpace}${kSpace}Sign Out`}
                             primary={true}
                           />
                         : null;

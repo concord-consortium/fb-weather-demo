@@ -122,8 +122,10 @@ export class FirebaseImp {
   signOut() {
     if (!this.isSignedOut || this.user) {
       this.isSignedOut = true;
-      firebase.database().goOffline();
+      // sign out the current user (de-authenticate)
       firebase.auth().signOut();
+      // disconnect from the firebase server (and prevent automatic reconnect)
+      firebase.database().goOffline();
     }
   }
 
