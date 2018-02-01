@@ -225,7 +225,7 @@ export const Simulation = types
       initPresence() {
         const firebase = gFirebase;
         gFirebase.postConnect.then( () => {
-          const id = firebase.user.uid;
+          const id = firebase.user && firebase.user.uid;
           if(self.presences.selected && self.presences.selected.id === id) {
             return;
           }

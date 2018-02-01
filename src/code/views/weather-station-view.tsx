@@ -1,10 +1,13 @@
 import * as React from "react";
+import RaisedButton from "material-ui/RaisedButton";
 import { observer } from "mobx-react";
 import { CardText } from "material-ui/Card";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
 // import { weatherColor, precipDiv } from "./weather-styler";
+import { gFirebase } from "../middleware/firebase-imp";
+
 export type StationTab = "configure" | "weather";
 
 export interface WeatherStationProps {
@@ -20,13 +23,16 @@ export class WeatherStationView extends
     super(props);
   }
 
+  handleExit = () => {
+    gFirebase.signOut();
+  }
 
   render() {
     let name = "";
     // let callSign = "";
     const {weatherStation} = this.props,
           simulation = simulationStore.selected,
-          time = simulation && simulation.timeString,
+          time = simulation && weatherStation && simulation.timeString,
           simulationName = simulation && simulation.name,
           temperature = weatherStation && weatherStation.temperature,
           unitTempStr = simulation && simulation.formatTemperature(temperature, { withUnit: true });
@@ -96,18 +102,37 @@ export class WeatherStationView extends
         fontSize: "36pt",
         fontWeight: "bold",
         alignSelf: "flex-end"
+      },
+      button: {
+        gridRow: "5",
+        gridColumn: "1",
+        boxShadow: "none",
+        position: "relative",
+        width: 160
       }
     };
 
-    const settings = simulation && simulation.settings,
-          showTemperature = settings && settings.showTempValues;
-
-    function renderTemperature() {
-      return showTemperature
-              ? `${unitTempStr || ''}`
-              : null;
-    }
-    const precip = (weatherStation && weatherStation.precipitation)  ? "Rain" : "Clear";
+    const kRedXChar = "\u274C",
+          kSpace = "\u00A0",  // non-breaking space
+          settings = simulation && simulation.settings,
+          showTemperature = settings && settings.showTempValues,
+          hasPresence = !!(simulation && simulation.selectedPresence),
+          temperatureStr = hasPresence
+                            ? (showTemperature ? `${unitTempStr || ''}` : null)
+                            : `Good ${kSpace}bye!`,
+          precip = weatherStation
+                    ? (weatherStation.precipitation  ? "Rain" : "Clear")
+                    : "",
+          exitButton = hasPresence
+                        ? <RaisedButton
+                            className={"weather-station-exit-button"}
+                            style={styles.button}
+                            disabled={!hasPresence}
+                            onClick={this.handleExit}
+                            label={`${kRedXChar}${kSpace}${kSpace}Sign Out`}
+                            primary={true}
+                          />
+                        : null;
     return (
       <div>
         <CardText>
@@ -130,12 +155,13 @@ export class WeatherStationView extends
               {name}
             </div>
             <div style={styles.temp}>
-              {renderTemperature()}
+              {temperatureStr}
             </div>
             <div style={styles.precip}>
               {precip}
             </div>
-        </div>
+            {exitButton}
+          </div>
         </CardText>
       </div>
     );

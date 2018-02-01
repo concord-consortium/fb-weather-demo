@@ -1,6 +1,5 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import * as _ from "lodash";
 
 import { Card, CardText} from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
@@ -32,21 +31,30 @@ export class StudentTabsView extends React.Component<
   constructor(props: StudentTabsProps, context: any) {
     super(props);
     this.state = {
-      selectedTab: _.last(this.enabledTabs())
+      selectedTab: this.lastEnabledTab()
     };
   }
 
-  enabledTabs() {
-    const simulation = simulationStore.selected,
-          group = simulation && simulation.selectedGroup,
-          weatherStation = simulation && simulation.presenceStation;
-    if(!group) {
-      return [StudentTab.GroupTab];
-    }
-    if(!weatherStation) {
-      return [StudentTab.GroupTab, StudentTab.CellTab];
-    }
-    return [StudentTab.GroupTab, StudentTab.CellTab, StudentTab.WeatherTab];
+  isGroupTabEnabled() {
+    const simulation = simulationStore.selected;
+    return !!(simulation && simulation.selectedPresence);
+  }
+
+  isLocationTabEnabled() {
+    const simulation = simulationStore.selected;
+    return !!(simulation && simulation.selectedPresence && simulation.selectedGroup);
+  }
+
+  isStationTabEnabled() {
+    const simulation = simulationStore.selected;
+    return !!(simulation && simulation.presenceStation);
+  }
+
+  lastEnabledTab() {
+    if (this.isStationTabEnabled()) { return StudentTab.WeatherTab; }
+    if (this.isLocationTabEnabled()) { return StudentTab.CellTab; }
+    if (this.isGroupTabEnabled()) { return StudentTab.GroupTab; }
+    return undefined;
   }
 
   render() {
@@ -61,12 +69,8 @@ export class StudentTabsView extends React.Component<
       this.setState({selectedTab: newTab});
     };
     const simulation = simulationStore.selected,
-          enabledTabs = this.enabledTabs(),
-          disabled = (tab:StudentTab) => ! _.includes(enabledTabs, tab),
-          cellDisabled    = disabled(StudentTab.CellTab),
-          weatherDisabled = disabled(StudentTab.WeatherTab),
           groupTabLabel   = simulation && simulation.groupName || StudentTab.GroupTab,
-          weatherTabLabel = weatherDisabled ? "––" : "Current Conditions";
+          weatherTabLabel = simulation && simulation.presenceStation ? "Current Conditions" : "––";
     const cellTabLabel    =
       (simulation && simulation.presenceStation && `Location: ${simulation.presenceStation.name}`)
       || StudentTab.CellTab;
@@ -89,14 +93,14 @@ export class StudentTabsView extends React.Component<
     return (
       <Card style={styles.card}>
         <Tabs value={this.state.selectedTab} onChange={handleChangeTab}>
-          <Tab label={groupTabLabel} value={StudentTab.GroupTab}>
+          <Tab label={groupTabLabel} disabled={!this.isGroupTabEnabled()} value={StudentTab.GroupTab}>
             <ChooseGroupView onDone={onGroupChosen}/>
           </Tab>
-          <Tab label={cellTabLabel} disabled={cellDisabled} value={StudentTab.CellTab}>
+          <Tab label={cellTabLabel} disabled={!this.isLocationTabEnabled()} value={StudentTab.CellTab}>
             <ChooseCellView onDone={onCellChosen}/>
           </Tab>
           <Tab
-            label={weatherTabLabel} disabled={weatherDisabled} value={StudentTab.WeatherTab}>
+            label={weatherTabLabel} disabled={!this.isStationTabEnabled()} value={StudentTab.WeatherTab}>
             <CardText>
               <WeatherStationView weatherStation={simulation && simulation.presenceStation} />
             </CardText>

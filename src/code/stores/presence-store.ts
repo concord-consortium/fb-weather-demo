@@ -10,7 +10,7 @@ export const PresenceStore = types
   })
   .views(self => ({
     get selected(): IPresence | undefined{
-      return self.presences.get(gFirebase.user.uid);
+      return self.presences.get((gFirebase.user && gFirebase.user.uid) || "");
     },
     get presenceList(): IPresence[] {
       return self.presences.values();
@@ -18,7 +18,7 @@ export const PresenceStore = types
   }))
   .views(self => ({
       get weatherStation(): IWeatherStation | null {
-      return self.selected && self.selected.weatherStation || null;
+      return (self.selected && self.selected.weatherStation) || null;
     },
     get size() {
       return self.presences.size;
@@ -27,7 +27,7 @@ export const PresenceStore = types
       return self.presenceList.map((p:IPresence) => p.groupName);
     },
     get groupName() {
-      return self.selected && self.selected.groupName || "";
+      return (self.selected && self.selected.groupName) || "";
     }
   }))
   .actions(self => ({
