@@ -80,3 +80,9 @@ table.GridView td.set {
 .divIconContent {
   font-size: 8pt;
 }
+
+.weather-station-exit-button button {
+  position: absolute !important;
+  bottom: 0px;
+  width: 160px;
+}

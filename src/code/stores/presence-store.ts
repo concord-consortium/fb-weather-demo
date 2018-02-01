@@ -10,7 +10,7 @@ export const PresenceStore = types
   })
   .views(self => ({
     get selected(): IPresence | undefined{
-      return self.presences.get(gFirebase.user.uid);
+      return self.presences.get(gFirebase.user && gFirebase.user.uid || "");
     },
     get presenceList(): IPresence[] {
       return self.presences.values();
