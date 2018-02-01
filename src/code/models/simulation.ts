@@ -1,4 +1,4 @@
-import { types } from "mobx-state-tree";
+import { types, onSnapshot } from "mobx-state-tree";
 import { SimulationControl } from "./simulation-control";
 import { SimulationMetadata, gSimulationMetadata } from "./simulation-metadata";
 import { SimulationSettings, IFormatTempOptions, IFormatWindSpeedOptions } from "../models/simulation-settings";
@@ -39,7 +39,8 @@ export const Simulation = types
     groups: types.optional(GroupStore,             () => GroupStore.create())
   })
   .volatile(self => ({
-    isTeacherView: false
+    isTeacherView: false,
+    presenceID: null as (string | null)
   }))
   .views(self => ({
     get isPlaying(): boolean {
@@ -129,6 +130,11 @@ export const Simulation = types
       return selectedPresence && selectedPresence.weatherStation || null;
     }
   }))
+  .actions(self => ({
+    setPresenceID(presenceID: string | null) {
+      self.presenceID = presenceID;
+    }
+  }))
   .actions(self => {
 
     function _createGroups() {
@@ -148,6 +154,15 @@ export const Simulation = types
 
     return {
       afterCreate() {
+        onSnapshot(self, (snapshot: ISimulationSnapshot) => {
+          // check whether our presence has been cleared (e.g. remotely by teacher)
+          if (self.presenceID && (snapshot.presences.presences[self.presenceID] == null)) {
+            // disconnect from firebase
+            gFirebase.signOut();
+            // clear our cached presence ID
+            self.setPresenceID(null);
+          }
+        });
         if (_.size(self.stations.stations) === 0) {
           // create stations from scenario
           const stations = self.scenario.stations &&
@@ -226,13 +241,19 @@ export const Simulation = types
         const firebase = gFirebase;
         gFirebase.postConnect.then( () => {
           const id = firebase.user && firebase.user.uid;
-          if(self.presences.selected && self.presences.selected.id === id) {
+          if(!id || self.presences.selected && self.presences.selected.id === id) {
             return;
           }
           const path =`simulations/${self.id}`;
           const snapshot = { id, role: self.isTeacherView ? ERole.teacher : ERole.student };
           self.presences.createPresence(path, snapshot);
+          // cache our presence ID
+          self.setPresenceID(id);
         });
+      },
+      deletePresence(presenceID: string) {
+        const path =`simulations/${self.id}`;
+        self.presences.deletePresence(path, presenceID);
       },
       // SimulationControl wrappers
       setTime(time: Date) {
@@ -256,6 +277,7 @@ export const Simulation = types
     };
   });
 export type ISimulation = typeof Simulation.Type;
+export type ISimulationSnapshot = typeof Simulation.SnapshotType;
 
 const SimulationStore = types
   .model('SimulationStore', {

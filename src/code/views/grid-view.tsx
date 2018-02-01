@@ -10,7 +10,7 @@ import * as _ from "lodash";
 
 export interface GridViewProps {
   grid: IGrid|null;
-  onCellClick?: (cell:IGridCell|null) => void;
+  onCellClick?: (cell:IGridCell|null, evt:React.MouseEvent<HTMLElement>) => void;
   colorFunc?: (cell:IGridCell|null) => string;
   titleFunc?: (cell:IGridCell|null) => any;
   rollOverFunc?: (cell:IGridCell|null) => any;
@@ -58,12 +58,10 @@ export class GridView extends React.Component<
         rowDivs.push(<GridHeaderView key={row} label={rName(row)} />);
         for(let column = 0; column < grid.columns; column++) {
           const cell = grid.gridCellAt(row, column);
-          const onCellClick = this.props.onCellClick;
-          const clickHandler = cell && onCellClick ? (e:any) => onCellClick(cell) :  undefined;
           if(cell) {
             rowDivs.push(
               <GridCellView
-                cellClick={clickHandler}
+                onCellClick={this.props.onCellClick}
                 size={size}
                 colorFunc={this.props.colorFunc}
                 key={`${row}-${column}-grid-cell`}

@@ -16,6 +16,8 @@ import { ComponentStyleMap } from "../utilities/component-style-map";
 import { cellName, IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
 import { urlParams } from "../utilities/url-params";
+import Popover from "material-ui-next/Popover";
+import { TeacherCellPopover } from "./teacher-cell-popover";
 
 
 // require("!style-loader!css-loader!react-treeview/react-treeview.css");
@@ -29,8 +31,9 @@ export interface TeacherViewProps {}
 
 export interface TeacherViewState {
   tab: TeacherViewTab;
+  popoverCell: string | null;
+  popoverAnchorEl: HTMLElement | null;
 }
-
 
 const styles:ComponentStyleMap = {
   wrapper: {
@@ -108,12 +111,16 @@ export class TeacherView extends React.Component<
                                   TeacherViewState> {
 
   clipboard: Clipboard;
+  closingCount: number;
 
   constructor(props: TeacherViewProps, ctxt: any) {
     super(props, ctxt);
     this.state = {
-      tab: "control"
+      tab: "control",
+      popoverCell: null,
+      popoverAnchorEl: null
     };
+    this.closingCount = 0;
   }
 
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
@@ -134,6 +141,21 @@ export class TeacherView extends React.Component<
     if (this.clipboard) {
       this.clipboard.destroy();
     }
+  }
+
+  handleCellClick = (cell:IGridCell, evt: React.MouseEvent<HTMLElement>) => {
+    // Prevent reopening if we're in the process of closing.
+    if (this.closingCount) { return; }
+    const classes = evt.currentTarget.className;
+    const match = /grid-cell-label-([A-Z]-[0-9]*)/.exec(classes);
+    const cellName = match && match[1] || null;
+    this.setState({ popoverCell: cellName, popoverAnchorEl: evt.currentTarget });
+  }
+
+  handleRequestClose = () => {
+    // Track whether we're in the process of closing to prevent reopening.
+    ++ this.closingCount;
+    this.setState({ popoverCell: null, popoverAnchorEl: null }, () => --this.closingCount);
   }
 
   renderLeafletMap() {
@@ -176,23 +198,43 @@ export class TeacherView extends React.Component<
       const precip = precipDiv(station);
       const city = showCities ? cityAnnotation(cell.weatherStationId) : null;
       const cellLabel = cellName(cell.row, cell.column);
+      const isOpenPopoverCell = this.state.popoverCell === cellLabel;
       const group = groupMap[cellLabel];
       const groupLabel = group
                           ? <div className="grid-cell-group-label" style={styles.groupLabel}>
                               {group}
                             </div>
                           : null;
+      const popover = <Popover
+                        className='teacher-cell-popover-trigger'
+                        open={isOpenPopoverCell}
+                        anchorEl={(isOpenPopoverCell && this.state.popoverAnchorEl) || undefined}
+                        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                        transformOrigin={{horizontal: 'left', vertical: 'top'}}
+                        onBackdropClick={this.handleRequestClose}
+                        onClose={this.handleRequestClose}
+                      >
+                        <TeacherCellPopover
+                          simulation={simulation}
+                          cell={cell}
+                          group={group}
+                          station={station}
+                        />
+                      </Popover>;
       return (
-        <div style={{}}>
+        <div className="grid-cell-content" style={{}}>
           {city}
           {precip}
           {groupLabel}
+          {popover}
         </div>
       );
     };
 
     return (
-      <GridView grid={grid} colorFunc={colorFunc} titleFunc={titleFunc} />
+      <GridView grid={grid} colorFunc={colorFunc} titleFunc={titleFunc}
+                onCellClick={this.handleCellClick}
+      />
     );
   }
 

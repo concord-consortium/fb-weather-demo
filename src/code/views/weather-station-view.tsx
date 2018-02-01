@@ -120,9 +120,7 @@ export class WeatherStationView extends
           temperatureStr = hasPresence
                             ? (showTemperature ? `${unitTempStr || ''}` : null)
                             : `Good ${kSpace}bye!`,
-          precip = weatherStation
-                    ? (weatherStation.precipitation  ? "Rain" : "Clear")
-                    : "",
+          precip = weatherStation && weatherStation.strPrecipitation,
           exitButton = hasPresence
                         ? <RaisedButton
                             className={"weather-station-exit-button"}
