@@ -13,7 +13,7 @@ import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 //import { TeacherOptionsView } from "./teacher-options-view";
 
-import { IGridCell } from "../models/grid-cell";
+import { cellName, IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
 import { urlParams } from "../utilities/url-params";
 
@@ -75,6 +75,12 @@ const styles:ComponentStyleMap = {
   },
   stationName: {
     fontSize: "10pt"
+  },
+  groupLabel: {
+    fontSize: "12px",
+    position: "absolute",
+    left: 6,
+    bottom: 2
   },
   values: {
     marginTop: "1em"
@@ -147,8 +153,16 @@ export class TeacherView extends React.Component<
 
   renderGridMap() {
     const simulation = simulationStore.selected,
-          grid = simulation && simulation.grid;
+          grid = simulation && simulation.grid,
+          groupMap: { [index:string]: string } = {};
 
+    if (simulation) {
+      simulation.presences.presenceList.forEach((presence) => {
+        if (presence.groupName && presence.weatherStationID) {
+          groupMap[presence.weatherStationID] = presence.groupName;
+        }
+      });
+    }
     const colorFunc = (cell:IGridCell) => {
       const station = simulation && simulation.stations &&
                       simulation.stations.getStation(cell.weatherStationId);
@@ -161,10 +175,18 @@ export class TeacherView extends React.Component<
                       simulation.stations.getStation(cell.weatherStationId);
       const precip = precipDiv(station);
       const city = showCities ? cityAnnotation(cell.weatherStationId) : null;
+      const cellLabel = cellName(cell.row, cell.column);
+      const group = groupMap[cellLabel];
+      const groupLabel = group
+                          ? <div className="grid-cell-group-label" style={styles.groupLabel}>
+                              {group}
+                            </div>
+                          : null;
       return (
         <div style={{}}>
           {city}
           {precip}
+          {groupLabel}
         </div>
       );
     };
