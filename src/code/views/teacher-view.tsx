@@ -179,7 +179,7 @@ export class TeacherView extends React.Component<
       const group = groupMap[cellLabel];
       const groupLabel = group
                           ? <div className="grid-cell-group-label" style={styles.groupLabel}>
-                              {group || ''}
+                              {group}
                             </div>
                           : null;
       return (
