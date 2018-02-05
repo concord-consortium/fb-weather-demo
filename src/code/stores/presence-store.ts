@@ -2,6 +2,7 @@ import { types } from "mobx-state-tree";
 import { Presence, IPresence, IPresenceSnapshot } from "../models/presence";
 import { gFirebase } from "../middleware/firebase-imp";
 import { IWeatherStation } from "../models/weather-station";
+import { find } from "lodash";
 
 export const PresenceStore = types
   .model("PresenceStore", {
@@ -14,6 +15,11 @@ export const PresenceStore = types
     },
     get presenceList(): IPresence[] {
       return self.presences.values();
+    },
+    getPresenceForGroup(group: string): IPresence | undefined {
+      return find(self.presences.values(), (presence: IPresence) => {
+        return presence && (presence.groupName === group);
+      });
     }
   }))
   .views(self => ({
@@ -42,8 +48,16 @@ export const PresenceStore = types
       const path = `${_path}/presences/presences/${snapshot.id}`;
       const presref = firebase.dataRef.child(path);
       presref.onDisconnect().remove();
+      // add presence to map
       self.presences.put(presence);
       return presence;
+    },
+    deletePresence(_path: string, presenceID: string) {
+      const path = `${_path}/presences/presences/${presenceID}`,
+            presenceRef = gFirebase.dataRef.child(path);
+      if (presenceRef) {
+        presenceRef.set(null);
+      }
     }
   }));
 export type IPresenceStore = typeof PresenceStore.Type;
