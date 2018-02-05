@@ -145,11 +145,10 @@ export class TeacherView extends React.Component<
 
   handleCellClick = (cell:IGridCell, evt: React.MouseEvent<HTMLElement>) => {
     // Prevent reopening if we're in the process of closing.
-    if (this.closingCount) { return; }
-    const classes = evt.currentTarget.className;
-    const match = /grid-cell-label-([A-Z]-[0-9]*)/.exec(classes);
-    const cellName = match && match[1] || null;
-    this.setState({ popoverCell: cellName, popoverAnchorEl: evt.currentTarget });
+    if (!this.closingCount) {
+      const cellLabel = cellName(cell.row, cell.column);
+      this.setState({ popoverCell: cellLabel, popoverAnchorEl: evt.currentTarget });
+    }
   }
 
   handleRequestClose = () => {
