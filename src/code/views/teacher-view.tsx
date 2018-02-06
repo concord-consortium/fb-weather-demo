@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as Clipboard from "clipboard";
 import { observer } from "mobx-react";
 import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
@@ -7,21 +6,16 @@ import { cityAnnotation } from "../utilities/city-map";
 import { GridView } from "./grid-view";
 import { weatherColor, precipDiv } from "./weather-styler";
 import { LeafletMapView } from "./leaflet-map-view";
-// import { PlaybackOptionsView } from "./playback-options-view";
-// import { PlaybackControlView } from "./playback-control-view";
 import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
-//import { TeacherOptionsView } from "./teacher-options-view";
 
 import { cellName, IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
 import { urlParams } from "../utilities/url-params";
 import Popover from "material-ui-next/Popover";
 import { TeacherCellPopover } from "./teacher-cell-popover";
-
-
-// require("!style-loader!css-loader!react-treeview/react-treeview.css");
-// require("!style-loader!css-loader!../../html/treeview.css");
+import { TeacherOptionsButton } from "./teacher-options-button";
+import { CopyStudentLinkButton } from "./copy-student-link-button";
 
 export type TeacherViewTab = "control" | "configure";
 export const MAP_TYPE_GRID = "MAP_TYPE_GRID";
@@ -106,11 +100,9 @@ const styles:ComponentStyleMap = {
 };
 
 @observer
-export class TeacherView extends React.Component<
-                                  TeacherViewProps,
-                                  TeacherViewState> {
+export class TeacherView
+  extends React.Component<TeacherViewProps, TeacherViewState> {
 
-  clipboard: Clipboard;
   closingCount: number;
 
   constructor(props: TeacherViewProps, ctxt: any) {
@@ -128,18 +120,6 @@ export class TeacherView extends React.Component<
           settings = simulation && simulation.settings;
     if (settings) {
       settings.setSetting('enabledPredictions', value);
-    }
-  }
-
-  componentDidMount() {
-    if (urlParams.isTesting && Clipboard.isSupported()) {
-      this.clipboard = new Clipboard('.clipboard-button');
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.clipboard) {
-      this.clipboard.destroy();
     }
   }
 
@@ -246,17 +226,11 @@ export class TeacherView extends React.Component<
   render() {
     const simulation = simulationStore.selected,
           time = simulation && simulation.timeString,
-          teacherUrl = window.location.href,
-          studentUrl = urlParams.isTesting
-                        ? teacherUrl.replace('show/teacher', 'show/student')
-                        : '',
-          studentUrlBtn = studentUrl
-                            ? <button className="clipboard-button" data-clipboard-text={studentUrl}>
-                                Copy student URL to clipboard
-                              </button>
-                            : null,
           userCount = simulation && simulation.presences.size,
-          usersString = `${userCount} ${userCount === 1 ? 'user' : 'users'}`;
+          usersString = `${userCount} ${userCount === 1 ? 'user' : 'users'}`,
+          copyStudentUrlButton = urlParams.isTesting
+                                  ? <CopyStudentLinkButton />
+                                  : null;
 
     const handleChangeTab = (value: TeacherViewTab) => {
       this.setState({
@@ -267,18 +241,20 @@ export class TeacherView extends React.Component<
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
-          {/* <Tab label="Options" value="configure">
-            <PlaybackOptionsView />
-            <TeacherOptionsView />
-          </Tab> */}
           <Tab label="Control" value="control">
             <CardTitle>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ fontWeight: 'bold', fontSize: "14pt"}}> {time}</div>
+              <div className="teacher-title-card-contents"
+                    style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ fontWeight: 'bold', fontSize: "14pt"}}>{time}</div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <div>{simulation && simulation.name || ""}</div>
-                  <div>{usersString}</div>
-                  {studentUrlBtn}
+                  <div className="teacher-status-options">
+                    <div>{usersString}</div>
+                    <div className="teacher-option-buttons">
+                      {copyStudentUrlButton}
+                      <TeacherOptionsButton />
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardTitle>
@@ -289,21 +265,11 @@ export class TeacherView extends React.Component<
                 alignItems: "center"
               }}
             >
-              <div style={styles.wrapper}>
-                <div style={styles.mapAndPrediction}>
+              <div className="teacher-card-media-wrapper" style={styles.wrapper}>
+                <div className="teacher-card-media-map" style={styles.mapAndPrediction}>
                     { this.renderMapView() }
-                  {/*
-                    import { PredictionDisplayView } from "../prediction-display-view"
-                    <PredictionDisplayView />
-                  */}
                 </div>
                   <SegmentedControlView />
-                  {/* <PlaybackControlView /> */}
-                {/*
-                  import { PredictionSelectorView } from "../prediction-selection-view"
-                  <PredictionSelectorView />
-                */}
-
               </div>
             </CardMedia>
           </Tab>

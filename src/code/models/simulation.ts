@@ -255,6 +255,10 @@ export const Simulation = types
         const path =`simulations/${self.id}`;
         self.presences.deletePresence(path, presenceID);
       },
+      deleteAllOtherPresences() {
+        const path =`simulations/${self.id}`;
+        self.presences.deleteAllOtherPresences(path);
+      },
       // SimulationControl wrappers
       setTime(time: Date) {
         self.control.setTime(time);
