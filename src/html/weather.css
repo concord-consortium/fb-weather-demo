@@ -99,6 +99,21 @@ table.GridView td.set {
   margin-top: 8px;
 }
 
+.teacher-status-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.teacher-option-buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.teacher-card-media-wrapper {
+  margin-top: -30px;
+}
+
 .weather-station-exit-button button {
   position: absolute !important;
   bottom: 0px;

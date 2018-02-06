@@ -1,4 +1,4 @@
-import { types } from "mobx-state-tree";
+import { getSnapshot, types } from "mobx-state-tree";
 import { Presence, IPresence, IPresenceSnapshot } from "../models/presence";
 import { gFirebase } from "../middleware/firebase-imp";
 import { IWeatherStation } from "../models/weather-station";
@@ -10,7 +10,7 @@ export const PresenceStore = types
     presences: types.optional(types.map(Presence), {})
   })
   .views(self => ({
-    get selected(): IPresence | undefined{
+    get selected(): IPresence | undefined {
       return self.presences.get((gFirebase.user && gFirebase.user.uid) || "");
     },
     get presenceList(): IPresence[] {
@@ -57,6 +57,17 @@ export const PresenceStore = types
             presenceRef = gFirebase.dataRef.child(path);
       if (presenceRef) {
         presenceRef.set(null);
+      }
+    },
+    deleteAllOtherPresences(_path: string) {
+      const selfPresence = self.selected,
+            selfPresenceID = selfPresence && selfPresence.id,
+            selfPresenceSnapshot = selfPresence && getSnapshot(selfPresence);
+      if (selfPresenceID) {
+        const path = `${_path}/presences/presences`,
+              presencesRef = gFirebase.dataRef.child(path),
+              presences = { [selfPresenceID]: selfPresenceSnapshot };
+        presencesRef.set(presences);
       }
     }
   }));
