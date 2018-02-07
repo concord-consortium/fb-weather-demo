@@ -40,7 +40,12 @@ export class PortalUrlUtility {
       else if (urlParams.isPortalStudent) {
         await this.extractStudentInfo(urlParams.params as StudentLaunchParams);
       }
-      return `${this.domain}-${this.classId}-${this.offeringId}`;
+      // We don't currently have a good means of determining the offeringId
+      // as a student, so we leave off for now until it becomes available.
+      // Until then, simulations are unique to the class, not the offering.
+      // Scott suggested that the offeringId could be incorporated into the JWT.
+      // return `${this.domain}-${this.classId}-${this.offeringId}`;
+      return `${this.domain}-${this.classId}`;
     }
 
     async extractStudentInfo(params: StudentLaunchParams) {
