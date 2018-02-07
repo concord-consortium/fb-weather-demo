@@ -1,6 +1,9 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import RaisedButton from "material-ui/RaisedButton";
+import { MuiThemeProvider } from 'material-ui-next/styles';
+import Button from "material-ui-next/Button";
+import Icon from "material-ui-next/Icon";
+import theme from "../utilities/mui-default-theme";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../models/simulation";
 
@@ -43,9 +46,6 @@ export class SegmentedControlView extends React.Component<
         alignItems: "center"
       },
       buttonStyle: {
-        padding: "0 4px"
-      },
-      skipButtonStyle: {
         marginLeft: 4
       },
       iconStyle: {
@@ -54,32 +54,36 @@ export class SegmentedControlView extends React.Component<
       }
     };
     return(
-      <div style={style.container} >
+      <MuiThemeProvider theme={theme}>
+        <div style={style.container} >
           <div>
-            <RaisedButton
+            <Button variant="raised"
               style={style.buttonStyle}
               disabled={!simulation || isAtBeginning || isPlaying}
               onClick={reset}
-              icon={<i className="icon-refresh" style={style.iconStyle} />}
-              label="Reset"
-              primary={true}
-            />
-            <RaisedButton
-              buttonStyle={style.buttonStyle}
+              color="primary"
+            >
+              <Icon className="icon-refresh" style={style.iconStyle}/>
+              Reset
+            </Button>
+            <Button variant="raised"
+              style={style.buttonStyle}
               disabled={!simulation || isAtEnd}
               onClick={playPauseAction}
-              icon={<i className={playPauseIcon} style={style.iconStyle} />}
-              label={isPlaying ? "Pause" : "Play"}
-              primary={true}
-            />
-            <RaisedButton
-              buttonStyle={style.skipButtonStyle}
+              color="primary"
+            >
+              <Icon className={playPauseIcon} style={style.iconStyle}/>
+              {isPlaying ? "Pause" : "Play"}
+            </Button>
+            <Button variant="raised"
+              style={style.buttonStyle}
               disabled={!simulation || isPlaying || isAtEnd}
               onClick={skipAction}
-              icon={<i className="icon-skip_next" style={style.iconStyle} />}
-              label={"Skip"}
-              primary={true}
-            />
+              color="primary"
+            >
+              <Icon className="icon-skip_next" style={style.iconStyle}/>
+              Skip
+            </Button>
           </div>
           <TimelineView
             startTime={startTime}
@@ -88,6 +92,7 @@ export class SegmentedControlView extends React.Component<
             endTime={endTime}
           />
         </div>
+      </MuiThemeProvider>
     );
   }
 }
