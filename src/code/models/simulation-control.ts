@@ -1,4 +1,4 @@
-import { types } from "mobx-state-tree";
+import { types, onSnapshot } from "mobx-state-tree";
 import * as moment from 'moment';
 
 const kOverrides = {
@@ -7,7 +7,7 @@ const kOverrides = {
         updateInterval: 1
       };
 
-export const  SimulationControl = types
+export const SimulationControl = types
   .model("SimulationControl", {
     startTime: types.maybe(types.Date), // UTC date
     isPlaying: types.optional(types.boolean, false),
@@ -55,6 +55,14 @@ export const  SimulationControl = types
     }
 
     return {
+      afterCreate() {
+        onSnapshot(self, (snapshot: ISimulationControlSnapshot) => {
+          // if we're not playing, stop any timers
+          if (!snapshot.isPlaying) {
+            _clearTimer();
+          }
+        });
+      },
       setTimeRange(startTime: Date, duration: number, breakProportion?: number) {
         self.startTime = moment.utc(startTime).utcOffset(0, true).toDate();
         self.duration = duration;
@@ -125,3 +133,4 @@ export const  SimulationControl = types
     };
   });
 export type ISimulationControl = typeof SimulationControl.Type;
+export type ISimulationControlSnapshot = typeof SimulationControl.SnapshotType;
