@@ -2,11 +2,8 @@ import * as queryString from "query-string";
 
 export interface StudentLaunchParams {
   domain: string;
-  class_info_url: string;
   domain_uid: string;
-  externalId: string;
-  logging: boolean;
-  returnUrl: string;
+  token: string;
 }
 
 export interface TeacherReportParams {
@@ -27,7 +24,7 @@ function isTestingLaunchUrl() {
 }
 
 function isPortalStudentParams(params: UnionParams): params is StudentLaunchParams {
-  return ((params as StudentLaunchParams).class_info_url != null);
+  return ((params as StudentLaunchParams).domain != null) && !isPortalTeacherParams(params);
 }
 
 function isPortalTeacherParams(params: UnionParams): params is TeacherReportParams {

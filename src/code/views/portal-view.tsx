@@ -22,6 +22,10 @@ export interface PortalViewProps {
 export interface PortalViewState {
   simulationKey: string;
   showTeacher: boolean;
+  startTitle: string;
+  startMessage: string;
+  startDetail?: string;
+  startSuggestion?: string;
 }
 
 @observer
@@ -32,7 +36,12 @@ class _PortalView extends React.Component<
   constructor(props: PortalViewProps, ctx: any) {
     super(props);
     // default to teacher
-    this.state = {simulationKey: defaultSimulationName, showTeacher: true};
+    this.state = {
+      simulationKey: defaultSimulationName,
+      showTeacher: true,
+      startTitle: "Start Simulation",
+      startMessage: "Waiting for simulation to begin..."
+    };
   }
 
   componentDidMount() {
@@ -71,6 +80,14 @@ class _PortalView extends React.Component<
             ref.on('value', handleSnapshot);
           });
       }
+    })
+    .catch((error) => {
+      this.setState({
+        startTitle: "Error",
+        startMessage: `Could not start the simulation because an error occurred.`,
+        startDetail: `[${error.message}]`,
+        startSuggestion: "Try relaunching the simulation from the portal."
+      });
     });
   }
 
@@ -80,11 +97,19 @@ class _PortalView extends React.Component<
   }
 
   render() {
+    const { startTitle, startMessage, startDetail, startSuggestion } = this.state,
+          detail = startDetail ? <div>{startDetail}</div> : null,
+          spacer = startSuggestion ? <div>{"\u00A0"}</div> : null,
+          suggestion = startSuggestion ? <div>{startSuggestion}</div> : null;
     return (
       <Card>
-        <CardTitle>Start Simulation</CardTitle>
+        <CardTitle>{startTitle}</CardTitle>
         <CardText style={{}}>
-          Waiting for simulation to begin...
+          {startMessage}
+          {detail}
+          {spacer}
+          {spacer}
+          {suggestion}
         </CardText>
       </Card>
     );
