@@ -6,18 +6,16 @@ import { cityAnnotation } from "../utilities/city-map";
 import { GridView } from "./grid-view";
 import { weatherColor, precipDiv } from "./weather-styler";
 import { LeafletMapView } from "./leaflet-map-view";
-// import { PlaybackOptionsView } from "./playback-options-view";
-// import { PlaybackControlView } from "./playback-control-view";
 import { SegmentedControlView } from "./segmented-control-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
-//import { TeacherOptionsView } from "./teacher-options-view";
 
-import { IGridCell } from "../models/grid-cell";
+import { cellName, IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
-
-
-require("!style-loader!css-loader!react-treeview/react-treeview.css");
-require("!style-loader!css-loader!../../html/treeview.css");
+import { urlParams } from "../utilities/url-params";
+import Popover from "material-ui-next/Popover";
+import { TeacherCellPopover } from "./teacher-cell-popover";
+import { TeacherOptionsButton } from "./teacher-options-button";
+import { CopyStudentLinkButton } from "./copy-student-link-button";
 
 export type TeacherViewTab = "control" | "configure";
 export const MAP_TYPE_GRID = "MAP_TYPE_GRID";
@@ -27,8 +25,9 @@ export interface TeacherViewProps {}
 
 export interface TeacherViewState {
   tab: TeacherViewTab;
+  popoverCell: string | null;
+  popoverAnchorEl: HTMLElement | null;
 }
-
 
 const styles:ComponentStyleMap = {
   wrapper: {
@@ -74,6 +73,12 @@ const styles:ComponentStyleMap = {
   stationName: {
     fontSize: "10pt"
   },
+  groupLabel: {
+    fontSize: "12px",
+    position: "absolute",
+    left: 6,
+    bottom: 2
+  },
   values: {
     marginTop: "1em"
   },
@@ -95,31 +100,50 @@ const styles:ComponentStyleMap = {
 };
 
 @observer
-export class TeacherView extends React.Component<
-                                  TeacherViewProps,
-                                  TeacherViewState> {
+export class TeacherView
+  extends React.Component<TeacherViewProps, TeacherViewState> {
+
+  closingCount: number;
 
   constructor(props: TeacherViewProps, ctxt: any) {
     super(props, ctxt);
     this.state = {
-      tab: "control"
+      tab: "control",
+      popoverCell: null,
+      popoverAnchorEl: null
     };
+    this.closingCount = 0;
   }
 
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
-    const simulation = simulationStore.selected;
-    const settings = simulation.settings;
+    const simulation = simulationStore.selected,
+          settings = simulation && simulation.settings;
     if (settings) {
       settings.setSetting('enabledPredictions', value);
     }
   }
 
+  handleCellClick = (cell:IGridCell, evt: React.MouseEvent<HTMLElement>) => {
+    // Prevent reopening if we're in the process of closing.
+    if (!this.closingCount) {
+      const cellLabel = cellName(cell.row, cell.column);
+      this.setState({ popoverCell: cellLabel, popoverAnchorEl: evt.currentTarget });
+    }
+  }
+
+  handleRequestClose = () => {
+    // Track whether we're in the process of closing to prevent reopening.
+    ++ this.closingCount;
+    this.setState({ popoverCell: null, popoverAnchorEl: null }, () => --this.closingCount);
+  }
+
   renderLeafletMap() {
-    const simulation = simulationStore.selected;
-    const weatherStations = (simulation.stations && simulation.stations.stations) || [];
+    const simulation = simulationStore.selected,
+          weatherStations = simulation && simulation.stations &&
+                              simulation.stations.stations || [];
     return (
       <LeafletMapView
-        mapConfig={simulation.mapConfig}
+        mapConfig={simulation && simulation.mapConfig}
         interaction={false}
         weatherStations={weatherStations}
         width={600}
@@ -129,29 +153,67 @@ export class TeacherView extends React.Component<
   }
 
   renderGridMap() {
-    const simulation = simulationStore.selected;
-    const grid = simulation.grid;
+    const simulation = simulationStore.selected,
+          grid = simulation && simulation.grid,
+          groupMap: { [index:string]: string } = {};
 
+    if (simulation) {
+      simulation.presences.presenceList.forEach((presence) => {
+        if (presence.groupName && presence.weatherStationID) {
+          groupMap[presence.weatherStationID] = presence.groupName;
+        }
+      });
+    }
     const colorFunc = (cell:IGridCell) => {
-      const station = simulation.stations && simulation.stations.getStation(cell.weatherStationId);
+      const station = simulation && simulation.stations &&
+                      simulation.stations.getStation(cell.weatherStationId);
       return weatherColor(station);
     };
 
-    const showCities = simulation.settings.showCities;
+    const showCities = simulation && simulation.settings.showCities;
     const titleFunc = (cell:IGridCell) => {
-      const station = simulation.stations && simulation.stations.getStation(cell.weatherStationId);
+      const station = simulation && simulation.stations &&
+                      simulation.stations.getStation(cell.weatherStationId);
       const precip = precipDiv(station);
       const city = showCities ? cityAnnotation(cell.weatherStationId) : null;
+      const cellLabel = cellName(cell.row, cell.column);
+      const isOpenPopoverCell = this.state.popoverCell === cellLabel;
+      const group = groupMap[cellLabel];
+      const groupLabel = group
+                          ? <div className="grid-cell-group-label" style={styles.groupLabel}>
+                              {group}
+                            </div>
+                          : null;
+      const popover = <Popover
+                        className='teacher-cell-popover-trigger'
+                        open={isOpenPopoverCell}
+                        anchorEl={(isOpenPopoverCell && this.state.popoverAnchorEl) || undefined}
+                        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                        transformOrigin={{horizontal: 'left', vertical: 'top'}}
+                        onBackdropClick={this.handleRequestClose}
+                        onClose={this.handleRequestClose}
+                      >
+                        <TeacherCellPopover
+                          simulation={simulation}
+                          cell={cell}
+                          group={group}
+                          station={station}
+                        />
+                      </Popover>;
       return (
-        <div style={{}}>
+        <div className="grid-cell-content" style={{}}>
           {city}
           {precip}
+          {groupLabel}
+          {popover}
         </div>
       );
     };
 
     return (
-      <GridView grid={grid} colorFunc={colorFunc} titleFunc={titleFunc} />
+      <GridView grid={grid} colorFunc={colorFunc} titleFunc={titleFunc}
+                onCellClick={this.handleCellClick}
+      />
     );
   }
 
@@ -162,10 +224,13 @@ export class TeacherView extends React.Component<
   }
 
   render() {
-    const simulation = simulationStore.selected;
-    const time = simulation.timeString;
-    const userCount = simulation.presences.size;
-    const usersString = `${userCount} ${userCount === 1 ? 'user' : 'users'}`;
+    const simulation = simulationStore.selected,
+          time = simulation && simulation.timeString,
+          userCount = simulation && simulation.presences.size,
+          usersString = `${userCount} ${userCount === 1 ? 'user' : 'users'}`,
+          copyStudentUrlButton = urlParams.isTesting
+                                  ? <CopyStudentLinkButton />
+                                  : null;
 
     const handleChangeTab = (value: TeacherViewTab) => {
       this.setState({
@@ -176,17 +241,20 @@ export class TeacherView extends React.Component<
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
-          {/* <Tab label="Options" value="configure">
-            <PlaybackOptionsView />
-            <TeacherOptionsView />
-          </Tab> */}
           <Tab label="Control" value="control">
             <CardTitle>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ fontWeight: 'bold', fontSize: "14pt"}}> {time}</div>
+              <div className="teacher-title-card-contents"
+                    style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ fontWeight: 'bold', fontSize: "14pt"}}>{time}</div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div>{simulation.name}</div>
-                  <div>{usersString}</div>
+                  <div>{simulation && simulation.name || ""}</div>
+                  <div className="teacher-status-options">
+                    <div>{usersString}</div>
+                    <div className="teacher-option-buttons">
+                      {copyStudentUrlButton}
+                      <TeacherOptionsButton />
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardTitle>
@@ -197,21 +265,11 @@ export class TeacherView extends React.Component<
                 alignItems: "center"
               }}
             >
-              <div style={styles.wrapper}>
-                <div style={styles.mapAndPrediction}>
+              <div className="teacher-card-media-wrapper" style={styles.wrapper}>
+                <div className="teacher-card-media-map" style={styles.mapAndPrediction}>
                     { this.renderMapView() }
-                  {/*
-                    import { PredictionDisplayView } from "../prediction-display-view"
-                    <PredictionDisplayView />
-                  */}
                 </div>
                   <SegmentedControlView />
-                  {/* <PlaybackControlView /> */}
-                {/*
-                  import { PredictionSelectorView } from "../prediction-selection-view"
-                  <PredictionSelectorView />
-                */}
-
               </div>
             </CardMedia>
           </Tab>

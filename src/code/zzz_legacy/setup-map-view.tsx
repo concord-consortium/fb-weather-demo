@@ -101,14 +101,14 @@ export class SetupMapView extends React.Component<
             <RaisedButton
               label="done"
               primary={true}
-              onTouchTap={() => {
+              onClick={() => {
                 mapConfigStore.deselect();
               }}
             />
             <RaisedButton
               label="delete"
               secondary={true}
-              onTouchTap={() => {
+              onClick={() => {
                 mapConfigStore.delete();
               }}
             />
@@ -125,7 +125,7 @@ export class SetupMapView extends React.Component<
         <FlatButton
           label="add Map"
           primary={true}
-          onTouchTap={() => mapConfigStore.new()}
+          onClick={() => mapConfigStore.new()}
         />
       </div>
     );

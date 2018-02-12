@@ -209,7 +209,7 @@ export class PredictionFormView
           rows={4}
         />
         <CardActions>
-          <FlatButton label="Submit" disabled={!isEnabled} onTouchTap={this.submitPrediction} />
+          <FlatButton label="Submit" disabled={!isEnabled} onClick={this.submitPrediction} />
         </CardActions>
       </CardText>
     );

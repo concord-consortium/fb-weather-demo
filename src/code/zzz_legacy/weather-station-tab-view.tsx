@@ -6,7 +6,7 @@ import { WeatherStationConfigView } from "./weather-station-config-view";
 import { PredictionFormView } from "./prediction-form-view";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { IWeatherStation } from "../models/weather-station";
-import { simulationStore } from "../stores/simulation-store";
+import { simulationStore } from "../models/simulation";
 
 export type StationTab = "configure" | "weather";
 
@@ -46,8 +46,8 @@ export class WeatherStationTabView extends React.Component<
     let name = "";
     let callSign = "";
     let imgUrl = "img/farm.jpg";
-    const simulation = simulationStore.selected;
-    const time = simulation.timeString,
+    const simulation = simulationStore.selected,
+          time = simulation.timeString,
           simulationName = simulationStore.simulationName,
           weatherStation = this.state.station || simulation.presenceStation,
           temperature = weatherStation && weatherStation.temperature,
@@ -111,7 +111,6 @@ export class WeatherStationTabView extends React.Component<
         tab: newTab
       });
     };
-    const simulation = simulationStore.selected;
     const settings = simulation.settings,
           showTemperature = settings && settings.showTempValues,
           showWindValues = settings && settings.showWindValues;
