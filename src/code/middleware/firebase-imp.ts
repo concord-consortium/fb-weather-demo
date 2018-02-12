@@ -93,12 +93,18 @@ export class FirebaseImp {
 
   reqAuth() {
     // const provider = new firebase.auth.GoogleAuthProvider();
-    firebase
-      .auth()
-      //.signInWithRedirect(provider)
-      .signInAnonymously()
-      .then(this.finishAuth)
-      .catch(this.failAuth);
+    // Use Firebase's session persistence so that if a student launches multiple tabs,
+    // they will operate independently rather than interfering with each other.
+    // cf. https://firebase.google.com/docs/auth/web/auth-state-persistence
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+    .then(() => {
+      firebase
+        .auth()
+        //.signInWithRedirect(provider)
+        .signInAnonymously()
+        .then(this.finishAuth)
+        .catch(this.failAuth);
+    });
   }
 
   failAuth = (error: firebase.auth.Error) => {
