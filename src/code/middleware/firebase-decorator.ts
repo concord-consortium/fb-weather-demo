@@ -1,13 +1,21 @@
 import * as firebase from "firebase";
-
 import { onSnapshot, applySnapshot } from "mobx-state-tree";
 import { gFirebase } from "./firebase-imp";
+import { ISimulationSnapshot } from "../models/simulation";
+import { urlParams } from "../utilities/url-params";
+import { cloneDeep } from "lodash";
 
 export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => void) => {
   const pendingRef = gFirebase.refForPath(relativeDataPath);
+  let updateModelFromFirebaseCount = 0;
   const updateModelFromFirebase = (newV:firebase.database.DataSnapshot) => {
-    const v = newV.val();
+    let v: ISimulationSnapshot = newV.val();
     if(v) {
+      // simulation should be stopped on initial teacher launch
+      if (urlParams.isTeacher && (++updateModelFromFirebaseCount === 1) && v.control.isPlaying) {
+        v = cloneDeep(v);
+        v.control.isPlaying = false;
+      }
       applySnapshot(model, v);
     }
   };
@@ -23,11 +31,13 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => v
         presenceRef.update(presence);
       }
     }
-    ref.once('value').then( (newV:firebase.database.DataSnapshot) => {
+    let onValueCount = 0;
+    ref.on('value', (newV:firebase.database.DataSnapshot) => {
       updateModelFromFirebase(newV);
-      ref.on('value', updateModelFromFirebase);
-      onSnapshot(model, (newSnapshot:any) => updateFirebaseFromModel(newSnapshot));
-      if (callBack) { setTimeout(() => callBack(), 1); }
+      if (++onValueCount === 1) {
+        onSnapshot(model, (newSnapshot:any) => updateFirebaseFromModel(newSnapshot));
+        if (callBack) { setTimeout(() => callBack(), 1); }
+      }
     });
   });
 

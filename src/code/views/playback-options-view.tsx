@@ -23,14 +23,24 @@ export class PlaybackOptionsView extends React.Component<
         maxWidth: 250
       }
     };
-    const simulationControl = simulationStore.selected.control;
+    const simulationControl = simulationStore.selected && simulationStore.selected.control;
 
     if (simulationControl) {
-      const chageTimeScale = (e:any, v:string) => simulationControl.setTimeScale(v);
+      const chageTimeScale = (e:any, v:string) => {
+        const newScale = parseInt(v, 10);
+        if (newScale && !isNaN(newScale)) {
+          simulationControl.setTimeScale(newScale);
+        }
+      };
       const timeScale = simulationControl.timeScale;
 
-      const changeUpdateInterval = (e:any, v:string) => simulationControl.setUpdateIntervalS(v);
-      const updateInterval = simulationControl.updateIntervalS;
+      const changeUpdateInterval = (e:any, v:string) => {
+        const newInterval = parseInt(v, 10);
+        if (newInterval && !isNaN(newInterval)) {
+          simulationControl.setUpdateInterval(newInterval);
+        }
+      };
+      const updateInterval = simulationControl.updateInterval;
 
       return (
         <CardText>
@@ -56,6 +66,5 @@ export class PlaybackOptionsView extends React.Component<
         No simulation available at this time.
       </div>
     );
-
   }
 }

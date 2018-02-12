@@ -26,7 +26,10 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loader: "babel-loader",
-        exclude: /node_modules/
+        include: [
+          path.resolve(__dirname, "src"),
+          path.resolve(__dirname, "node_modules/clipboard/src")
+        ],
       },
       // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
       { test: /\.tsx?$/, loader: "awesome-typescript-loader", options: {configFileName: "./tsconfig.json"} },

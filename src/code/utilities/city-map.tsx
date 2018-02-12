@@ -21,7 +21,8 @@ export function cityAnnotation(cellName:string) {
           padding: '0em 0.5em',
           // backgroundColor: 'hsla(255, 0%, 100%, 0.5)',
           borderRadius: '1em',
-          fontWeight: 400
+          fontWeight: 400,
+          pointerEvents: 'none'
         },
         leftLabelStyle: React.CSSProperties = {
           position: 'absolute',

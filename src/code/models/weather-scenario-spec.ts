@@ -1,12 +1,14 @@
 const weatherScenarioSpecs = require("../../json/weather-scenario-specs.json") || [];
+import { IWeatherScenarioSnapshot } from "./weather-scenario";
 
 // preprocess scenarios, e.g. convert TimeSpecs to Dates
 weatherScenarioSpecs.forEach((spec: IWeatherScenarioSpec) => {
-  let mod = spec as any,
+  let mod: IWeatherScenarioSnapshot = spec as any,
         s = spec.startTime,
-        e = spec.endTime;
-  mod.startTime = s ? new Date(s.year, s.month - 1, s.day, s.hour, s.minute) : null;
-  mod.endTime = e ? new Date(e.year, e.month - 1, e.day, e.hour, e.minute) : null;
+        e = spec.endTime,
+        endTime = e ? new Date(Date.UTC(e.year, e.month - 1, e.day, e.hour, e.minute)) : null;
+  mod.startTime = s ? new Date(Date.UTC(s.year, s.month - 1, s.day, s.hour, s.minute)) : null;
+  mod.duration = s && endTime && (endTime.getTime() - mod.startTime.getTime()) / 1000;
 });
 
 export const gWeatherScenarioSpec: IWeatherScenarioSpec =

@@ -11,7 +11,7 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
-import { simulationListStore } from "../stores/simulation-store";
+import { simulationListStore } from "../stores/simulation-list-store";
 import { gWeatherScenarioSpec } from "../models/weather-scenario-spec";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import * as _ from "lodash";
@@ -92,9 +92,9 @@ export class ChooseSimulationView extends React.Component<
 
     return (
       <IconMenu iconButtonElement={this.iconButton()} animated={false}>
-        <MenuItem onTouchTap={copy}>Copy</MenuItem>
-        <MenuItem onTouchTap={rename}>Rename</MenuItem>
-        <MenuItem onTouchTap={rm}>Delete</MenuItem>
+        <MenuItem onClick={copy}>Copy</MenuItem>
+        <MenuItem onClick={rename}>Rename</MenuItem>
+        <MenuItem onClick={rm}>Delete</MenuItem>
       </IconMenu>
     );
   }
@@ -134,7 +134,7 @@ export class ChooseSimulationView extends React.Component<
         <ListItem
           key={name}
           primaryText={name}
-          onTouchTap={() => this.navigateTo(pathString)}
+          onClick={() => this.navigateTo(pathString)}
           rightIconButton={this.rightIconMenu(name)}
         />
       );
@@ -145,12 +145,12 @@ export class ChooseSimulationView extends React.Component<
         label="Ok"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={this.handleClose.bind(this)}
+        onClick={this.handleClose.bind(this)}
       />,
       <FlatButton
         label="Cancel"
         keyboardFocused={true}
-        onTouchTap={this.handleCancel.bind(this)}
+        onClick={this.handleCancel.bind(this)}
       />
     ];
     const showingCopy = this.state.nowShowing === DialogType.Copy;
@@ -174,7 +174,7 @@ export class ChooseSimulationView extends React.Component<
               {visList}
             </List>
             <Toolbar><ToolbarGroup>
-              <FlatButton primary={true} onTouchTap={onNew}> Add Simulation </FlatButton>
+              <FlatButton primary={true} onClick={onNew}> Add Simulation </FlatButton>
             </ToolbarGroup></Toolbar>
           </Tab>
         </Tabs>

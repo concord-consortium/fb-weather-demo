@@ -45,8 +45,8 @@ export class LeafletMapView extends React.Component<
       }
     };
     updateMap.bind(this);
-    const simulation = simulationStore.selected;
-    const baseMap = (simulation.settings && simulation.settings.showBaseMap)
+    const simulation = simulationStore.selected,
+          baseMap = (simulation && simulation.settings && simulation.settings.showBaseMap)
       ? <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
       : null;
     return (
@@ -66,8 +66,8 @@ export class LeafletMapView extends React.Component<
         >
           {baseMap}
           {this.props.weatherStations.map(b => {
-              const simulation = simulationStore.selected;
-              const selectedStation = simulation.selectedStation,
+              const simulation = simulationStore.selected,
+                    selectedStation = simulation && simulation.selectedStation,
                     selectedCallSign = selectedStation && selectedStation.callSign,
                     isSelected = b.callSign === selectedCallSign;
               return <LeafletMapMarker weatherStation={b} key={b.callSign} selected={isSelected}/>;

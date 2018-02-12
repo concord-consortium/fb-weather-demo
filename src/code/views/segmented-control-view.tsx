@@ -1,7 +1,9 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import RaisedButton from "material-ui/RaisedButton";
-//import Slider from 'material-ui/Slider';
+import { MuiThemeProvider } from 'material-ui-next/styles';
+import Button from "material-ui-next/Button";
+import Icon from "material-ui-next/Icon";
+import theme from "../utilities/mui-default-theme";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../models/simulation";
 
@@ -20,30 +22,21 @@ export class SegmentedControlView extends React.Component<
   render() {
     const simulation = simulationStore.selected;
     const isPlaying = !!(simulation && simulation.isPlaying);
-    // const playFirstHalf = () =>  simulation.playFirstHalf();
-    // const playSecondHalf = () => simulation.playSecondHalf();
-    const reset = () => simulation.rewind();
-    // disable dragging (at least for now)
-    // const dragStop = (o:any) => {
-    //   if (simulation) {
-    //     const newTime = this.state.splitTime;
-    //     if(newTime) {
-    //       simulation.setHalfTime(newTime);
-    //     }
-    //   }
-    // };
+    const reset = () => simulation && simulation.rewind();
+    const play = () => simulation && simulation.play();
+    const stop = () => simulation && simulation.stop();
+    const setTime = (time: Date) => simulation && simulation.setTime(time);
 
-    // const change   = (o:any, v:number) => this.setState ( {splitTime: v });
     const startTime = simulation && simulation.startTime;
     const endTime = simulation && simulation.endTime;
-    const halfTime = simulation && simulation.halfTime;
+    const breakTime = simulation && simulation.breakTime;
     const currentTime = simulation && simulation.time;
     const isAtBeginning = currentTime && startTime && currentTime <= startTime;
-    const isAtEnd = currentTime && endTime && currentTime >= endTime;
+    const isAtEnd = currentTime && endTime ? currentTime >= endTime : false;
     const playPauseIcon = isPlaying ? "icon-pause" : "icon-play_arrow";
-    const playPauseAction = isPlaying ? simulation.stop : simulation.play;
-    const skipToTime = simulation && currentTime < halfTime ? halfTime : endTime;
-    const skipAction = () => { if (skipToTime) { simulation.setTime(skipToTime); } };
+    const playPauseAction = isPlaying ? stop : play;
+    const skipToTime = currentTime && breakTime && currentTime < breakTime ? breakTime : endTime;
+    const skipAction = () => { if (skipToTime) { setTime(skipToTime); } };
     const style:ComponentStyleMap = {
       container: {
         display: "flex",
@@ -53,9 +46,6 @@ export class SegmentedControlView extends React.Component<
         alignItems: "center"
       },
       buttonStyle: {
-        padding: "0 4px"
-      },
-      skipButtonStyle: {
         marginLeft: 4
       },
       iconStyle: {
@@ -64,47 +54,45 @@ export class SegmentedControlView extends React.Component<
       }
     };
     return(
-      <div style={style.container} >
+      <MuiThemeProvider theme={theme}>
+        <div style={style.container} >
           <div>
-            <RaisedButton
+            <Button variant="raised"
               style={style.buttonStyle}
               disabled={!simulation || isAtBeginning || isPlaying}
-              onTouchTap={reset}
-              icon={<i className="icon-refresh" style={style.iconStyle} />}
-              label="Reset"
-              primary={true}
-            />
-            <RaisedButton
-              buttonStyle={style.buttonStyle}
+              onClick={reset}
+              color="primary"
+            >
+              <Icon className="icon-refresh" style={style.iconStyle}/>
+              Reset
+            </Button>
+            <Button variant="raised"
+              style={style.buttonStyle}
               disabled={!simulation || isAtEnd}
-              onTouchTap={playPauseAction}
-              icon={<i className={playPauseIcon} style={style.iconStyle} />}
-              label={isPlaying ? "Pause" : "Play"}
-              primary={true}
-            />
-            <RaisedButton
-              buttonStyle={style.skipButtonStyle}
+              onClick={playPauseAction}
+              color="primary"
+            >
+              <Icon className={playPauseIcon} style={style.iconStyle}/>
+              {isPlaying ? "Pause" : "Play"}
+            </Button>
+            <Button variant="raised"
+              style={style.buttonStyle}
               disabled={!simulation || isPlaying || isAtEnd}
-              onTouchTap={skipAction}
-              icon={<i className="icon-skip_next" style={style.iconStyle} />}
-              label={"Skip"}
-              primary={true}
-            />
+              onClick={skipAction}
+              color="primary"
+            >
+              <Icon className="icon-skip_next" style={style.iconStyle}/>
+              Skip
+            </Button>
           </div>
           <TimelineView
             startTime={startTime}
-            halfTime={halfTime}
+            breakTime={breakTime}
             currentTime={currentTime}
             endTime={endTime}
-            />
-          {/* <Slider
-            min={0}
-            max={1}
-            style={{width: "80%"}}
-            onChange={change}
-            onDragStop={dragStop}
-          /> */}
+          />
         </div>
+      </MuiThemeProvider>
     );
   }
 }

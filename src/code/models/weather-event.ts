@@ -7,8 +7,8 @@ class WeatherEvent {
   stations: any;
   stationsPromise: any;
   error: any;
-  startTime: Date;
-  endTime: Date;
+  startTime: Date;  // UTC Date
+  duration: number; // seconds
 
   constructor(url: string) {
     this.url = url;
@@ -31,10 +31,11 @@ class WeatherEvent {
                                         return name.toLowerCase() === "time";
                                       });
                     if (timeIndex && station.rows) {
+                      let endTime: Date = this.startTime;
                       _.forEach(station.rows, (row) => {
                         const timeStr = row[timeIndex],
                               // seems like weather station times are UTC?
-                              time = moment(timeStr, "M/D/YYYY H:m"),
+                              time = moment.utc(timeStr, "M/D/YYYY H:m"),
                               jsTime = time.toDate();
                         if (time.isValid()) {
                           row[timeIndex] = jsTime;
@@ -42,11 +43,14 @@ class WeatherEvent {
                           if (!this.startTime || (jsTime < this.startTime)) {
                             this.startTime = jsTime;
                           }
-                          if (!this.endTime || (jsTime > this.endTime)) {
-                            this.endTime = jsTime;
+                          if (!endTime || (jsTime > endTime)) {
+                            endTime = jsTime;
                           }
                         }
                       });
+                      if (endTime) {
+                        this.duration = endTime && (endTime.getTime() - this.startTime.getTime()) / 1000;
+                      }
                     }
                   });
                 }
