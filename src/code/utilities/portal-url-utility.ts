@@ -1,4 +1,4 @@
-import { urlParams, StudentLaunchParams, TeacherReportParams } from "./url-params";
+import { urlParams, StudentLaunchParams, TeacherReportParams, setStudentJwt, getStudentJwt } from "./url-params";
 import { v4 as uuid } from "uuid";
 import * as jwt from 'jsonwebtoken';
 
@@ -61,6 +61,7 @@ export class PortalUrlUtility {
     offeringUrl?: string;
     activityName?: string;
     activityUrl?: string;
+    firebaseKey: string;
 
     constructor() {
       this.isTeacher = urlParams.isTeacher;
@@ -70,33 +71,52 @@ export class PortalUrlUtility {
     }
 
     async getFirebaseKey():Promise<string> {
-      if (urlParams.isPortalTeacher) {
-        await this.extractTeacherInfo(urlParams.params as TeacherReportParams);
+      if (!this.firebaseKey) {
+        if (urlParams.isPortalTeacher) {
+          await this.extractTeacherInfo(urlParams.params as TeacherReportParams);
+        }
+        else if (urlParams.isPortalStudent) {
+          await this.extractStudentInfo(urlParams.params as StudentLaunchParams);
+        }
+        this.firebaseKey = `${this.domain}-${this.classId}-${this.offeringId}`;
       }
-      else if (urlParams.isPortalStudent) {
-        await this.extractStudentInfo(urlParams.params as StudentLaunchParams);
-      }
-      return `${this.domain}-${this.classId}-${this.offeringId}`;
+      return this.firebaseKey;
     }
 
     async extractStudentInfo(params: StudentLaunchParams) {
-      const domain = params.domain && extractRawDomain(params.domain);
-      if (!params.domain || !domain) { return; }
-      this.domain = extractDomain(params.domain) || '';
-      const jwtUrl = `${domain}/api/v1/jwt/firebase?firebase_app=pc-weather`;
-      const authorizationHeader = `Bearer ${params.token}`;
-      const headers = ({headers: {Authorization: authorizationHeader}});
-      let validJsonResponse = true;
-      const response = await fetch(jwtUrl, headers);
-      const json = await response.json()
-                          .catch(error => validJsonResponse = false);
-      if (!response.ok) {
-        throw extractError(response, validJsonResponse ? json : undefined);
+      let domain = params.domain && extractRawDomain(params.domain),
+          jwToken = null as (string | null);
+      if (params.token && params.domain && domain) {
+        // retrieve firebase jwt from portal
+        const jwtUrl = `${domain}/api/v1/jwt/firebase?firebase_app=pc-weather`;
+        const authorizationHeader = `Bearer ${params.token}`;
+        const headers = ({headers: {Authorization: authorizationHeader}});
+        let validJsonResponse = true;
+        const response = await fetch(jwtUrl, headers);
+        const json = await response.json()
+                            .catch(error => validJsonResponse = false);
+        if (!response.ok) {
+          throw extractError(response, validJsonResponse ? json : undefined);
+        }
+        jwToken = json.token;
+        // save firebase jwt in session storage
+        setStudentJwt(domain, jwToken);
       }
-      const _authToken = jwt.decode(json.token);
+      else {
+        // retrieve firebase jwt from session storage
+        const jwtInfo = getStudentJwt();
+        if (jwtInfo) {
+          domain = jwtInfo.domain;
+          jwToken = jwtInfo.token;
+        }
+      }
+      this.domain = extractDomain(domain || '');
+      // decode firebase jwt
+      const _authToken = jwToken ? jwt.decode(jwToken) : null;
       if (_authToken && (typeof _authToken === 'object')) {
         const authToken: IPortalJwt = _authToken as IPortalJwt;
         // this.isTeacher = authToken.claims.user_type === 'teacher';
+        // extract class ID from firebase jwt
         if (authToken.class_info_url) {
           const match = /classes\/([^\/]*)/.exec(authToken.class_info_url);
           const classId = match && match[1];
@@ -104,6 +124,7 @@ export class PortalUrlUtility {
             this.classId = classId;
           }
         }
+        // extract offering ID from firebase jwt
         if (authToken.claims.offering_id) {
           this.offeringId = String(authToken.claims.offering_id);
         }
@@ -134,3 +155,5 @@ export class PortalUrlUtility {
       this.domain = extractDomain((urlParams.params as TeacherReportParams).offering);
     }
 }
+
+export const gPortalUrlUtility = new PortalUrlUtility();

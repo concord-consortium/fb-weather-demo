@@ -1,6 +1,10 @@
 import * as queryString from "query-string";
 import { clone } from "lodash";
 
+const domainJwtItemName = 'jwtDomain',
+      teacherJwtItemName = 'jwtTeacher',
+      studentJwtItemName = 'jwtStudent';
+
 export interface StudentLaunchParams {
   domain: string;
   domain_uid: string;
@@ -41,9 +45,47 @@ function hasTestTestingParam(params: UnionParams): params is TestingParams {
   return ((params as TestingParams).test !== undefined);
 }
 
+export function getTeacherJwt() {
+  const domain = sessionStorage.getItem(domainJwtItemName),
+        token = sessionStorage.getItem(teacherJwtItemName);
+  return domain && token ? { domain, token } : null;
+}
+
+export function setTeacherJwt(domainJwt: string | null, teacherJwt: string | null) {
+  if (domainJwt && teacherJwt) {
+    sessionStorage.setItem(domainJwtItemName, domainJwt);
+    sessionStorage.setItem(teacherJwtItemName, teacherJwt);
+    // can't have both student and teacher
+    sessionStorage.removeItem(studentJwtItemName);
+  }
+  else {
+    sessionStorage.removeItem(domainJwtItemName);
+    sessionStorage.removeItem(teacherJwtItemName);
+  }
+}
+
+export function getStudentJwt() {
+  const domain = sessionStorage.getItem(domainJwtItemName),
+        token = sessionStorage.getItem(studentJwtItemName);
+  return domain && token ? { domain, token } : null;
+}
+
+export function setStudentJwt(domainJwt: string | null, studentJwt: string | null) {
+  if (domainJwt && studentJwt) {
+    sessionStorage.setItem(domainJwtItemName, domainJwt);
+    sessionStorage.setItem(studentJwtItemName, studentJwt);
+    // can't have both student and teacher
+    sessionStorage.removeItem(teacherJwtItemName);
+  }
+  else {
+    sessionStorage.removeItem(domainJwtItemName);
+    sessionStorage.removeItem(studentJwtItemName);
+  }
+}
+
 const params = queryString.parse(window.location.search),
-      isPortalTeacher = isPortalTeacherParams(params),
-      isPortalStudent = !isPortalTeacher && isPortalStudentParams(params),
+      isPortalTeacher = isPortalTeacherParams(params) || !!getTeacherJwt(),
+      isPortalStudent = !isPortalTeacher && isPortalStudentParams(params) || !!getStudentJwt(),
       isStudent = isPortalStudent || hasStudentTestingParam(params),
       isTeacher = !isStudent,
       // if `test` URL parameter is present, or if we're not launched from portal,

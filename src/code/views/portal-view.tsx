@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { Card, CardText, CardTitle } from "material-ui/Card";
 import { withRouter } from "react-router";
 
-import { PortalUrlUtility, defaultSimulationName } from "../utilities/portal-url-utility";
+import { gPortalUrlUtility, defaultSimulationName } from "../utilities/portal-url-utility";
 import { captureSimulationMetadata } from "../models/simulation-metadata";
 import { gFirebase } from "../middleware/firebase-imp";
 import * as firebase from "firebase";
@@ -55,9 +55,8 @@ class _PortalView extends React.Component<
   }
 
   componentDidMount() {
-    const portalUrlUtility = new PortalUrlUtility();
-    const showTeacher = portalUrlUtility.isTeacher;
-    portalUrlUtility.getFirebaseKey().then( (key) => {
+    const showTeacher = gPortalUrlUtility.isTeacher;
+    gPortalUrlUtility.getFirebaseKey().then( (key) => {
       this.setState({simulationKey:key, showTeacher: showTeacher});
 
       // remove transient url params so they don't affect page reload
@@ -68,11 +67,11 @@ class _PortalView extends React.Component<
         const launchTime = new Date();
         captureSimulationMetadata({
           launchOrigin: windowLocationOrigin(),
-          classId: portalUrlUtility.classId,
-          offeringId: portalUrlUtility.offeringId,
-          offeringUrl: portalUrlUtility.offeringUrl,
-          activityName: portalUrlUtility.activityName,
-          activityUrl: portalUrlUtility.activityUrl,
+          classId: gPortalUrlUtility.classId,
+          offeringId: gPortalUrlUtility.offeringId,
+          offeringUrl: gPortalUrlUtility.offeringUrl,
+          activityName: gPortalUrlUtility.activityName,
+          activityUrl: gPortalUrlUtility.activityUrl,
           launchTime: launchTime.toString(),
           utcLaunchTime: launchTime.toISOString()
         });
