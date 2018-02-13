@@ -7,6 +7,7 @@ import { PortalUrlUtility, defaultSimulationName } from "../utilities/portal-url
 import { captureSimulationMetadata } from "../models/simulation-metadata";
 import { gFirebase } from "../middleware/firebase-imp";
 import * as firebase from "firebase";
+import { removeUrlParams } from "../utilities/url-params";
 
 function windowLocationOrigin() {
   // cf. https://tosbourn.com/a-fix-for-window-location-origin-in-internet-explorer/
@@ -44,11 +45,25 @@ class _PortalView extends React.Component<
     };
   }
 
+  updateUrlParams() {
+    const orgParams = window.location.search,
+          newParams = removeUrlParams(['token', 'domain', 'domain_uid']);
+    if (orgParams && (orgParams !== newParams)) {
+      const newUrl = window.location.href.replace(orgParams, newParams);
+      history.replaceState(null, "", newUrl);
+    }
+  }
+
   componentDidMount() {
     const portalUrlUtility = new PortalUrlUtility();
     const showTeacher = portalUrlUtility.isTeacher;
     portalUrlUtility.getFirebaseKey().then( (key) => {
       this.setState({simulationKey:key, showTeacher: showTeacher});
+
+      // remove transient url params so they don't affect page reload
+      this.updateUrlParams();
+
+      // extract additional user/presence information
       if (showTeacher) {
         const launchTime = new Date();
         captureSimulationMetadata({

@@ -1,4 +1,5 @@
 import * as queryString from "query-string";
+import { clone } from "lodash";
 
 export interface StudentLaunchParams {
   domain: string;
@@ -54,3 +55,14 @@ export const urlParams = {
   params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting
 };
 
+// Returns a modified URL query/search string after removing the specified params
+export function removeUrlParams(paramsToRemove: string[]) {
+  const newParams = clone(urlParams.params);
+  paramsToRemove.forEach((param) => {
+    if (newParams[param] != null) {
+      delete newParams[param];
+    }
+  });
+  const newParamsStr = queryString.stringify(newParams);
+  return newParamsStr ? '?' + newParamsStr : '';
+}
