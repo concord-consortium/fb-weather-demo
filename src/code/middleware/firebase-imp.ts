@@ -1,7 +1,9 @@
 import * as firebase from "firebase";
+import { urlParams } from "../utilities/url-params";
 
 const DEFAULT_SIMULATION = "default";
-const DEFAULT_VERSION_STRING = "1.3.0-pre5";
+const DEFAULT_VERSION_STRING = "1.3.0-pre6";
+const kDatabaseSuffix = urlParams.isTesting ? '-test' : '';
 
 interface FirebaseListener {
   setState(state: any): void;
@@ -20,7 +22,7 @@ interface FirebaseConfig {
 
 export class FirebaseImp {
   simulationID: string;
-  user: firebase.User;
+  user: firebase.User | null;
   version: string;
   listeners: FirebaseListener[];
   simulationMap: [{key:string, value:any}];
@@ -29,10 +31,13 @@ export class FirebaseImp {
   simulationsRef: firebase.database.Reference;
   pendingCallbacks: Function[];
   postConnect: Promise<FirebaseImp>;
+  isSignedOut: boolean;
 
   constructor() {
     this.simulationID = `${DEFAULT_SIMULATION}`;
     this.version = DEFAULT_VERSION_STRING;
+    this.user = null;
+    this.isSignedOut = false;
     this.pendingCallbacks = [];
     const configs: { [index: string]: FirebaseConfig } = {
       old: {
@@ -66,19 +71,21 @@ export class FirebaseImp {
 
   initFirebase() {
     firebase.initializeApp(this.config);
-    const finishAuth = this.finishAuth.bind(this);
-    const reqAuth = this.reqAuth.bind(this);
-    const log = this.log.bind(this);
     let auth = firebase.auth();
     const imp = this;
-    this.postConnect = new Promise(function(resolve:Function, reject:Function) {
-      auth.onAuthStateChanged(function(user: firebase.User | null) {
-        if (user) {
-          log(user.displayName + " authenticated");
-          finishAuth({ user: user } );
+    this.postConnect = new Promise((resolve:Function, reject:Function) => {
+      auth.onAuthStateChanged((user: firebase.User | null) => {
+        if (this.isSignedOut) {
+          this.user = null;
+          this.dataRef.off();
+        }
+        else if (user) {
+          this.log(user.displayName + " authenticated");
+          this.finishAuth({ user: user } );
           resolve(imp);
-        } else {
-          reqAuth();
+        }
+        else {
+          this.reqAuth();
         }
       });
     });
@@ -90,17 +97,17 @@ export class FirebaseImp {
       .auth()
       //.signInWithRedirect(provider)
       .signInAnonymously()
-      .then(this.finishAuth.bind(this))
-      .catch(this.failAuth.bind(this));
+      .then(this.finishAuth)
+      .catch(this.failAuth);
   }
 
-  failAuth(error: firebase.auth.Error) {
+  failAuth = (error: firebase.auth.Error) => {
     const errorMessage = error.message;
     const email = (error as any).email || ""; // only some errors have email
     this.error(["could not authenticate", errorMessage, email].join(" "));
   }
 
-  finishAuth(result: { user: firebase.User }) {
+  finishAuth = (result: { user: firebase.User }) => {
     this.user = result.user;
     this.setDataRef();
     this.log("logged in");
@@ -112,8 +119,19 @@ export class FirebaseImp {
     this.pendingCallbacks=[];
   }
 
+  signOut() {
+    if (!this.isSignedOut || this.user) {
+      this.isSignedOut = true;
+      // sign out the current user (de-authenticate)
+      firebase.auth().signOut();
+      // disconnect from the firebase server (and prevent automatic reconnect)
+      firebase.database().goOffline();
+    }
+  }
+
   get basePath() {
-    return DEFAULT_VERSION_STRING.replace(/\./g, "_");
+    const versionString = DEFAULT_VERSION_STRING.replace(/\./g, "_");
+    return `${versionString}${kDatabaseSuffix}`;
   }
 
   setDataRef() {

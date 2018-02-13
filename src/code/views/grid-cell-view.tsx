@@ -1,13 +1,13 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { IGridCell } from "../models/grid-cell";
+import { cellName, IGridCell } from "../models/grid-cell";
 
 export interface GridCellProps {
   cell: IGridCell;
   size?: number ;
   color?: string;
   textColor?: string;
-  cellClick?: (evt:any) => void;
+  onCellClick?: (cell:IGridCell|null, evt:React.MouseEvent<HTMLElement>) => void;
   colorFunc?: (cell:IGridCell|null) => string;
   titleFunc?: (cell:IGridCell|null) => any;
   rollOverFunc?:(cell:IGridCell|null) => any;
@@ -44,7 +44,7 @@ export class GridCellView extends React.Component<
   }
 
   render() {
-    const { color, textColor, colorFunc, cell, cellClick  }  = this.props;
+    const { color, textColor, colorFunc, cell, onCellClick } = this.props;
     const border = "1px solid white";
     const displayColor = colorFunc ? colorFunc(cell) : color;
     const cellStyle:React.CSSProperties = {
@@ -74,14 +74,17 @@ export class GridCellView extends React.Component<
         ? hoverContent
         : normalContent;
 
-    const clickHandler = cellClick ? (e:any) => cellClick(cell) : undefined;
+    const clickHandler = onCellClick ? (e:any) => onCellClick(cell, e) : undefined;
+    const cellLabel = cellName(cell.row, cell.column);
+    const cellLabelClass = `grid-cell-label-${cellLabel}`;
     return (
       <div
+        className={`grid-cell-view ${cellLabelClass}`}
         style={cellStyle}
         onMouseOut = { ()=>this.mouseOut()  }
         onMouseOver= { ()=>this.mouseOver() }
         onClick = { clickHandler }
-        >
+      >
         {content}
       </div>
     );

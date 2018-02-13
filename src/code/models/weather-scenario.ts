@@ -8,17 +8,16 @@ export const StationSpec = types.model({
 });
 export type IStationSpec = typeof StationSpec.Type;
 
-export const WeatherScenario = types.model('WeatherScenario', {
-  id: types.identifier(types.string),
-  name: types.string,
-  eventUrl: types.string,
-  startTime: types.maybe(types.Date),
-  endTime: types.maybe(types.Date),
-  utcOffset: types.maybe(types.number),
-  stations: types.maybe(types.array(StationSpec)),
-  mapConfig: MapConfig
-}, {
-  // volatile
-}, {
-});
+export const WeatherScenario = types
+  .model('WeatherScenario', {
+    id: types.identifier(types.string),
+    name: types.string,
+    eventUrl: types.string,
+    startTime: types.maybe(types.Date),   // UTC Date
+    duration: types.maybe(types.number),  // seconds
+    utcOffset: types.maybe(types.number),
+    stations: types.maybe(types.array(StationSpec)),
+    mapConfig: MapConfig
+  });
 export type IWeatherScenario = typeof WeatherScenario.Type;
+export type IWeatherScenarioSnapshot = typeof WeatherScenario.SnapshotType;

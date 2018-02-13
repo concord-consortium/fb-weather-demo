@@ -1,23 +1,10 @@
-import * as queryString from "query-string";
+import { urlParams, StudentLaunchParams, TeacherReportParams } from "./url-params";
+import { v4 as uuid } from "uuid";
 
-interface StudentLaunchParams {
-  domain: string;
-  class_info_url: string;
-  domain_uid: string;
-  externalId: string;
-  logging: boolean;
-  returnUrl: string;
-}
-
-interface TeacherReportParams {
-  offering: string;
-  token: string;
-}
-
-function isTeacherParams(params: StudentLaunchParams | TeacherReportParams): params is TeacherReportParams {
-  return ((params as TeacherReportParams).offering !==  undefined);
-}
-
+export const defaultSimulationName = uuid(),
+             defaultDomain = defaultSimulationName.substr(0, 18),
+             defaultClass = defaultSimulationName.substr(19, 4),
+             defaultOffering = defaultSimulationName.substr(24);
 
 function extractDomain(url:string) {
   const domainMatcher = /https?:\/\/([^\/]*)/i;
@@ -25,33 +12,44 @@ function extractDomain(url:string) {
   if(matches && matches.length > 0) {
     return matches[1].replace(/\./g,"_");
   }
-  return "fake_domain";
+  return "no_domain";
 }
 
 export class PortalUrlUtility {
-    params: StudentLaunchParams | TeacherReportParams;
     domain: string;
     classId: string;
-    isTeacher: boolean;
+    offeringId: string;
+    offeringUrl?: string;
+    activityName?: string;
+    activityUrl?: string;
 
     constructor() {
-      const q = queryString;
-      this.params = q.parse(window.location.search);
-      this.isTeacher = isTeacherParams(this.params);
+      this.domain = defaultDomain;
+      this.classId = defaultClass;
+      this.offeringId = defaultOffering;
+    }
+
+    get isTeacher() {
+      return urlParams.isTeacher;
     }
 
     async getFirebaseKey():Promise<string> {
-      if (this.isTeacher) {
-        await this.extractTeacherInfo(this.params as TeacherReportParams);
+      if (urlParams.isPortalTeacher) {
+        await this.extractTeacherInfo(urlParams.params as TeacherReportParams);
       }
-      else {
-        await this.extractStudentInfo(this.params as StudentLaunchParams);
+      else if (urlParams.isPortalStudent) {
+        await this.extractStudentInfo(urlParams.params as StudentLaunchParams);
       }
+      // We don't currently have a good means of determining the offeringId
+      // as a student, so we leave off for now until it becomes available.
+      // Until then, simulations are unique to the class, not the offering.
+      // Scott suggested that the offeringId could be incorporated into the JWT.
+      // return `${this.domain}-${this.classId}-${this.offeringId}`;
       return `${this.domain}-${this.classId}`;
     }
 
     async extractStudentInfo(params: StudentLaunchParams) {
-      this.classId = params.class_info_url && params.class_info_url.split("/").pop() || "💀";
+      this.classId = params.class_info_url && params.class_info_url.split("/").pop() || "no_class";
       this.domain = extractDomain(params.domain);
     }
 
@@ -60,8 +58,17 @@ export class PortalUrlUtility {
       const headers = ({headers: {Authorization: authorizationHeader}});
       const response = await fetch(params.offering, headers);
       const reportData = await response.json();
-      this.classId = `${reportData[0].clazz_id}`;
-      this.domain  = extractDomain((this.params as TeacherReportParams).offering);
-    }
+      // class reports return an array; offering reports return a single entry
+      const reportEntry = Array.isArray(reportData) ? reportData[0] : reportData;
+      const match = /offerings\/([^\/]*)/.exec(params.offering);
+      this.classId = `${reportEntry.clazz_id}`;
+      if (match && match[1]) {
+        this.offeringId = match[1];
+      }
+      this.offeringUrl = params.offering;
+      this.activityName = reportData.activity;
+      this.activityUrl = reportData.activity_url;
 
+      this.domain = extractDomain((urlParams.params as TeacherReportParams).offering);
+    }
 }

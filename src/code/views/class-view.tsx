@@ -13,9 +13,9 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewState> {
   }
 
   render() {
-    const simulation = simulationStore.selected;
-    const time = simulation.timeString;
-    const weatherStations = (simulation.stations && simulation.stations.stations) || [];
+    const simulation = simulationStore.selected,
+          time = simulation && simulation.timeString,
+          weatherStations = simulation && simulation.stations && simulation.stations.stations || [];
     return (
       <Card className="ClassView">
         <Tabs>
@@ -31,7 +31,7 @@ export class ClassView extends React.Component<ClassViewProps, ClassViewState> {
               }}
             >
               <LeafletMapView
-                mapConfig={simulationStore.selected.mapConfig}
+                mapConfig={simulation && simulation.mapConfig}
                 interaction={false}
                 weatherStations={weatherStations}
                 width={800}
