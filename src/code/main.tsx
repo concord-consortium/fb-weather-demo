@@ -30,8 +30,8 @@ const log = function(msg: string) {
 gFirebase.postConnect.then( (imp:FirebaseImp)=> {
   imp.dataRef.once('value').then((snapshot:any) => {
 
-    const updateSession = function (nextSimulation: string) {
-      if (nextSimulation && nextSimulation) {
+    const updateSession = function (nextSimulation: string, callback?: () => void) {
+      if (nextSimulation) {
         simulationStore.select(nextSimulation);
         const logString = `
           ================================================
@@ -43,53 +43,53 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
       else {
         hashHistory.push('/simulations/choose');
       }
+      if (callback) { callback(); }
     };
 
     const simulationChanged = function (
       prevState: any,
       nextState: any,
       replace: any,
-      callback: Function | undefined
+      callback: () => void | undefined
     ) {
-      updateSession(nextState.params.simulationName);
-      if (callback) {
-        callback();
-      }
-    };
-
-    const onEnterSimulation = function (
-      nextState: any,
-      replace: any,
-      callback: Function | undefined
-    ) {
-      updateSession(nextState.params.simulationName);
-      if (callback) {
-        callback();
-      }
+      updateSession(nextState.params.simulationName, callback);
     };
 
     const setTeacherMode = function (
       nextState: any,
       replace: any,
-      callback: Function | undefined
+      callback: () => void | undefined
     ) {
+      const simulationName = nextState.params.simulationName;
+      if (simulationName) {
+        updateSession(simulationName);
+      }
       const simulation = simulationStore.selected;
       if (simulation) {
         simulation.setIsTeacherView(true);
-        if(callback) { callback(); }
       }
+      if(callback) { callback(); }
     };
 
     const setStudentMode = function (
       nextState: any,
       replace: any,
-      callback: Function | undefined
+      callback: () => void | undefined
     ) {
-      const simulation = simulationStore.selected;
-      if (simulation) {
-        simulation.setIsTeacherView(false);
-        if(callback) { callback(); }
+      const simulationName = nextState.params.simulationName;
+      if (simulationName) {
+        // students must wait until teacher has started simulation
+        gFirebase.waitForPathToExist(`simulations/${simulationName}`, (snapshot: any) => {
+          if (simulationName) {
+            updateSession(simulationName);
+          }
+          const simulation = simulationStore.selected;
+          if (simulation) {
+            simulation.setIsTeacherView(false);
+          }
+        });
       }
+      if(callback) { callback(); }
     };
 
     ReactDOM.render(
@@ -100,10 +100,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
         >
           <IndexRedirect to="/portal-launch" />
           <Route path="/portal-launch" component={PortalView} />
-          <Route path="/simulations"
-                onChange={simulationChanged}
-                onEnter={onEnterSimulation}
-          >
+          <Route path="/simulations" onChange={simulationChanged}>
             {/* <IndexRedirect to="choose" /> */}
             {/* <Route path="choose" component={ChooseSimulationView} /> */}
             <Route path="/simulations/:simulationName">

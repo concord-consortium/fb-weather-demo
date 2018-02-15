@@ -6,7 +6,6 @@ import { withRouter } from "react-router";
 import { gPortalUrlUtility, defaultSimulationName } from "../utilities/portal-url-utility";
 import { captureSimulationMetadata } from "../models/simulation-metadata";
 import { gFirebase } from "../middleware/firebase-imp";
-import * as firebase from "firebase";
 import { removeUrlParams } from "../utilities/url-params";
 
 function windowLocationOrigin() {
@@ -79,20 +78,14 @@ class _PortalView extends React.Component<
         this.props.router.push(this.nextUrl(key));
       }
       else {
+        // TODO: should be able to eliminate this wait, since there's already
+        // a wait in place at the StudentTabsView, but when we proceed from here
+        // the simulation gets created before we get there.
         // students must wait until teacher has started simulation
-        gFirebase.refForPath(`simulations/${key}`)
-          .then((ref:firebase.database.Reference) => {
-            const handleSnapshot = (snapshot: firebase.database.DataSnapshot | null) => {
-              if (snapshot && snapshot.val()) {
-                // remove handler once simulation exists
-                ref.off('value', handleSnapshot);
-                // advance to student/weather station view
-                this.props.router.push(this.nextUrl(key));
-              }
-            };
-            // attach handler for detecting simulation existence
-            ref.on('value', handleSnapshot);
-          });
+        gFirebase.waitForPathToExist(`simulations/${key}`, (snapshot: any) => {
+          // advance to student/weather station view
+          this.props.router.push(this.nextUrl(key));
+        });
       }
     })
     .catch((error) => {

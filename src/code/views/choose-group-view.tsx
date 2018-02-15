@@ -35,7 +35,7 @@ export class ChooseGroupView
     super(props);
     const simulation = simulationStore.selected,
           chosenGroup = simulation && simulation.groupName || "";
-    this.state = {chosenGroup: chosenGroup};
+    this.state = { chosenGroup };
   }
 
   setGroup(event:any, index:number, name:string) {
@@ -47,6 +47,44 @@ export class ChooseGroupView
     }
   }
 
+  isWaitingForSimulation() {
+    return !simulationStore.selected;
+  }
+
+  getCardTitle() {
+    return this.isWaitingForSimulation()
+            ? "Waiting for simulation to begin..."
+            : "Select your Group";
+  }
+
+  renderSelect() {
+    if (this.isWaitingForSimulation()) { return null; }
+
+    const optionFor = (group:string) => {
+            return  <MenuItem value={group} key={group} primaryText={group} />;
+          },
+          simulation = simulationStore.selected,
+          availableGroups = simulation && simulation.availableGroups,
+          selectedGroup = simulation && simulation.selectedGroup;
+    let groupOptions:string[] = [];
+
+    if (availableGroups) {
+      groupOptions = availableGroups.map((g:IGroup) => g.name);
+      if (selectedGroup) {
+        groupOptions.push(selectedGroup.name);
+      }
+    }
+
+    return (
+      <SelectField
+        floatingLabelText="Team Name"
+        value={this.state.chosenGroup}
+        onChange={ (e,i,v) => this.setGroup(e,i,v) }
+      >
+        { groupOptions.map( opt => optionFor(opt)) }
+      </SelectField>
+    );
+  }
 
   renderChooseButton() {
     if(this.state.chosenGroup === "") { return <div/>; }
@@ -61,36 +99,13 @@ export class ChooseGroupView
     );
   }
 
-
   render() {
-
-    const optionFor = (group:string) => {
-                        return  <MenuItem value={group} key={group} primaryText={group} />;
-                      },
-          chooseButton = this.renderChooseButton(),
-          simulation = simulationStore.selected,
-          availableGroups = simulation && simulation.availableGroups,
-          selectedGroup = simulation && simulation.selectedGroup;
-    let groupOptions:string[] = [];
-    if(availableGroups) {
-      groupOptions = availableGroups.map((g:IGroup) => g.name);
-      if(selectedGroup) {
-        groupOptions.push(selectedGroup.name);
-      }
-    }
-
     return (
       <div>
-        <CardTitle>Select your Group</CardTitle>
+        <CardTitle>{this.getCardTitle()}</CardTitle>
         <CardText>
-          <SelectField
-            floatingLabelText="Team Name"
-            value={this.state.chosenGroup}
-            onChange={ (e,i,v) => this.setGroup(e,i,v) }
-          >
-            { groupOptions.map( opt => optionFor(opt)) }
-          </SelectField>
-          { chooseButton }
+          { this.renderSelect() }
+          { this.renderChooseButton() }
         </CardText>
       </div>
     );
