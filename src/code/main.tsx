@@ -80,9 +80,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
       if (simulationName) {
         // students must wait until teacher has started simulation
         gFirebase.waitForPathToExist(`simulations/${simulationName}`, (snapshot: any) => {
-          if (simulationName) {
-            updateSession(simulationName);
-          }
+          updateSession(simulationName);
           const simulation = simulationStore.selected;
           if (simulation) {
             simulation.setIsTeacherView(false);
