@@ -12,7 +12,8 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => v
     let v: ISimulationSnapshot = newV.val();
     if(v) {
       // simulation should be stopped on initial teacher launch
-      if (urlParams.isTeacher && (++updateModelFromFirebaseCount === 1) && v.control.isPlaying) {
+      if (urlParams.isTeacher && (++updateModelFromFirebaseCount === 1) &&
+          v.control && v.control.isPlaying) {
         v = cloneDeep(v);
         v.control.isPlaying = false;
       }

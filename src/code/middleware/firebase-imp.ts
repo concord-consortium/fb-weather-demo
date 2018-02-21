@@ -179,6 +179,21 @@ export class FirebaseImp {
     });
   }
 
+  waitForPathToExist(path: string, callback: (snapshot: any) => void) {
+    gFirebase.refForPath(path)
+      .then((ref:firebase.database.Reference) => {
+        const handleSnapshot = (snapshot: firebase.database.DataSnapshot | null) => {
+          if (snapshot && snapshot.val()) {
+            // remove handler once path exists
+            ref.off('value', handleSnapshot);
+            // let caller know that the path exists
+            callback(snapshot.val());
+          }
+        };
+        // attach handler for detecting path existence
+        ref.on('value', handleSnapshot);
+      });
+  }
 }
 
 export const gFirebase = new FirebaseImp();
