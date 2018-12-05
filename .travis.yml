@@ -1,11 +1,14 @@
+sudo: false
 language: node_js
-node_js:
-  - 6
+node_js: 8
 install:
   - travis_retry yarn
   - travis_retry gem install s3_website -v 2.12.3
-before_script: webpack
-script: npm test && deploy/s3_deploy.sh
+script:
+- npm run build
+- npm run test
+after_script:
+- deploy/s3_deploy.sh
 cache:
   yarn: true
   directories:

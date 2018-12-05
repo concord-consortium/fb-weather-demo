@@ -15,9 +15,9 @@ import { PortalView } from "./views/portal-view";
 // import { SetupGridView } from "./views/setup-grid-view";
 import { simulationStore } from "./models/simulation";
 
-require("!style-loader!css-loader!leaflet/dist/leaflet.css");
-require("!style-loader!css-loader!../html/loading.css");
-require("!style-loader!css-loader!../html/weather.css");
+require("leaflet/dist/leaflet.css");
+require("../html/loading.css");
+require("../html/weather.css");
 
 injectTapEventPlugin();
 
