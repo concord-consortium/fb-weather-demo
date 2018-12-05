@@ -1,9 +1,8 @@
 import * as firebase from "firebase";
-import { urlParams } from "../utilities/url-params";
+import { gPortalUrlUtility } from "../utilities/portal-url-utility";
 
 const DEFAULT_SIMULATION = "default";
-const DEFAULT_VERSION_STRING = "1.3.0-pre6";
-const kDatabaseSuffix = urlParams.isTesting ? '-test' : '';
+const DEFAULT_VERSION_STRING = "1.4.0";
 
 interface FirebaseListener {
   setState(state: any): void;
@@ -28,6 +27,7 @@ interface FirebaseConfigMap {
 interface AppLocation {
   hostname: string;
   pathname: string;
+  search: string;
 }
 
 export interface FirebaseImpOptions {
@@ -50,10 +50,10 @@ export class FirebaseImp {
   pendingCallbacks: Function[];
   postConnect: Promise<FirebaseImp>;
   isSignedOut: boolean;
-  persistSession: boolean;
+  options: FirebaseImpOptions;
 
   constructor(options: FirebaseImpOptions) {
-    this.persistSession = options.persistSession;
+    this.options = options;
     this.simulationID = `${DEFAULT_SIMULATION}`;
     this.version = DEFAULT_VERSION_STRING;
     this.user = null;
@@ -100,6 +100,12 @@ export class FirebaseImp {
     }
   }
 
+  get portalAppName() {
+    const isDev = this.config === this.configs.dev;
+    const isStaging = this.config === this.configs.staging;
+    return `pc-weather${isDev ? "-dev" : (isStaging ? "-staging" : "")}`;
+  }
+
   log(msg: string) {
     console.log(msg);
   }
@@ -131,20 +137,29 @@ export class FirebaseImp {
   }
 
   reqAuth() {
-    // const provider = new firebase.auth.GoogleAuthProvider();
+    const auth = firebase.auth();
+    const signin = () => {
+      gPortalUrlUtility.getFirebaseSettings(this.portalAppName).then(({jwt}) => {
+        if (jwt) {
+          auth
+          .signInWithCustomToken(jwt)
+          .then(this.finishAuth)
+          .catch(this.failAuth);
+        }
+        else {
+          auth
+          .signInAnonymously()
+          .then(this.finishAuth)
+          .catch(this.failAuth);
+        }
+      });
+    };
+
     // Use Firebase's session persistence so that if a student launches multiple tabs,
     // they will operate independently rather than interfering with each other.
     // cf. https://firebase.google.com/docs/auth/web/auth-state-persistence
-    const signin = () => {
-      firebase
-        .auth()
-        //.signInWithRedirect(provider)
-        .signInAnonymously()
-        .then(this.finishAuth)
-        .catch(this.failAuth);
-    };
-    if (this.persistSession) {
-      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(signin);
+    if (this.options.persistSession) {
+      auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(signin);
     }
     else {
       signin();
@@ -180,8 +195,7 @@ export class FirebaseImp {
   }
 
   get basePath() {
-    const versionString = DEFAULT_VERSION_STRING.replace(/\./g, "_");
-    return `${versionString}${kDatabaseSuffix}`;
+    return DEFAULT_VERSION_STRING.replace(/\./g, "_");
   }
 
   setDataRef() {
@@ -218,7 +232,7 @@ export class FirebaseImp {
   refForPath(path:string) {
     return new Promise( (resolve, reject) => {
       this.postConnect.then( (imp) => {
-        resolve(imp.dataRef.child(path));
+        resolve(imp.dataRef.child(path.replace(/_/g, "/")));
       });
     });
   }

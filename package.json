@@ -1,6 +1,6 @@
 {
   "name": "fb-weather-demo",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "description": "A Demo app (one to throw away) for simulating weather in a classroom",
   "main": "index.js",
   "scripts": {

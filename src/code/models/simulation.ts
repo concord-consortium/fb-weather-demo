@@ -43,6 +43,10 @@ export const Simulation = types
     presenceID: null as (string | null)
   }))
   .views(self => ({
+    get displayName(): string {
+      const parts = self.name.split("_");
+      return parts.length > 1 ? parts[1].substr(1, 32) : self.name;
+    },
     get isPlaying(): boolean {
       return self.control.isPlaying;
     },
