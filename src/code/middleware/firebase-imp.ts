@@ -19,6 +19,23 @@ interface FirebaseConfig {
   storageBucket: string;
   messagingSenderId: string;
 }
+interface FirebaseConfigMap {
+  dev: FirebaseConfig;
+  staging: FirebaseConfig;
+  production: FirebaseConfig;
+}
+
+interface AppLocation {
+  hostname: string;
+  pathname: string;
+}
+
+export interface FirebaseImpOptions {
+  location: AppLocation;
+  initFirebase: boolean;
+  persistSession: boolean;
+  logConfigChoice: boolean;
+}
 
 export class FirebaseImp {
   simulationID: string;
@@ -27,27 +44,39 @@ export class FirebaseImp {
   listeners: FirebaseListener[];
   simulationMap: [{key:string, value:any}];
   config: FirebaseConfig;
+  configs: FirebaseConfigMap;
   dataRef: firebase.database.Reference;
   simulationsRef: firebase.database.Reference;
   pendingCallbacks: Function[];
   postConnect: Promise<FirebaseImp>;
   isSignedOut: boolean;
+  persistSession: boolean;
 
-  constructor() {
+  constructor(options: FirebaseImpOptions) {
+    this.persistSession = options.persistSession;
     this.simulationID = `${DEFAULT_SIMULATION}`;
     this.version = DEFAULT_VERSION_STRING;
     this.user = null;
     this.isSignedOut = false;
     this.pendingCallbacks = [];
-    const configs: { [index: string]: FirebaseConfig } = {
-      old: {
+    this.configs = {
+      dev: {
         apiKey: "AIzaSyAlgebbG2k820uai5qZT6T8yMONvuSl-wI",
         authDomain: "weather-dev-eae1d.firebaseapp.com",
         databaseURL: "https://weather-dev-eae1d.firebaseio.com",
+        projectId: "weather-dev-eae1d",
         storageBucket: "weather-dev-eae1d.appspot.com",
         messagingSenderId: "857031925472"
       },
-      new: {
+      staging: {
+        apiKey: "AIzaSyDRSQsaFvE6p5N6qHreRKpGMR2J04iKQDc",
+        authDomain: "weather-staging-a85f9.firebaseapp.com",
+        databaseURL: "https://weather-staging-a85f9.firebaseio.com",
+        projectId: "weather-staging-a85f9",
+        storageBucket: "weather-staging-a85f9.appspot.com",
+        messagingSenderId: "1048466787110"
+      },
+      production: {
         apiKey: "AIzaSyAglPFMReyiX9r33RDLkWkBNAMGUKdY9os",
         authDomain: "weather-1892e.firebaseapp.com",
         databaseURL: "https://weather-1892e.firebaseio.com",
@@ -56,9 +85,19 @@ export class FirebaseImp {
         messagingSenderId: "74648732809"
       }
     };
-    this.config = configs.new;
+
+    const {hostname, pathname} = options.location;
+    const isLocalhost = !!hostname.match(/localhost|127\.0\.0\.1/);
+    const isBranchOrVersion = !!pathname.match(/branch|version/);
+
+    this.config = isLocalhost ? this.configs.dev : (isBranchOrVersion ? this.configs.staging : this.configs.production);
+    if (options.logConfigChoice) {
+      console.log(`Using ${this.config.projectId} project`);
+    }
     this.listeners = [];
-    this.initFirebase();
+    if (options.initFirebase) {
+      this.initFirebase();
+    }
   }
 
   log(msg: string) {
@@ -96,15 +135,20 @@ export class FirebaseImp {
     // Use Firebase's session persistence so that if a student launches multiple tabs,
     // they will operate independently rather than interfering with each other.
     // cf. https://firebase.google.com/docs/auth/web/auth-state-persistence
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-    .then(() => {
+    const signin = () => {
       firebase
         .auth()
         //.signInWithRedirect(provider)
         .signInAnonymously()
         .then(this.finishAuth)
         .catch(this.failAuth);
-    });
+    };
+    if (this.persistSession) {
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(signin);
+    }
+    else {
+      signin();
+    }
   }
 
   failAuth = (error: firebase.auth.Error) => {
@@ -196,4 +240,10 @@ export class FirebaseImp {
   }
 }
 
-export const gFirebase = new FirebaseImp();
+// check for options when running tests
+const jestOptions = (window as any).jestOptions;
+const initFirebase = !jestOptions || jestOptions.initFirebase;
+const persistSession = !jestOptions || jestOptions.persistSession;
+const logConfigChoice = !jestOptions || jestOptions.logConfigChoice;
+
+export const gFirebase = new FirebaseImp({location: window.location, initFirebase, persistSession, logConfigChoice});
