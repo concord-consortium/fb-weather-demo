@@ -23,9 +23,15 @@ export function precipDiv(station?:IWeatherStation|null) {
   const raining = station && station.precipitation;
   const fontColor = raining ? rainColor : sunColor;
   const style: React.CSSProperties = { position: 'relative', zIndex: 2, color: fontColor };
-  const rainIcon = "icon-cloud-rain";
+  const rainIcons = [
+    "",
+    "icon-cloud",
+    "icon-cloud-drizzle",
+    "icon-cloud-rain"]
+    ;
   // const sunIcon = "icon-sun";
-  const sunIcon = "";
-  const className = raining ?  rainIcon : sunIcon;
+  const index = station && station.precipitation ? station.precipitation : 0;
+  const className = rainIcons[index];
+  // return ( <span>{station.precipitation}</span> );
   return ( <i className={className} style={style} /> );
 }
