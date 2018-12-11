@@ -2,6 +2,15 @@ import { urlParams, StudentLaunchParams, TeacherReportParams, setStudentJwt, get
 import { v4 as uuid } from "uuid";
 import * as jwt from 'jsonwebtoken';
 
+interface PartialOfferingReport {
+  clazz_id: number;
+  clazz_info_url: string;
+}
+
+interface PartialClassInfo {
+  class_hash: string;
+}
+
 export const defaultSimulationName = uuid(),
              defaultDomain = defaultSimulationName.substr(0, 18),
              defaultClass = defaultSimulationName.substr(19, 4),
@@ -62,6 +71,8 @@ export class PortalUrlUtility {
     activityName?: string;
     activityUrl?: string;
     firebaseKey: string;
+    firebaseJWT: string | null;
+    classHash: string | null;
 
     constructor() {
       this.isTeacher = urlParams.isTeacher;
@@ -70,26 +81,31 @@ export class PortalUrlUtility {
       this.offeringId = defaultOffering;
     }
 
-    async getFirebaseKey():Promise<string> {
+    async getFirebaseSettings(portalAppName: string):Promise<{key: string, jwt: string|null}> {
       if (!this.firebaseKey) {
         if (urlParams.isPortalTeacher) {
-          await this.extractTeacherInfo(urlParams.params as TeacherReportParams);
+          await this.extractTeacherInfo(urlParams.params as TeacherReportParams, portalAppName);
         }
         else if (urlParams.isPortalStudent) {
-          await this.extractStudentInfo(urlParams.params as StudentLaunchParams);
+          await this.extractStudentInfo(urlParams.params as StudentLaunchParams, portalAppName);
         }
-        this.firebaseKey = `${this.domain}-${this.classId}-${this.offeringId}`;
+        if (this.firebaseJWT && this.classHash) {
+          this.firebaseKey = `portal_${this.classHash}_${this.offeringId}`;
+        }
+        else {
+          this.firebaseKey = `no-portal_${this.domain}-${this.classId}-${this.offeringId}`;
+        }
       }
-      return this.firebaseKey;
+      return {key: this.firebaseKey, jwt: this.firebaseJWT};
     }
 
-    async extractStudentInfo(params: StudentLaunchParams) {
-      let domain = params.domain && extractRawDomain(params.domain),
-          jwToken = null as (string | null);
-      if (params.token && params.domain && domain) {
+    async requestJWT(domain: string, bearerToken: string, portalAppName: string, classHash?: string) {
         // retrieve firebase jwt from portal
-        const jwtUrl = `${domain}/api/v1/jwt/firebase?firebase_app=pc-weather`;
-        const authorizationHeader = `Bearer ${params.token}`;
+        let jwtUrl = `${domain}/api/v1/jwt/firebase?firebase_app=${portalAppName}`;
+        if (classHash) {
+          jwtUrl = `${jwtUrl}&class_hash=${classHash}`;
+        }
+        const authorizationHeader = `Bearer ${bearerToken}`;
         const headers = ({headers: {Authorization: authorizationHeader}});
         let validJsonResponse = true;
         const response = await fetch(jwtUrl, headers);
@@ -98,8 +114,28 @@ export class PortalUrlUtility {
         if (!response.ok) {
           throw extractError(response, validJsonResponse ? json : undefined);
         }
-        jwToken = json.token;
+        return json.token;
+    }
+
+    async requestClassInfo(url: string, bearerToken: string) {
+      const authorizationHeader = `Bearer ${bearerToken}`;
+      const headers = ({headers: {Authorization: authorizationHeader}});
+      let validJsonResponse = true;
+      const response = await fetch(url, headers);
+      const json: PartialClassInfo = await response.json()
+                          .catch(error => validJsonResponse = false);
+      if (!validJsonResponse) {
+        throw new Error("Unable to get class info");
+      }
+      return json;
+    }
+
+    async extractStudentInfo(params: StudentLaunchParams, portalAppName: string) {
+      let domain = params.domain && extractRawDomain(params.domain),
+          jwToken = null as (string | null);
+      if (params.token && params.domain && domain) {
         // save firebase jwt in session storage
+        jwToken = await this.requestJWT(domain, params.token, portalAppName);
         setStudentJwt(domain, jwToken);
       }
       else {
@@ -110,6 +146,7 @@ export class PortalUrlUtility {
           jwToken = jwtInfo.token;
         }
       }
+      this.firebaseJWT = jwToken;
       this.domain = extractDomain(domain || '');
       // decode firebase jwt
       const _authToken = jwToken ? jwt.decode(jwToken) : null;
@@ -128,10 +165,11 @@ export class PortalUrlUtility {
         if (authToken.claims.offering_id) {
           this.offeringId = String(authToken.claims.offering_id);
         }
+        this.classHash = authToken.claims.class_hash;
       }
     }
 
-    async extractTeacherInfo(params: TeacherReportParams) {
+    async extractTeacherInfo(params: TeacherReportParams, portalAppName: string) {
       const authorizationHeader = `Bearer ${params.token}`;
       const headers = ({headers: {Authorization: authorizationHeader}});
       let validJsonResponse = true;
@@ -142,7 +180,7 @@ export class PortalUrlUtility {
         throw extractError(response, validJsonResponse ? reportData : undefined);
       }
       // class reports return an array; offering reports return a single entry
-      const reportEntry = Array.isArray(reportData) ? reportData[0] : reportData;
+      const reportEntry: PartialOfferingReport = Array.isArray(reportData) ? reportData[0] : reportData;
       const match = /offerings\/([^\/]*)/.exec(params.offering);
       this.classId = `${reportEntry.clazz_id}`;
       if (match && match[1]) {
@@ -152,7 +190,12 @@ export class PortalUrlUtility {
       this.activityName = reportData.activity;
       this.activityUrl = reportData.activity_url;
 
-      this.domain = extractDomain((urlParams.params as TeacherReportParams).offering);
+      const classInfo = await this.requestClassInfo(reportEntry.clazz_info_url, params.token);
+      this.classHash = classInfo.class_hash;
+      const rawDomain = extractRawDomain(params.offering)!;
+      this.firebaseJWT = await this.requestJWT(rawDomain, params.token, portalAppName, this.classHash);
+
+      this.domain = extractDomain(params.offering);
     }
 }
 

@@ -20,39 +20,39 @@ describe("Firebase implementation", () => {
 
   beforeEach(() => {
     options = {
-      location: {hostname: "overridden", pathname: "overridden"},
+      location: {hostname: "overridden", pathname: "overridden", search: "?"},
       initFirebase: false,
       persistSession: false,
-      logConfigChoice: false
+      logConfigChoice: false,
     };
   });
 
   test("should use dev config for localhost", () => {
-    options.location = {hostname: "localhost", pathname: "/"};
+    options.location = {hostname: "localhost", pathname: "/", search: "?"};
     fbImp = new FirebaseImp(options);
     expect(fbImp.config).toBe(fbImp.configs.dev);
   });
 
   test("should use dev config for 127.0.0.1", () => {
-    options.location = {hostname: "127.0.0.1", pathname: "/"};
+    options.location = {hostname: "127.0.0.1", pathname: "/", search: "?"};
     fbImp = new FirebaseImp(options);
     expect(fbImp.config).toBe(fbImp.configs.dev);
   });
 
   test("should use staging config for published branches", () => {
-    options.location = {hostname: "weather.concord.org", pathname: "/branch/foo"};
+    options.location = {hostname: "weather.concord.org", pathname: "/branch/foo", search: "?"};
     fbImp = new FirebaseImp(options);
     expect(fbImp.config).toBe(fbImp.configs.staging);
   });
 
   test("should use staging config for published versions", () => {
-    options.location = {hostname: "weather.concord.org", pathname: "/version/1.2.3"};
+    options.location = {hostname: "weather.concord.org", pathname: "/version/1.2.3", search: "?"};
     fbImp = new FirebaseImp(options);
     expect(fbImp.config).toBe(fbImp.configs.staging);
   });
 
   test("should use production config for production version", () => {
-    options.location = {hostname: "weather.concord.org", pathname: "/"};
+    options.location = {hostname: "weather.concord.org", pathname: "/", search: "?"};
     fbImp = new FirebaseImp(options);
     expect(fbImp.config).toBe(fbImp.configs.production);
   });

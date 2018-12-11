@@ -33,7 +33,7 @@ export class WeatherStationView extends
     const {weatherStation} = this.props,
           simulation = simulationStore.selected,
           time = simulation && weatherStation && simulation.timeString,
-          simulationName = simulation && simulation.name,
+          simulationName = simulation && simulation.displayName,
           temperature = weatherStation && weatherStation.temperature,
           unitTempStr = simulation && simulation.formatTemperature(temperature, { withUnit: true });
           // NP: Removed but saved in comments here for easy access.

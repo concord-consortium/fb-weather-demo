@@ -247,7 +247,7 @@ export class TeacherView
                     style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 'bold', fontSize: "14pt"}}>{time}</div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div>{simulation && simulation.name || ""}</div>
+                  <div>{simulation && simulation.displayName || ""}</div>
                   <div className="teacher-status-options">
                     <div>{usersString}</div>
                     <div className="teacher-option-buttons">
