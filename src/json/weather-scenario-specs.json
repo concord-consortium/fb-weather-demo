@@ -1,5 +1,116 @@
 [
   {
+    "id": "AK_EP2",
+    "name": "Alaska Episode 2",
+    "eventUrl": "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/AK_EP2.json",
+    "startTime": {
+      "year": 2013,
+      "month": 5,
+      "day": 15,
+      "hour": 7,
+      "minute": 0
+    },
+    "endTime": {
+      "year": 2013,
+      "month": 5,
+      "day": 15,
+      "hour": 19,
+      "minute": 0
+    },
+    "utcOffset": 0,
+    "mapConfig": {
+      "id": "AK_EP2",
+      "lat": 42,
+      "long": -77,
+      "name": "AK_EP2",
+      "zoom": 6
+    },
+    "stations": []
+  },
+  {
+    "id": "AK_EP1",
+    "name": "Alaska Episode 1",
+    "eventUrl": "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/AK_EP1.json",
+    "startTime": {
+      "year": 2013,
+      "month": 5,
+      "day": 15,
+      "hour": 7,
+      "minute": 0
+    },
+    "endTime": {
+      "year": 2013,
+      "month": 5,
+      "day": 15,
+      "hour": 19,
+      "minute": 0
+    },
+    "utcOffset": 0,
+    "mapConfig": {
+      "id": "AK_EP1",
+      "lat": 42,
+      "long": -77,
+      "name": "AK_EP1",
+      "zoom": 6
+    },
+    "stations": []
+  },
+  {
+    "id": "NE_EP2",
+    "name": "New England Episode 2",
+    "eventUrl": "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/NE_EP2.json",
+    "startTime": {
+      "year": 2013,
+      "month": 5,
+      "day": 15,
+      "hour": 7,
+      "minute": 0
+    },
+    "endTime": {
+      "year": 2013,
+      "month": 5,
+      "day": 15,
+      "hour": 19,
+      "minute": 0
+    },
+    "utcOffset": 0,
+    "mapConfig": {
+      "id": "NE_EP2",
+      "lat": 42,
+      "long": -77,
+      "name": "NE_EP2",
+      "zoom": 6
+    },
+    "stations": []
+  },{
+    "id": "NE_EP1",
+    "name": "New England Episode 1",
+    "eventUrl": "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/NE_EP1.json",
+    "startTime": {
+      "year": 2013,
+      "month": 5,
+      "day": 15,
+      "hour": 7,
+      "minute": 0
+    },
+    "endTime": {
+      "year": 2013,
+      "month": 5,
+      "day": 15,
+      "hour": 19,
+      "minute": 0
+    },
+    "utcOffset": 0,
+    "mapConfig": {
+      "id": "NE_EP1",
+      "lat": 42,
+      "long": -77,
+      "name": "NE_EP1",
+      "zoom": 6
+    },
+    "stations": []
+  },
+  {
     "id": "day-one-v7",
     "name": "Day One (v7)",
     "eventUrl": "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v7.json",
