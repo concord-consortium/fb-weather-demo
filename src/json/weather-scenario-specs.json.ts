@@ -1,12 +1,12 @@
 import {IWeatherScenarioSpec} from "../code/models/weather-scenario-spec";
+import { TemperatureUnit } from "../code/models/temperature";
 
 export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
   {
     id: "AK_EP2",
     name: "Alaska Episode 2",
     tempConfig: {
-      eventScale: "F",
-      displayScale: "F",
+      eventUnit: TemperatureUnit.Fahrenheit,
       bandModel: "six-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/AK_EP2.json",
@@ -38,8 +38,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
     id: "AK_EP1",
     name: "Alaska Episode 1",
     tempConfig: {
-      eventScale: "F",
-      displayScale: "F",
+      eventUnit: TemperatureUnit.Fahrenheit,
       bandModel: "six-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/AK_EP1.json",
@@ -71,8 +70,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
     id: "NE_EP2",
     name: "New England Episode 2",
     tempConfig: {
-      eventScale: "F",
-      displayScale: "F",
+      eventUnit: TemperatureUnit.Fahrenheit,
       bandModel: "six-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/NE_EP2.json",
@@ -103,8 +101,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
     id: "NE_EP1",
     name: "New England Episode 1",
     tempConfig: {
-      eventScale: "F",
-      displayScale: "F",
+      eventUnit: TemperatureUnit.Fahrenheit,
       bandModel: "six-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/NE_EP1.json",
@@ -136,8 +133,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
     id: "day-one-v7",
     name: "Day One (v7)",
     tempConfig: {
-      eventScale: "C",
-      displayScale: "C",
+      eventUnit: TemperatureUnit.Celsius,
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v7.json",
@@ -169,8 +165,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
     id: "day-one-v6",
     name: "Day one test (v6)",
     tempConfig: {
-      eventScale: "C",
-      displayScale: "C",
+      eventUnit: TemperatureUnit.Celsius,
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v6.json",
@@ -202,8 +197,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
     id: "day-one-12-23-1970",
     name: "Day one test (v5)",
     tempConfig: {
-      eventScale: "C",
-      displayScale: "C",
+      eventUnit: TemperatureUnit.Celsius,
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v5.json",
@@ -235,8 +229,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
     id: "day-one-12-23-1970",
     name: "Day one test (v4)",
     tempConfig: {
-      eventScale: "C",
-      displayScale: "C",
+      eventUnit: TemperatureUnit.Celsius,
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v4.json",
@@ -268,8 +261,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
     id: "day-one-12-23-1970",
     name: "Day one test",
     tempConfig: {
-      eventScale: "C",
-      displayScale: "C",
+      eventUnit: TemperatureUnit.Celsius,
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one.json",
@@ -301,8 +293,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
     id: "lake-michigan-april-2017-8",
     name: "Lake Michigan - April 2017 (8 stations)",
     tempConfig: {
-      eventScale: "C",
-      displayScale: "C",
+      eventUnit: TemperatureUnit.Celsius,
       bandModel: "three-bands"
     },
     eventUrl: "https://api.github.com/repos/concord-consortium/weather-events/contents/events/lake-michigan.json",

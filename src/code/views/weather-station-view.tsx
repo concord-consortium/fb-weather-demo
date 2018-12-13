@@ -35,7 +35,7 @@ export class WeatherStationView extends
           time = simulation && weatherStation && simulation.timeString,
           simulationName = simulation && simulation.displayName,
           temperature = weatherStation && weatherStation.temperature,
-          unitTempStr = simulation && simulation.formatTemperature(temperature, { withUnit: true });
+          unitTempStr = temperature ? temperature.format({ withUnit: true }) : "";
           // NP: Removed but saved in comments here for easy access.
           // Its likely we are going to put this back in at some point.
           // windSpeed = weatherStation && weatherStation.windSpeed,

@@ -36,7 +36,7 @@ export class TeacherCellPopover extends React.Component<TeacherCellPopoverProps>
           temperature = station && station.temperature,
           formatTempOptions = { precision: 0, withUnit: true },
           strTemp = settings && (temperature != null)
-                      ? settings.formatTemperature(temperature, formatTempOptions)
+                      ? temperature.format(formatTempOptions)
                       : "",
           strPrecip = station && station.strPrecipitation,
           disconnectGroup = () => this.disconnectGroup(group),
