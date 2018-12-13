@@ -1,18 +1,52 @@
 import * as React from "react";
 import { IWeatherStation } from "../models/weather-station";
+import { fToC } from "../utilities/scales";
 
-export function weatherColor(station?:IWeatherStation|null) {
+const normColor = "#f9b33a";
+
+function threeBandColor(tempInC: number) {
   const coldColor = "#50a9fa";
   const hotColor = "#f05042";
-  const normColor = "#f9b33a";
-
   const hotTemp = 22.5;
   const coldTemp = 17.5;
 
-  if(station && station.temperature) {
-    if(station.temperature > hotTemp) { return hotColor; }
-    if(station.temperature > coldTemp) { return normColor; }
-    return coldColor;
+  if(tempInC > hotTemp) { return hotColor; }
+  if(tempInC > coldTemp) { return normColor; }
+  return coldColor;
+}
+
+function sixBandColor(tempInC: number) {
+  const bands = [
+    {min: -12.2, max: -6.7, color: "purple"},
+    {min: -6.7,  max: -1.1, color: "blue"},
+    {min: -1.1,  max: 4.4,  color: "green"},
+    {min: 4.4,   max: 10,   color: "yellow"},
+    {min: 10,    max: 15.6, color: "orange"},
+    {min: 15.6,  max: 20.6, color: "red"},
+  ];
+
+  for (let i = 0; i < bands.length; i++) {
+    const band = bands[i];
+    if ((tempInC >= band.min) && (tempInC < band.max)) {
+      return band.color;
+    }
+  }
+
+  return normColor;
+}
+
+export function weatherColor(station?:IWeatherStation|null) {
+  if(station) {
+    const {temperature, tempConfig} = station;
+    if ((temperature !== null) && (tempConfig !== null)) {
+      const tempInC = tempConfig.displayScale === "F" ? fToC(temperature) : temperature;
+      switch (tempConfig.bandModel) {
+        case "three-bands":
+          return threeBandColor(tempInC);
+        case "six-bands":
+          return sixBandColor(tempInC);
+      }
+    }
   }
   return normColor;
 }
@@ -25,13 +59,14 @@ export function precipDiv(station?:IWeatherStation|null) {
   const style: React.CSSProperties = { position: 'relative', zIndex: 2, color: fontColor };
   const rainIcons = [
     "",
-    "icon-cloud",
-    "icon-cloud-drizzle",
-    "icon-cloud-rain"]
-    ;
+    "raindrops-one",
+    "raindrops-two",
+    "raindrops-three"
+  ];
   // const sunIcon = "icon-sun";
   const index = station && station.precipitation ? station.precipitation : 0;
   const className = rainIcons[index];
   // return ( <span>{station.precipitation}</span> );
   return ( <i className={className} style={style} /> );
 }
+
