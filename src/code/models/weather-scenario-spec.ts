@@ -1,5 +1,6 @@
 import { weatherScenarioSpecs } from "../../json/weather-scenario-specs.json";
 import { IWeatherScenarioSnapshot } from "./weather-scenario";
+import { TemperatureUnit } from "./temperature";
 
 // preprocess scenarios, e.g. convert TimeSpecs to Dates
 weatherScenarioSpecs.forEach((spec) => {
@@ -35,16 +36,12 @@ export interface IMapConfigSpec {
     zoom: number;
 }
 
-export type TWeatherScenarioSpecTempScale = "F" | "C";
-export type TWeatherScenarioSpecTempBandModel = "three-bands" | "six-bands";
-
 export interface IWeatherScenarioSpec {
   id: string;
   name: string;
   tempConfig: {
-    eventScale: TWeatherScenarioSpecTempScale,
-    displayScale: TWeatherScenarioSpecTempScale,
-    bandModel: TWeatherScenarioSpecTempBandModel,
+    eventUnit: TemperatureUnit,
+    bandModel: "three-bands" | "six-bands",
   };
   eventUrl: string;
   startTime?: ITimeSpec;

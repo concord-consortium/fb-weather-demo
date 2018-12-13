@@ -1,6 +1,7 @@
 import { types, destroy } from "mobx-state-tree";
 import { WeatherStationState, kDefaultPrecision } from "./weather-station-state";
 import { ITempConfig } from "./weather-scenario";
+import { Temperature } from "./temperature";
 
 export { kDefaultPrecision };
 
@@ -25,7 +26,7 @@ export const WeatherStation = types
     state: null as any as WeatherStationState | null
   }))
   .views(self => ({
-    get temperature(): number | null {
+    get temperature(): Temperature | null {
       return self.state && self.state.temperature;
     },
 

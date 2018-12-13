@@ -1,9 +1,11 @@
 import { types } from "mobx-state-tree";
 import { MapConfig } from "./map-config";
+import { TemperatureUnit } from "./temperature";
+
+const TempUnit = types.enumeration("TempUnit", [TemperatureUnit.Celsius, TemperatureUnit.Fahrenheit]);
 
 export const TempConfig = types.model("Scale", {
-  eventScale: types.string,
-  displayScale: types.string,
+  eventUnit: TempUnit,
   bandModel: types.enumeration("BandModel", ["three-bands", "six-bands"]),
 });
 export type ITempConfig = typeof TempConfig.Type;

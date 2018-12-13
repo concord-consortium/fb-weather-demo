@@ -1,6 +1,5 @@
 import * as React from "react";
 import { IWeatherStation } from "../models/weather-station";
-import { fToC } from "../utilities/scales";
 
 const normColor = "#f9b33a";
 
@@ -39,12 +38,11 @@ export function weatherColor(station?:IWeatherStation|null) {
   if(station) {
     const {temperature, tempConfig} = station;
     if ((temperature !== null) && (tempConfig !== null)) {
-      const tempInC = tempConfig.displayScale === "F" ? fToC(temperature) : temperature;
       switch (tempConfig.bandModel) {
         case "three-bands":
-          return threeBandColor(tempInC);
+          return threeBandColor(temperature.value.C);
         case "six-bands":
-          return sixBandColor(tempInC);
+          return sixBandColor(temperature.value.C);
       }
     }
   }

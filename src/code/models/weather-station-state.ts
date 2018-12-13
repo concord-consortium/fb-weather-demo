@@ -2,7 +2,7 @@ import { computed } from "mobx";
 import { ISimulationControl } from "./simulation-control";
 import * as _ from "lodash";
 import { ITempConfig } from "./weather-scenario";
-import { fToC, cToF } from "../utilities/scales";
+import { Temperature } from "./temperature";
 
 export const kDefaultPrecision = {
               windDirection: 0
@@ -120,13 +120,7 @@ export class WeatherStationState {
   @computed
   get temperature() {
     const eventTemp = this.interpolate(this.colIndices.temperature);
-    if ((eventTemp === null) || (this.tempConfig.eventScale === this.tempConfig.displayScale)) {
-      return eventTemp;
-    }
-    if (this.tempConfig.displayScale === "F") {
-      return cToF(eventTemp);
-    }
-    return fToC(eventTemp);
+    return eventTemp ? new Temperature(eventTemp, this.tempConfig.eventUnit) : null;
   }
 
   @computed
