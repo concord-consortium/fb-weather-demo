@@ -1,6 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { cellName, IGridCell } from "../models/grid-cell";
+import { gWeatherScenarioSpec } from "../models/weather-scenario-spec";
 
 export interface GridCellProps {
   cell: IGridCell;
@@ -53,7 +54,7 @@ export class GridCellView extends React.Component<
       alignContent: "center",
       justifyContent: "center",
       backgroundColor: displayColor,
-      opacity: 0.75,
+      opacity: gWeatherScenarioSpec.mapConfig.geoMap ? 0.75 : 1.0,
       color: textColor,
       alignItems: "center",
       fontSize: "24pt",
