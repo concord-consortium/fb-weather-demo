@@ -34,7 +34,7 @@ function sixBandColor(tempInC: number) {
   return normColor;
 }
 
-export function weatherColor(station?:IWeatherStation|null) {
+export function weatherColor(station?:IWeatherStation|null, defaultColor?:string) {
   if(station) {
     const {temperature, tempConfig} = station;
     if ((temperature !== null) && (tempConfig !== null)) {
@@ -46,7 +46,7 @@ export function weatherColor(station?:IWeatherStation|null) {
       }
     }
   }
-  return normColor;
+  return defaultColor || normColor;
 }
 
 export function precipDiv(station?:IWeatherStation|null) {

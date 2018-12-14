@@ -5,7 +5,8 @@ import { ITempConfig } from "./weather-scenario";
 import { Temperature } from "./temperature";
 
 export const kDefaultPrecision = {
-              windDirection: 0
+              windDirection: 0,
+              moisture: 2
             };
 
 export class WeatherStationState {
@@ -34,7 +35,8 @@ export class WeatherStationState {
             dewPointTemperature: "dew_point_temperature",
             cloudCover: "cloud_area_fraction",
             hourlyPrecipitation: "precipitation_amount_hourly",
-            dailyPrecipitation: "precipitation_amount_24"
+            dailyPrecipitation: "precipitation_amount_24",
+            moisture: "moisture"
           };
     _.each(nameMap, (oldName: string, newName: string) => {
       if ((oldName !== newName) && (this.colIndices[oldName]) != null) {
@@ -156,5 +158,15 @@ export class WeatherStationState {
   @computed
   get dailyPrecipitation() {
     return this.interpolate(this.colIndices.dailyPrecipitation);
+  }
+
+  @computed
+  get moisture() {
+    return this.interpolate(this.colIndices.moisture);
+  }
+
+  strMoisture(precision = kDefaultPrecision.moisture) {
+    const d = this.moisture;
+    return d && isFinite(d) ? d.toFixed(precision) : null;
   }
 }

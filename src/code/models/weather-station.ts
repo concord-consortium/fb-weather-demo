@@ -40,9 +40,8 @@ export const WeatherStation = types
 
     get strPrecipitation(): string {
       const precipitation = self.state && self.state.hourlyPrecipitation;
-      return precipitation != null
-              ? (precipitation ? "Rain" : "Clear")
-              : "";
+      const names = ["None", "Low", "Moderate", "High"];
+      return precipitation != null ? names[precipitation] || "None" : "None";
     },
 
     get windSpeed(): number | null {
@@ -55,7 +54,15 @@ export const WeatherStation = types
 
     strWindDirection(precision = kDefaultPrecision.windDirection): string {
       return self.state && self.state.strWindDirection() || "";
-    }
+    },
+
+    get moisture(): number | null {
+      return self.state && self.state.moisture;
+    },
+
+    strMoisture(precision = kDefaultPrecision.moisture) {
+      return self.state && self.state.strMoisture(precision);
+    },
   }))
   .actions(self => ({
     setLocation(location: { lat: number, long: number }) {
