@@ -42,7 +42,7 @@ export class LeafletMapMarker extends React.Component<
 
   get diffTemp() {
     return (this.predictedTemp != null) && (this.actualTemp != null)
-      ? this.predictedTemp - this.actualTemp
+      ? this.predictedTemp - this.actualTemp.value.C
       : null;
   }
 
@@ -70,8 +70,8 @@ export class LeafletMapMarker extends React.Component<
   actualTempDiv() {
     const simulation = simulationStore.selected,
           showTempValues = simulation && simulation.settings && simulation.settings.showTempValues;
-    if (showTempValues && (this.actualTemp != null) && isFinite(this.actualTemp)) {
-      const actualTempString = simulation && simulation.formatTemperature(this.actualTemp, { withDegree: true });
+    if (showTempValues && (this.actualTemp != null) && isFinite(this.actualTemp.value.C)) {
+      const actualTempString = simulation && simulation.formatTemperature(this.actualTemp.value.C, { withDegree: true });
       return `<span class="actualTemp">${actualTempString}</span>`;
     }
     return "";

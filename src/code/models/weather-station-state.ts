@@ -1,6 +1,8 @@
 import { computed } from "mobx";
 import { ISimulationControl } from "./simulation-control";
 import * as _ from "lodash";
+import { ITempConfig } from "./weather-scenario";
+import { Temperature } from "./temperature";
 
 export const kDefaultPrecision = {
               windDirection: 0
@@ -11,11 +13,13 @@ export class WeatherStationState {
   stationData: any;
   interpolationEnabled: boolean;
   colIndices: { [key: string]: number; };
+  tempConfig: ITempConfig;
 
-  constructor(stationData: any, simulation: ISimulationControl, interpolationEnabled: boolean) {
+  constructor(stationData: any, simulation: ISimulationControl, interpolationEnabled: boolean, tempConfig: ITempConfig) {
     this.stationData = stationData;
     this.simulation = simulation;
     this.interpolationEnabled = interpolationEnabled;
+    this.tempConfig = tempConfig;
 
     this.colIndices = {};
     stationData.cols.forEach((name: string, index: number) => {
@@ -115,7 +119,8 @@ export class WeatherStationState {
 
   @computed
   get temperature() {
-    return this.interpolate(this.colIndices.temperature);
+    const eventTemp = this.interpolate(this.colIndices.temperature);
+    return eventTemp ? new Temperature(eventTemp, this.tempConfig.eventUnit) : null;
   }
 
   @computed

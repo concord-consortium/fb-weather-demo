@@ -1,8 +1,9 @@
-const weatherScenarioSpecs = require("../../json/weather-scenario-specs.json") || [];
+import { weatherScenarioSpecs } from "../../json/weather-scenario-specs.json";
 import { IWeatherScenarioSnapshot } from "./weather-scenario";
+import { TemperatureUnit } from "./temperature";
 
 // preprocess scenarios, e.g. convert TimeSpecs to Dates
-weatherScenarioSpecs.forEach((spec: IWeatherScenarioSpec) => {
+weatherScenarioSpecs.forEach((spec) => {
   let mod: IWeatherScenarioSnapshot = spec as any,
         s = spec.startTime,
         e = spec.endTime,
@@ -11,8 +12,7 @@ weatherScenarioSpecs.forEach((spec: IWeatherScenarioSpec) => {
   mod.duration = s && endTime && (endTime.getTime() - mod.startTime.getTime()) / 1000;
 });
 
-export const gWeatherScenarioSpec: IWeatherScenarioSpec =
-              weatherScenarioSpecs && weatherScenarioSpecs.length && weatherScenarioSpecs[0];
+export const gWeatherScenarioSpec = weatherScenarioSpecs[0];
 
 export interface ITimeSpec {
   year: number;
@@ -39,6 +39,10 @@ export interface IMapConfigSpec {
 export interface IWeatherScenarioSpec {
   id: string;
   name: string;
+  tempConfig: {
+    eventUnit: TemperatureUnit,
+    bandModel: "three-bands" | "six-bands",
+  };
   eventUrl: string;
   startTime?: ITimeSpec;
   endTime?: ITimeSpec;

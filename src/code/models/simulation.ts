@@ -199,7 +199,7 @@ export const Simulation = types
               if (!self.time) {
                 self.control.setTime(startTime);
               }
-              station.setState(new WeatherStationState(stationData, self.control, self.settings.interpolationEnabled));
+              station.setState(new WeatherStationState(stationData, self.control, self.settings.interpolationEnabled, self.scenario.tempConfig));
             })
             .catch((err: any) => {
               console.log(`Error initializing weather station '${station.id}': ${err}`);
