@@ -12,6 +12,7 @@ class WeatherEvent {
 
   constructor(url: string) {
     this.url = url;
+    console.log(`Using scenario data from ${url}`);
 
     const p = fetch(url).then((response) => {
                 if (response.status >= 200 && response.status < 300) {

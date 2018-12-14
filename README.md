@@ -2,6 +2,10 @@
 
 A quick and dirty demo of using firebase for a classroom weather simulation.
 
+## Selecting a scenario
+
+You can select a scenario using the `scenario` url parameter with an id value found in the `weather-scenario-specs.json.ts` file.
+If no parameter is supplied or a parameter with an id that does not exist in the json data is supplied the first scenario is selected.
 
 ## Working with this project:
 

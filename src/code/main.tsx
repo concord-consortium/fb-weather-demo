@@ -33,11 +33,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
     const updateSession = function (nextSimulation: string, callback?: () => void) {
       if (nextSimulation) {
         simulationStore.select(nextSimulation);
-        const logString = `
-          ================================================
-          Changed Simulation path to: ${nextSimulation}
-          ================================================
-        `;
+        const logString = `Simulation path: ${nextSimulation.replace(/_/g, "/")}`;
         log(logString);
       }
       else {

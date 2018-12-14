@@ -1,6 +1,7 @@
 import { weatherScenarioSpecs } from "../../json/weather-scenario-specs.json";
 import { IWeatherScenarioSnapshot } from "./weather-scenario";
 import { TemperatureUnit } from "./temperature";
+import { urlParams } from "../utilities/url-params";
 
 // preprocess scenarios, e.g. convert TimeSpecs to Dates
 weatherScenarioSpecs.forEach((spec) => {
@@ -12,7 +13,12 @@ weatherScenarioSpecs.forEach((spec) => {
   mod.duration = s && endTime && (endTime.getTime() - mod.startTime.getTime()) / 1000;
 });
 
-export const gWeatherScenarioSpec = weatherScenarioSpecs[0];
+let scenarioIndex = 0;
+if (urlParams.scenario) {
+  scenarioIndex = Math.max(0, weatherScenarioSpecs.findIndex((spec) => spec.id === urlParams.scenario));
+}
+export const gWeatherScenarioSpec = weatherScenarioSpecs[scenarioIndex];
+console.log(`Using scenario ${gWeatherScenarioSpec.id}`);
 
 export interface ITimeSpec {
   year: number;
