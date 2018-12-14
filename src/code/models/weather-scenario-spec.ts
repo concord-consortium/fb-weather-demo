@@ -40,6 +40,7 @@ export interface IMapConfigSpec {
     lat: number;
     long: number;
     zoom: number;
+    geoMap?: "NomeAlaska" | "NewEngland";
 }
 
 export interface IWeatherScenarioSpec {

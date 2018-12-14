@@ -30,7 +30,8 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       lat: 42,
       long: -77,
       name: "AK_EP2",
-      zoom: 6
+      zoom: 6,
+      geoMap: "NomeAlaska"
     },
     stations: []
   },
@@ -62,7 +63,8 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       lat: 42,
       long: -77,
       name: "AK_EP1",
-      zoom: 6
+      zoom: 6,
+      geoMap: "NomeAlaska"
     },
     stations: []
   },
@@ -94,7 +96,8 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       lat: 42,
       long: -77,
       name: "NE_EP2",
-      zoom: 6
+      zoom: 6,
+      geoMap: "NewEngland"
     },
     stations: []
   },{
@@ -125,7 +128,8 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       lat: 42,
       long: -77,
       name: "NE_EP1",
-      zoom: 6
+      zoom: 6,
+      geoMap: "NewEngland"
     },
     stations: []
   },
