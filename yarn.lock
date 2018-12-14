@@ -3814,6 +3814,11 @@ iferr@^0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/iferr/-/iferr-0.1.5.tgz#c60eed69e6d8fdb6b3104a1fcbca1c192dc5b501"
 
+iframe-phone@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/iframe-phone/-/iframe-phone-1.2.0.tgz#e913fbf4f7964eeecccb7bb9acbaad55621e1c64"
+  integrity sha1-6RP79PeWTu7My3u5rLqtVWIeHGQ=
+
 ignore-walk@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/ignore-walk/-/ignore-walk-3.0.1.tgz#a83e62e7d272ac0e3b551aaa82831a19b69f82f8"

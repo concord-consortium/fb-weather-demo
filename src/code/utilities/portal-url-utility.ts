@@ -1,6 +1,7 @@
 import { urlParams, StudentLaunchParams, TeacherReportParams, setStudentJwt, getStudentJwt } from "./url-params";
 import { v4 as uuid } from "uuid";
 import * as jwt from 'jsonwebtoken';
+import { launchedFromLara, getLaraUserInfo } from "./lara";
 
 interface PartialOfferingReport {
   clazz_id: number;
@@ -88,6 +89,9 @@ export class PortalUrlUtility {
         }
         else if (urlParams.isPortalStudent) {
           await this.extractStudentInfo(urlParams.params as StudentLaunchParams, portalAppName);
+        }
+        else if (launchedFromLara) {
+          await this.extractLaraInfo(portalAppName);
         }
         if (this.firebaseJWT && this.classHash) {
           this.firebaseKey = `portal_${this.classHash}_${this.offeringId}`;
@@ -196,6 +200,13 @@ export class PortalUrlUtility {
       this.firebaseJWT = await this.requestJWT(rawDomain, params.token, portalAppName, this.classHash);
 
       this.domain = extractDomain(params.offering);
+    }
+
+    async extractLaraInfo(portalAppName: string) {
+      const {classHash, offeringId, firebaseJWT} = await getLaraUserInfo(portalAppName);
+      this.classHash = classHash;
+      this.offeringId = offeringId;
+      this.firebaseJWT = firebaseJWT;
     }
 }
 
