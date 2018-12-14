@@ -40,9 +40,8 @@ export const WeatherStation = types
 
     get strPrecipitation(): string {
       const precipitation = self.state && self.state.hourlyPrecipitation;
-      return precipitation != null
-              ? (precipitation ? "Rain" : "Clear")
-              : "";
+      const names = ["None", "Low", "Moderate", "High"];
+      return precipitation != null ? names[precipitation] || "None" : "None";
     },
 
     get windSpeed(): number | null {

@@ -5,7 +5,7 @@ import { CardText } from "material-ui/Card";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
-// import { weatherColor, precipDiv } from "./weather-styler";
+import { weatherColor, precipDiv } from "./weather-styler";
 import { gFirebase } from "../middleware/firebase-imp";
 
 export type StationTab = "configure" | "weather";
@@ -94,7 +94,8 @@ export class WeatherStationView extends
         gridColumn: "2",
         fontSize: "36pt",
         fontWeight: "bold",
-        alignSelf: "center"
+        alignSelf: "center",
+        color: "#000"
       },
       precip: {
         gridRow: "4",
@@ -103,8 +104,15 @@ export class WeatherStationView extends
         fontWeight: "bold",
         alignSelf: "flex-end"
       },
-      button: {
+      moisture: {
         gridRow: "5",
+        gridColumn: "2",
+        fontSize: "36pt",
+        fontWeight: "bold",
+        alignSelf: "flex-end"
+      },
+      button: {
+        gridRow: "6",
         gridColumn: "1",
         boxShadow: "none",
         position: "relative",
@@ -120,7 +128,9 @@ export class WeatherStationView extends
           temperatureStr = hasPresence
                             ? (showTemperature ? `${unitTempStr || ''}` : null)
                             : `Good ${kSpace}bye!`,
+          temperatureColor = weatherStation && weatherColor(weatherStation, "#000"),
           precip = weatherStation && weatherStation.strPrecipitation,
+          moisture = weatherStation && weatherStation.strMoisture(),
           exitButton = hasPresence
                         ? <RaisedButton
                             className={"weather-station-exit-button"}
@@ -131,6 +141,7 @@ export class WeatherStationView extends
                             primary={true}
                           />
                         : null;
+    styles.temp.color = temperatureColor;
     return (
       <div>
         <CardText>
@@ -156,7 +167,10 @@ export class WeatherStationView extends
               {temperatureStr}
             </div>
             <div style={styles.precip}>
-              {precip}
+              {precipDiv(weatherStation)} {precip}
+            </div>
+            <div style={styles.moisture}>
+              {moisture}
             </div>
             {exitButton}
           </div>
