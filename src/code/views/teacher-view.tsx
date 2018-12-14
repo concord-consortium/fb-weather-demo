@@ -113,7 +113,7 @@ const styles:ComponentStyleMap = {
   geoMapBackgroundNE: {
     backgroundImage: "url(./img/EP-Base-Map-HC.png)",
   },
-  tempForMapView: {
+  mapViewWrapper: {
     zIndex: 1000
   }
 };
@@ -301,7 +301,7 @@ export class TeacherView
             >
               <div className="teacher-card-media-wrapper" style={styles.wrapper}>
                 <div className="teacher-card-media-map" style={styles.mapAndPrediction}>
-                  <div style={styles.tempForMapView}>
+                  <div style={styles.mapViewWrapper}>
                     { this.renderMapView() }
                   </div>
                   <div style={{...styles.geoMapWrapper, ...styleForBackgroundGeoMap()}} />
