@@ -11,6 +11,7 @@ import { ComponentStyleMap } from "../utilities/component-style-map";
 
 import { cellName, IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
+import { gWeatherScenarioSpec } from "../models/weather-scenario-spec";
 import { urlParams } from "../utilities/url-params";
 import Popover from "material-ui-next/Popover";
 import { TeacherCellPopover } from "./teacher-cell-popover";
@@ -96,6 +97,24 @@ const styles:ComponentStyleMap = {
   },
   image: {
     height: "10vh"
+  },
+  geoMapWrapper: {
+    position: "absolute",
+    margin: "1em 0 0 1em",
+    width: "500px",
+    height: "500px",
+    backgroundPosition: "62px 62px",
+    backgroundSize: "432px 432px",
+    backgroundRepeat: "no-repeat"
+  },
+  geoMapBackgroundAK: {
+    backgroundImage: "url(./img/Alaska-EP-Base-Map-HC.png)",
+  },
+  geoMapBackgroundNE: {
+    backgroundImage: "url(./img/EP-Base-Map-HC.png)",
+  },
+  mapViewWrapper: {
+    zIndex: 1000
   }
 };
 
@@ -170,7 +189,8 @@ export class TeacherView
       return weatherColor(station);
     };
 
-    const showCities = simulation && simulation.settings.showCities;
+    const showCities = simulation && simulation.settings.showCities &&
+                       ! gWeatherScenarioSpec.mapConfig.geoMap;
     const titleFunc = (cell:IGridCell) => {
       const station = simulation && simulation.stations &&
                       simulation.stations.getStation(cell.weatherStationId);
@@ -201,7 +221,7 @@ export class TeacherView
                         />
                       </Popover>;
       return (
-        <div className="grid-cell-content" style={{}}>
+        <div className="grid-cell-content">
           {city}
           {precip}
           {groupLabel}
@@ -238,6 +258,20 @@ export class TeacherView
       });
     };
 
+    const styleForBackgroundGeoMap = () => {
+      switch (gWeatherScenarioSpec.mapConfig.geoMap) {
+        case "NomeAlaska": {
+          return styles.geoMapBackgroundAK;
+        }
+        case "NewEngland": {
+          return styles.geoMapBackgroundNE;
+        }
+        default: {
+          return null;
+        }
+      }
+    };
+
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
@@ -267,9 +301,14 @@ export class TeacherView
             >
               <div className="teacher-card-media-wrapper" style={styles.wrapper}>
                 <div className="teacher-card-media-map" style={styles.mapAndPrediction}>
+                  <div style={styles.mapViewWrapper}>
                     { this.renderMapView() }
+                  </div>
+                  <div style={{...styles.geoMapWrapper, ...styleForBackgroundGeoMap()}} />
                 </div>
+                <div>
                   <SegmentedControlView />
+                </div>
               </div>
             </CardMedia>
           </Tab>
