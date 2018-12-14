@@ -91,10 +91,11 @@ const params = queryString.parse(window.location.search),
       // if `test` URL parameter is present, or if we're not launched from portal,
       // then we're testing, i.e. writing to `-test` database rather than production.
       isTesting = isTestingLaunchUrl() || hasTestTestingParam(params) ||
-                    (!isPortalTeacher && !isPortalStudent);
+                    (!isPortalTeacher && !isPortalStudent),
+      scenario = params.scenario;
 
 export const urlParams = {
-  params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting
+  params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting, scenario
 };
 
 // Returns a modified URL query/search string after removing the specified params
