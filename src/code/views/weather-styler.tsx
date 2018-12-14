@@ -50,7 +50,11 @@ export function weatherColor(station?:IWeatherStation|null) {
 }
 
 export function precipDiv(station?:IWeatherStation|null) {
-  const rainColor = "#6B4747";
+  const rainColor = "#000000"; // "#6B4747";
+  // Note: rainColor has been set to "pure" black to increase the contrast
+  // on the rain-drop icons when displayed over weather tile -- since the
+  // weather tiles have less than a 100% opacity, it was making them difficult
+  // to see when a geo-map was also displayed.
   const sunColor = "#8D7927";
   const raining = station && station.precipitation;
   const fontColor = raining ? rainColor : sunColor;
