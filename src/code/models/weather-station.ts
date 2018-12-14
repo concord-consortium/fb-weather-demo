@@ -55,7 +55,15 @@ export const WeatherStation = types
 
     strWindDirection(precision = kDefaultPrecision.windDirection): string {
       return self.state && self.state.strWindDirection() || "";
-    }
+    },
+
+    get moisture(): number | null {
+      return self.state && self.state.moisture;
+    },
+
+    strMoisture(precision = kDefaultPrecision.moisture) {
+      return self.state && self.state.strMoisture(precision);
+    },
   }))
   .actions(self => ({
     setLocation(location: { lat: number, long: number }) {

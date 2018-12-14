@@ -39,6 +39,7 @@ export class TeacherCellPopover extends React.Component<TeacherCellPopoverProps>
                       ? temperature.format(formatTempOptions)
                       : "",
           strPrecip = station && station.strPrecipitation,
+          strMoisture = station && station.strMoisture(),
           disconnectGroup = () => this.disconnectGroup(group),
           kRedXChar = "\u274C",
           kSpace = "\u00A0",  // non-breaking space
@@ -54,6 +55,7 @@ export class TeacherCellPopover extends React.Component<TeacherCellPopoverProps>
         <div className="station-id">{cellLabel}</div>
         <div className="temperature">{strTemp}</div>
         <div className="precipitation">{strPrecip}</div>
+        <div className="moisture">{strMoisture}</div>
         <div className="group">{group}</div>
         {disconnectButton}
       </div>
