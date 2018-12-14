@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Card, CardMedia, CardTitle } from "material-ui/Card";
 import { Tab, Tabs } from "material-ui/Tabs";
-import { cityAnnotation } from "../utilities/city-map";
+// import { cityAnnotation } from "../utilities/city-map";
 import { GridView } from "./grid-view";
 import { weatherColor, precipDiv } from "./weather-styler";
 import { LeafletMapView } from "./leaflet-map-view";
@@ -96,6 +96,22 @@ const styles:ComponentStyleMap = {
   },
   image: {
     height: "10vh"
+  },
+  tempForGeoMap: {
+    position: "absolute",
+    margin: "1em 0 0 1em",
+    width: "500px",
+    height: "500px",
+    // backgroundImage: "url(./img/Alaska-EP-Base-Map.png)",
+    backgroundImage: "url(./img/Alaska-EP-Base-Map-HC.png)",
+    // backgroundImage: "url(./img/EP-Base-Map.png)",
+    // backgroundImage: "url(./img/EP-Base-Map-HC.png)",
+    backgroundPosition: "62px 62px",
+    backgroundSize: "432px 432px",
+    backgroundRepeat: "no-repeat"
+  },
+  tempForMapView: {
+    zIndex: 1000
   }
 };
 
@@ -170,12 +186,12 @@ export class TeacherView
       return weatherColor(station);
     };
 
-    const showCities = simulation && simulation.settings.showCities;
+    // const showCities = simulation && simulation.settings.showCities;
     const titleFunc = (cell:IGridCell) => {
       const station = simulation && simulation.stations &&
                       simulation.stations.getStation(cell.weatherStationId);
       const precip = precipDiv(station);
-      const city = showCities ? cityAnnotation(cell.weatherStationId) : null;
+      // const city = showCities ? cityAnnotation(cell.weatherStationId) : null;
       const cellLabel = cellName(cell.row, cell.column);
       const isOpenPopoverCell = this.state.popoverCell === cellLabel;
       const group = groupMap[cellLabel];
@@ -201,8 +217,8 @@ export class TeacherView
                         />
                       </Popover>;
       return (
-        <div className="grid-cell-content" style={{}}>
-          {city}
+        <div className="grid-cell-content">
+          {/* { city } */}
           {precip}
           {groupLabel}
           {popover}
@@ -267,9 +283,14 @@ export class TeacherView
             >
               <div className="teacher-card-media-wrapper" style={styles.wrapper}>
                 <div className="teacher-card-media-map" style={styles.mapAndPrediction}>
+                  <div style={styles.tempForMapView}>
                     { this.renderMapView() }
+                  </div>
+                  <div style={styles.tempForGeoMap} />
                 </div>
+                <div>
                   <SegmentedControlView />
+                </div>
               </div>
             </CardMedia>
           </Tab>

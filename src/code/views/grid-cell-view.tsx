@@ -53,6 +53,7 @@ export class GridCellView extends React.Component<
       alignContent: "center",
       justifyContent: "center",
       backgroundColor: displayColor,
+      opacity: 0.75,
       color: textColor,
       alignItems: "center",
       fontSize: "24pt",
