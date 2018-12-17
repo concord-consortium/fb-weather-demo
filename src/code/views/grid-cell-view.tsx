@@ -54,7 +54,7 @@ export class GridCellView extends React.Component<
       alignContent: "center",
       justifyContent: "center",
       backgroundColor: displayColor,
-      opacity: gWeatherScenarioSpec.mapConfig.geoMap ? 0.75 : 1.0,
+      opacity: gWeatherScenarioSpec.mapConfig.geoMap ? 0.65 : 1.0,
       color: textColor,
       alignItems: "center",
       fontSize: "24pt",
