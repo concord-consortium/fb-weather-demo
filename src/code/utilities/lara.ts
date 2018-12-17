@@ -17,7 +17,7 @@ interface LaraUserInfo {
 export const getLaraUserInfo = (portalAppName: string) => {
   return new Promise<LaraUserInfo>((resolve, reject) => {
     if (!launchedFromLara) {
-      reject("Not launched from LARA");
+      reject("In iframe but not launched from LARA!");
       return;
     }
 

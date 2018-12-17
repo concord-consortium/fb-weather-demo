@@ -92,7 +92,7 @@ class _PortalView extends React.Component<
       this.setState({
         startTitle: "Error",
         startMessage: `Could not start the simulation because an error occurred.`,
-        startDetail: `[${error.message}]`,
+        startDetail: error.message || error.toString(),
         startSuggestion: "Try relaunching the simulation from the portal."
       });
     });
@@ -105,7 +105,7 @@ class _PortalView extends React.Component<
 
   render() {
     const { startTitle, startMessage, startDetail, startSuggestion } = this.state,
-          detail = startDetail ? <div>{startDetail}</div> : null,
+          detail = startDetail ? <p>{startDetail}</p> : null,
           spacer = startSuggestion ? <div>{"\u00A0"}</div> : null,
           suggestion = startSuggestion ? <div>{startSuggestion}</div> : null;
     return (

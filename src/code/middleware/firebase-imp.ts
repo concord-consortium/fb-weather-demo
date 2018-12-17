@@ -118,7 +118,7 @@ export class FirebaseImp {
     firebase.initializeApp(this.config);
     let auth = firebase.auth();
     const imp = this;
-    this.postConnect = new Promise((resolve:Function, reject:Function) => {
+    this.postConnect = new Promise((resolve, reject) => {
       auth.onAuthStateChanged((user: firebase.User | null) => {
         if (this.isSignedOut) {
           this.user = null;
@@ -130,13 +130,13 @@ export class FirebaseImp {
           resolve(imp);
         }
         else {
-          this.reqAuth();
+          this.reqAuth(reject);
         }
       });
     });
   }
 
-  reqAuth() {
+  reqAuth(reject: (reason: any) => void) {
     const auth = firebase.auth();
     const signin = () => {
       gPortalUrlUtility.getFirebaseSettings(this.portalAppName).then(({jwt}) => {
@@ -144,15 +144,16 @@ export class FirebaseImp {
           auth
           .signInWithCustomToken(jwt)
           .then(this.finishAuth)
-          .catch(this.failAuth);
+          .catch(this.failAuth(reject));
         }
         else {
           auth
           .signInAnonymously()
           .then(this.finishAuth)
-          .catch(this.failAuth);
+          .catch(this.failAuth(reject));
         }
-      });
+      })
+      .catch(reject);
     };
 
     // Use Firebase's session persistence so that if a student launches multiple tabs,
@@ -166,10 +167,13 @@ export class FirebaseImp {
     }
   }
 
-  failAuth = (error: firebase.auth.Error) => {
-    const errorMessage = error.message;
-    const email = (error as any).email || ""; // only some errors have email
-    this.error(["could not authenticate", errorMessage, email].join(" "));
+  failAuth = (reject: (reason: any) => void) => {
+    return (error: firebase.auth.Error) => {
+      const errorMessage = error.message;
+      const email = (error as any).email || ""; // only some errors have email
+      this.error(["could not authenticate", errorMessage, email].join(" "));
+      reject(errorMessage);
+    };
   }
 
   finishAuth = (result: { user: firebase.User }) => {
