@@ -13,6 +13,7 @@ interface LaraUserInfo {
   classHash: string;
   offeringId: string;
   firebaseJWT: string;
+  isTeacher: boolean;
 }
 export const getLaraUserInfo = (portalAppName: string) => {
   return new Promise<LaraUserInfo>((resolve, reject) => {
@@ -28,11 +29,12 @@ export const getLaraUserInfo = (portalAppName: string) => {
           if (result && result.token) {
             const token: any = jwt.decode(result.token);
             if (token) {
-              const {class_hash, offering_id} = token.claims;
+              const {class_hash, offering_id, user_type} = token.claims;
               resolve({
                 classHash: class_hash,
                 offeringId: "" + offering_id,
-                firebaseJWT: result.token
+                firebaseJWT: result.token,
+                isTeacher: user_type === "teacher"
               });
             }
           }

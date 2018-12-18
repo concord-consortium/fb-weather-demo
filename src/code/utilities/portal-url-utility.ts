@@ -203,10 +203,11 @@ export class PortalUrlUtility {
     }
 
     async extractLaraInfo(portalAppName: string) {
-      const {classHash, offeringId, firebaseJWT} = await getLaraUserInfo(portalAppName);
+      const {classHash, offeringId, firebaseJWT, isTeacher} = await getLaraUserInfo(portalAppName);
       this.classHash = classHash;
       this.offeringId = offeringId;
       this.firebaseJWT = firebaseJWT;
+      this.isTeacher = isTeacher;
     }
 }
 

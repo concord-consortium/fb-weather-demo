@@ -54,8 +54,8 @@ class _PortalView extends React.Component<
   }
 
   componentDidMount() {
-    const showTeacher = gPortalUrlUtility.isTeacher;
     gPortalUrlUtility.getFirebaseSettings(gFirebase.portalAppName).then( ({key, jwt}) => {
+      const showTeacher = gPortalUrlUtility.isTeacher;
       this.setState({simulationKey:key, showTeacher: showTeacher});
 
       // remove transient url params so they don't affect page reload
