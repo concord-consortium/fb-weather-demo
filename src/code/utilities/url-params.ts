@@ -83,6 +83,11 @@ export function setStudentJwt(domainJwt: string | null, studentJwt: string | nul
   }
 }
 
+const isNotFalse = (param?: string) => {
+  param = (param || "").trim().toLowerCase();
+  return !((param === "false") || (param === "0") || (param === "no"));
+};
+
 const params = queryString.parse(window.location.search),
       isPortalTeacher = isPortalTeacherParams(params) || !!getTeacherJwt(),
       isPortalStudent = !isPortalTeacher && isPortalStudentParams(params) || !!getStudentJwt(),
@@ -92,10 +97,13 @@ const params = queryString.parse(window.location.search),
       // then we're testing, i.e. writing to `-test` database rather than production.
       isTesting = isTestingLaunchUrl() || hasTestTestingParam(params) ||
                     (!isPortalTeacher && !isPortalStudent),
-      scenario = params.scenario;
+      scenario = params.scenario,
+      showStudentTemperature = isNotFalse(params.showStudentTemperature),
+      showStudentPrecipitation = isNotFalse(params.showStudentPrecipitation),
+      showStudentMoisture = isNotFalse(params.showStudentMoisture);
 
 export const urlParams = {
-  params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting, scenario
+  params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting, scenario, showStudentTemperature, showStudentPrecipitation, showStudentMoisture
 };
 
 // Returns a modified URL query/search string after removing the specified params

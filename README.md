@@ -7,6 +7,22 @@ A quick and dirty demo of using firebase for a classroom weather simulation.
 You can select a scenario using the `scenario` url parameter with an id value found in the `weather-scenario-specs.json.ts` file.
 If no parameter is supplied or a parameter with an id that does not exist in the json data is supplied the first scenario is selected.
 
+Here is an example url with the scenario defined:
+
+`?scenario=NE_EP2`
+
+## Adjusting student weather station display
+
+By default the student weather station displays the time, the temperature, the precipitation and the moisture content.  The last three measurements can be disabled via giving the following url parameters a false value (either `false`, `0` or `no`):
+
+1. showStudentTemperature
+2. showStudentPrecipitation
+3. showStudentMoisture
+
+Here is an example url where precipitation and moisture are not displayed:
+
+`?showStudentPrecipitation=no&showStudentMoisture=no`
+
 ## Working with this project:
 
 1. Prerequisits: Install [`yarn`](https://yarnpkg.com/) and [`npm`](https://www.npmjs.com/)
