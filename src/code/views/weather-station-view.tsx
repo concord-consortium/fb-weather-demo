@@ -7,6 +7,7 @@ import { simulationStore } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
 import { weatherColor, precipDiv } from "./weather-styler";
 import { gFirebase } from "../middleware/firebase-imp";
+import { urlParams } from "../utilities/url-params";
 
 export type StationTab = "configure" | "weather";
 
@@ -163,15 +164,21 @@ export class WeatherStationView extends
             <div style={styles.name}>
               {name}
             </div>
-            <div style={styles.temp}>
-              {temperatureStr}
-            </div>
-            <div style={styles.precip}>
-              {precipDiv(weatherStation)} {precip}
-            </div>
-            <div style={styles.moisture}>
-              {moisture}
-            </div>
+            {urlParams.showStudentTemperature ?
+              <div style={styles.temp}>
+                {temperatureStr}
+              </div>
+              : null}
+            {urlParams.showStudentPrecipitation ?
+              <div style={styles.precip}>
+                {precipDiv(weatherStation)} {precip}
+              </div>
+              : null}
+            {urlParams.showStudentMoisture ?
+              <div style={styles.moisture}>
+                {moisture}
+              </div>
+              : null}
             {exitButton}
           </div>
         </CardText>
