@@ -6,7 +6,7 @@ import { Temperature } from "./temperature";
 
 export const kDefaultPrecision = {
               windDirection: 0,
-              moisture: 2
+              moisture: 0
             };
 
 export class WeatherStationState {
