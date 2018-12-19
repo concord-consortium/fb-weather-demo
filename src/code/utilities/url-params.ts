@@ -100,10 +100,12 @@ const params = queryString.parse(window.location.search),
       scenario = params.scenario,
       showStudentTemperature = isNotFalse(params.showStudentTemperature),
       showStudentPrecipitation = isNotFalse(params.showStudentPrecipitation),
-      showStudentMoisture = isNotFalse(params.showStudentMoisture);
+      showStudentMoisture = isNotFalse(params.showStudentMoisture),
+      interpolateTempColors = isNotFalse(params.interpolateTempColors);
 
 export const urlParams = {
-  params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting, scenario, showStudentTemperature, showStudentPrecipitation, showStudentMoisture
+  params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting, scenario,
+  showStudentTemperature, showStudentPrecipitation, showStudentMoisture, interpolateTempColors
 };
 
 // Returns a modified URL query/search string after removing the specified params

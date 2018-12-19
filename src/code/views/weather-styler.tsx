@@ -1,8 +1,10 @@
 import * as React from "react";
 import { IWeatherStation } from "../models/weather-station";
 import { gWeatherScenarioSpec } from "../models/weather-scenario-spec";
+import { urlParams } from "../utilities/url-params";
 
 const normColor = "#f9b33a";
+const interpolatedLRange = 30;
 
 function threeBandColor(tempInC: number) {
   const coldColor = "#50a9fa";
@@ -17,17 +19,24 @@ function threeBandColor(tempInC: number) {
 
 function sixBandColor(tempInC: number) {
   const bands = [
-    {min: -12.2, max: -6.7, color: "purple"},
-    {min: -6.7,  max: -1.1, color: "blue"},
-    {min: -1.1,  max: 4.4,  color: "green"},
-    {min: 4.4,   max: 10,   color: "yellow"},
-    {min: 10,    max: 15.6, color: "orange"},
-    {min: 15.6,  max: 20.6, color: "red"},
+    {min: -12.2, max: -6.7, color: "purple", hsl: [300, 100, 25]},
+    {min: -6.7,  max: -1.1, color: "blue", hsl: [240, 100, 50]},
+    {min: -1.1,  max: 4.4,  color: "green", hsl: [120, 100, 25]},
+    {min: 4.4,   max: 10,   color: "yellow", hsl: [60, 100, 50]},
+    {min: 10,    max: 15.6, color: "orange", hsl: [39, 100, 50]},
+    {min: 15.6,  max: 20.6, color: "red", hsl: [0, 100, 50]},
   ];
 
   for (let i = 0; i < bands.length; i++) {
     const band = bands[i];
     if ((tempInC >= band.min) && (tempInC < band.max)) {
+      if (urlParams.interpolateTempColors) {
+        const interpolatedPercentage = (tempInC - band.min) / (band.max - band.min);
+        const [h, s, l] = band.hsl;
+        const minL = l - (interpolatedLRange / 2);
+        const interpolatedL = Math.round(minL + (interpolatedLRange * interpolatedPercentage));
+        return `hsl(${h}, ${s}%, ${interpolatedL}%)`;
+      }
       return band.color;
     }
   }
