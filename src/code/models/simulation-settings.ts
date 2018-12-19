@@ -30,7 +30,7 @@ export const SimulationSettings = types
   .model('SimulationSettings', {
     id: types.optional(types.identifier(types.string), () => uuid()),
     showBaseMap: types.optional(types.boolean, true),
-    interpolationEnabled: types.optional(types.boolean, false),
+    interpolationEnabled: types.optional(types.boolean, true),
     showTempColors: types.optional(types.boolean, false),
     showTempValues: types.optional(types.boolean, true),
     showDeltaTemp: types.optional(types.boolean, false),
