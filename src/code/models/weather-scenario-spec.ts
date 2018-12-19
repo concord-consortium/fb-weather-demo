@@ -51,6 +51,7 @@ export interface IWeatherScenarioSpec {
     bandModel: "three-bands" | "six-bands",
   };
   eventUrl: string;
+  updateInterval: number;
   startTime?: ITimeSpec;
   endTime?: ITimeSpec;
   utcOffset?: number;

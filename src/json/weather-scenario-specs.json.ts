@@ -10,6 +10,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "six-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/AK_EP2.json",
+    updateInterval: 0.3333333333,
     startTime: {
       year: 2013,
       month: 5,
@@ -43,6 +44,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "six-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/AK_EP1.json",
+    updateInterval: 0.3333333333,
     startTime: {
       year: 2013,
       month: 5,
@@ -76,6 +78,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "six-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/NE_EP2.json",
+    updateInterval: 0.3333333333,
     startTime: {
       year: 2013,
       month: 5,
@@ -108,6 +111,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "six-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/NE_EP1.json",
+    updateInterval: 0.3333333333,
     startTime: {
       year: 2013,
       month: 5,
@@ -141,6 +145,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v7.json",
+    updateInterval: 1,
     startTime: {
       year: 2018,
       month: 1,
@@ -173,6 +178,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v6.json",
+    updateInterval: 1,
     startTime: {
       year: 2016,
       month: 8,
@@ -205,6 +211,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v5.json",
+    updateInterval: 1,
     startTime: {
       year: 1970,
       month: 12,
@@ -237,6 +244,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one-v4.json",
+    updateInterval: 1,
     startTime: {
       year: 1970,
       month: 12,
@@ -269,6 +277,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "three-bands"
     },
     eventUrl: "https://raw.githubusercontent.com/concord-consortium/weather-events/master/events/day-one.json",
+    updateInterval: 1,
     startTime: {
       year: 1970,
       month: 12,
@@ -301,6 +310,7 @@ export const weatherScenarioSpecs: IWeatherScenarioSpec[] = [
       bandModel: "three-bands"
     },
     eventUrl: "https://api.github.com/repos/concord-consortium/weather-events/contents/events/lake-michigan.json",
+    updateInterval: 1,
     startTime: {
       year: 2017,
       month: 3,
