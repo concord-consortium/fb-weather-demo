@@ -69,7 +69,7 @@ export const Simulation = types
         m = m.utcOffset(self.scenario.utcOffset);
       }
       // formatting rules see: https://momentjs.com/
-      return m.format(format || 'h:mm a' || 'lll');
+      return m.format(format || 'h:mm A' || 'lll');
     }
   }))
   .views(self => ({

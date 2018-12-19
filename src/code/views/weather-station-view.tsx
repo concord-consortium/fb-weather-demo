@@ -221,7 +221,7 @@ export class WeatherStationView extends
             {urlParams.showStudentMoisture ?
               <>
                 <div style={styles.moistureLabel}>
-                  Air Moisture Content:
+                  Air Moisture:
                 </div>
                 <div style={styles.moisture}>
                   {moisture}
