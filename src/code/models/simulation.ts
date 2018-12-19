@@ -45,7 +45,7 @@ export const Simulation = types
   .views(self => ({
     get displayName(): string {
       const parts = self.name.split("_");
-      return parts.length > 1 ? parts[1].substr(1, 32) : self.name;
+      return parts.length > 1 ? parts[1] : self.name;
     },
     get isPlaying(): boolean {
       return self.control.isPlaying;

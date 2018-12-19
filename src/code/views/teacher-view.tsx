@@ -17,6 +17,8 @@ import Popover from "material-ui-next/Popover";
 import { TeacherCellPopover } from "./teacher-cell-popover";
 import { TeacherOptionsButton } from "./teacher-options-button";
 import { CopyStudentLinkButton } from "./copy-student-link-button";
+import { gPortalUrlUtility, ActivityInfo } from "../utilities/portal-url-utility";
+import { gFirebase } from "../middleware/firebase-imp";
 
 export type TeacherViewTab = "control" | "configure";
 export const MAP_TYPE_GRID = "MAP_TYPE_GRID";
@@ -28,6 +30,7 @@ export interface TeacherViewState {
   tab: TeacherViewTab;
   popoverCell: string | null;
   popoverAnchorEl: HTMLElement | null;
+  activityInfo: ActivityInfo | null;
 }
 
 const styles:ComponentStyleMap = {
@@ -129,9 +132,16 @@ export class TeacherView
     this.state = {
       tab: "control",
       popoverCell: null,
-      popoverAnchorEl: null
+      popoverAnchorEl: null,
+      activityInfo: null
     };
     this.closingCount = 0;
+  }
+
+  componentWillMount() {
+    gPortalUrlUtility.getFirebaseSettings(gFirebase.portalAppName).then( ({activityInfo}) => {
+      this.setState({activityInfo});
+    });
   }
 
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
@@ -272,10 +282,15 @@ export class TeacherView
       }
     };
 
+    const {activityInfo} = this.state;
+    const tabLabel = activityInfo && (activityInfo.className || activityInfo.activityName || activityInfo.offeringId)
+      ? `${activityInfo.className ? `${activityInfo.className}: ` : ""}${activityInfo.activityName} ${activityInfo.offeringId ? `#${activityInfo.offeringId}` : ""}`
+      : "Control";
+
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
-          <Tab label="Control" value="control">
+          <Tab label={tabLabel} value="control">
             <CardTitle>
               <div className="teacher-title-card-contents"
                     style={{ display: 'flex', justifyContent: 'space-between' }}>
