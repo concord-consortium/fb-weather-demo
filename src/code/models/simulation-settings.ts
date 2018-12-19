@@ -59,7 +59,7 @@ export const SimulationSettings = types
     return {
       formatLocalTime(time: Date | null, format?: string): string {
         if (time == null) { return ""; }
-        return moment(time).utcOffset(localUtcOffset).format(format || 'HH:mm' || 'lll');
+        return moment(time).utcOffset(localUtcOffset).format(format || 'h:mm A' || 'lll');
       },
 
       formatTemperature(temp: number, options?: IFormatTempOptions): string {
