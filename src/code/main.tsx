@@ -28,7 +28,7 @@ const log = function(msg: string) {
 
 
 gFirebase.postConnect.then( (imp:FirebaseImp)=> {
-  imp.dataRef.once('value').then((snapshot:any) => {
+  imp.mstRef.once('value').then((snapshot:any) => {
 
     const updateSession = function (nextSimulation: string, callback?: () => void) {
       if (nextSimulation) {
@@ -75,7 +75,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
       const simulationName = nextState.params.simulationName;
       if (simulationName) {
         // students must wait until teacher has started simulation
-        gFirebase.waitForPathToExist(`simulations/${simulationName}`, (snapshot: any) => {
+        gFirebase.waitForMSTPathToExist(`simulations/${simulationName}`, (snapshot: any) => {
           updateSession(simulationName);
           const simulation = simulationStore.selected;
           if (simulation) {

@@ -82,7 +82,7 @@ class _PortalView extends React.Component<
         // a wait in place at the StudentTabsView, but when we proceed from here
         // the simulation gets created before we get there.
         // students must wait until teacher has started simulation
-        gFirebase.waitForPathToExist(`simulations/${key}`, (snapshot: any) => {
+        gFirebase.waitForMSTPathToExist(`simulations/${key}`, (snapshot: any) => {
           // advance to student/weather station view
           this.props.router.push(this.nextUrl(key));
         });

@@ -12,7 +12,7 @@ export const SimulationControl = types
   .model("SimulationControl", {
     startTime: types.maybe(types.Date), // UTC date
     isPlaying: types.optional(types.boolean, false),
-    playOffset: types.optional(types.number, 0),  // seconds from start
+    // playOffset: types.optional(types.number, 0),  // seconds from start
     breakOffset: types.optional(types.number, 0), // seconds from start
     duration: types.optional(types.number, 0),    // seconds
     timeStep: types.optional(types.number, kOverrides.timeStep),    // minutes per time step
@@ -20,7 +20,8 @@ export const SimulationControl = types
     updateInterval: types.optional(types.number, kOverrides.updateInterval),  // updates frame rate.
   })
   .volatile(self => ({
-    timer: null as (number | null)
+    timer: null as (number | null),
+    playOffset: 0
   }))
   .views(self => ({
     get time(): Date | null {
@@ -39,8 +40,11 @@ export const SimulationControl = types
   .actions(self => {
 
     // private/internal API
-    function _setPlayOffset(offset: number) {
+    function _setPlayOffset(offset: number, skipFirebaseSet?: boolean) {
       self.playOffset = Math.min(Math.max(0, offset), self.duration);
+      if (!skipFirebaseSet) {
+
+      }
     }
 
     function _clearTimer() {
@@ -94,6 +98,9 @@ export const SimulationControl = types
       },
       stop() {
         _stop();
+      },
+      setPlayOffset(offset: number, skipFirebaseSet?: boolean) {
+        _setPlayOffset(offset, skipFirebaseSet);
       },
       timerTick(stopOffset: number) {
         if (stopOffset && self.playOffset >= stopOffset) {

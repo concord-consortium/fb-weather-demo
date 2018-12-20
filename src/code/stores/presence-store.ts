@@ -46,7 +46,7 @@ export const PresenceStore = types
       const firebase = gFirebase;
       const presence = Presence.create(snapshot);
       const path = `${_path}/presences/presences/${snapshot.id}`;
-      const presref = firebase.dataRef.child(path);
+      const presref = firebase.mstRef.child(path);
       presref.onDisconnect().remove();
       // add presence to map
       self.presences.put(presence);
@@ -54,7 +54,7 @@ export const PresenceStore = types
     },
     deletePresence(_path: string, presenceID: string) {
       const path = `${_path}/presences/presences/${presenceID}`,
-            presenceRef = gFirebase.dataRef.child(path);
+            presenceRef = gFirebase.mstRef.child(path);
       if (presenceRef) {
         presenceRef.set(null);
       }
@@ -65,7 +65,7 @@ export const PresenceStore = types
             selfPresenceSnapshot = selfPresence && getSnapshot(selfPresence);
       if (selfPresenceID) {
         const path = `${_path}/presences/presences`,
-              presencesRef = gFirebase.dataRef.child(path),
+              presencesRef = gFirebase.mstRef.child(path),
               presences = { [selfPresenceID]: selfPresenceSnapshot };
         presencesRef.set(presences);
       }

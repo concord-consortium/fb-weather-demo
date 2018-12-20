@@ -45,7 +45,8 @@ export class FirebaseImp {
   simulationMap: [{key:string, value:any}];
   config: FirebaseConfig;
   configs: FirebaseConfigMap;
-  dataRef: firebase.database.Reference;
+  mstRef: firebase.database.Reference;
+  tickRef: firebase.database.Reference;
   simulationsRef: firebase.database.Reference;
   pendingCallbacks: Function[];
   postConnect: Promise<FirebaseImp>;
@@ -122,7 +123,7 @@ export class FirebaseImp {
       auth.onAuthStateChanged((user: firebase.User | null) => {
         if (this.isSignedOut) {
           this.user = null;
-          this.dataRef.off();
+          this.mstRef.off();
         }
         else if (user) {
           this.log(user.displayName + " authenticated");
@@ -178,7 +179,7 @@ export class FirebaseImp {
 
   finishAuth = (result: { user: firebase.User }) => {
     this.user = result.user;
-    this.setDataRef();
+    this.setDataRefs();
     this.log("logged in");
     let callback: Function;
     const context = this;
@@ -202,7 +203,7 @@ export class FirebaseImp {
     return DEFAULT_VERSION_STRING.replace(/\./g, "_");
   }
 
-  setDataRef() {
+  setDataRefs() {
     const fn = function() {
       this.rebindFirebaseHandlers();
     };
@@ -211,14 +212,22 @@ export class FirebaseImp {
 
   rebindFirebaseHandlers() {
     this.log("registering listeners");
-    if (this.dataRef) {
+    if (this.mstRef) {
       try {
-        this.dataRef.off();
+        this.mstRef.off();
       } catch (e) {
-        this.log("couldn't disable previous data handler");
+        this.log("couldn't disable previous MST data handler");
       }
     }
-    this.dataRef = firebase.database().ref(this.basePath);
+    if (this.tickRef) {
+      try {
+        this.tickRef.off();
+      } catch (e) {
+        this.log("couldn't disable previous tick data handler");
+      }
+    }
+    this.mstRef = firebase.database().ref(this.basePath + "/mst");
+    this.tickRef = firebase.database().ref(this.basePath + "/tick");
   }
 
   try(fn: Function) {
@@ -233,16 +242,24 @@ export class FirebaseImp {
     return firebase.database();
   }
 
-  refForPath(path:string) {
+  refForMSTPath(path:string) {
     return new Promise( (resolve, reject) => {
       this.postConnect.then( (imp) => {
-        resolve(imp.dataRef.child(path.replace(/_/g, "/")));
+        resolve(imp.mstRef.child(path.replace(/_/g, "/")));
       });
     });
   }
 
-  waitForPathToExist(path: string, callback: (snapshot: any) => void) {
-    gFirebase.refForPath(path)
+  refForTickPath(path:string) {
+    return new Promise( (resolve, reject) => {
+      this.postConnect.then( (imp) => {
+        resolve(imp.tickRef.child(path.replace(/_/g, "/")));
+      });
+    });
+  }
+
+  waitForMSTPathToExist(path: string, callback: (snapshot: any) => void) {
+    gFirebase.refForMSTPath(path)
       .then((ref:firebase.database.Reference) => {
         const handleSnapshot = (snapshot: firebase.database.DataSnapshot | null) => {
           if (snapshot && snapshot.val()) {

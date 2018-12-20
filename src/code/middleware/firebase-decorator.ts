@@ -6,7 +6,8 @@ import { urlParams } from "../utilities/url-params";
 import { cloneDeep } from "lodash";
 
 export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => void) => {
-  const pendingRef = gFirebase.refForPath(relativeDataPath);
+  const pendingMSTRef = gFirebase.refForMSTPath(relativeDataPath);
+  const pendingTickRef = gFirebase.refForTickPath(relativeDataPath);
   let updateModelFromFirebaseCount = 0;
   const updateModelFromFirebase = (newV:firebase.database.DataSnapshot) => {
     let v: ISimulationSnapshot = newV.val();
@@ -20,7 +21,7 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => v
       applySnapshot(model, v);
     }
   };
-  pendingRef.then((ref:firebase.database.Reference) => {
+  pendingMSTRef.then((ref:firebase.database.Reference) => {
     function updateFirebaseFromModel(snapshot:any) {
       const data = model.filterOutboundData ? model.filterOutboundData(snapshot) : snapshot,
             presence = model.outboundPresence && model.outboundPresence(snapshot),
@@ -37,6 +38,27 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => v
       updateModelFromFirebase(newV);
       if (++onValueCount === 1) {
         onSnapshot(model, (newSnapshot:any) => updateFirebaseFromModel(newSnapshot));
+        if (callBack) { setTimeout(() => callBack(), 1); }
+      }
+    });
+  });
+  pendingTickRef.then((ref:firebase.database.Reference) => {
+    function updateFromTick(snapshot:any) {
+      const data = model.filterOutboundData ? model.filterOutboundData(snapshot) : snapshot,
+            presence = model.outboundPresence && model.outboundPresence(snapshot),
+            presenceRef = presence && ref.child(`presences/presences/${presence.id}`);
+      // update the object (minus any filtered properties)
+      ref.update(data);
+      // update our presence separately
+      if (presenceRef) {
+        presenceRef.update(presence);
+      }
+    }
+    let onValueCount = 0;
+    ref.on('value', (newV:firebase.database.DataSnapshot) => {
+      updateModelFromFirebase(newV);
+      if (++onValueCount === 1) {
+        onSnapshot(model, (newSnapshot:any) => updateFromTick(newSnapshot));
         if (callBack) { setTimeout(() => callBack(), 1); }
       }
     });
