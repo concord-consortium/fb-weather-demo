@@ -167,6 +167,6 @@ export class WeatherStationState {
 
   strMoisture(precision = kDefaultPrecision.moisture) {
     const d = this.moisture;
-    return d && isFinite(d) ? d.toFixed(precision) : null;
+    return (d !== null) && isFinite(d) ? d.toFixed(precision) : null;
   }
 }
