@@ -86,7 +86,7 @@ export class WeatherStationState {
           isLowNum = isFinite(lowValue),
           isHighNum = isFinite(highValue);
     if (isLowNum && isHighNum) {
-      return lowValue + pctInterpolate * (highValue - lowValue);
+      return lowValue + Math.round(pctInterpolate * (highValue - lowValue));
     }
     if (isLowNum) { return lowValue; }
     if (isHighNum) { return highValue; }
