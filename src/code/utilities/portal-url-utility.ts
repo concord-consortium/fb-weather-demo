@@ -6,10 +6,13 @@ import { launchedFromLara, getLaraUserInfo } from "./lara";
 interface PartialOfferingReport {
   clazz_id: number;
   clazz_info_url: string;
+  id: number;
+  activity: string;
 }
 
 interface PartialClassInfo {
   class_hash: string;
+  name: string;
 }
 
 export const defaultSimulationName = uuid(),
@@ -62,6 +65,12 @@ interface IPortalJwt {
   claims: IPortalJwtClaims;
 }
 
+export interface ActivityInfo {
+  className?: string;
+  activityName?: string;
+  offeringId?: string;
+}
+
 export class PortalUrlUtility {
     domain: string;
     token: string;
@@ -74,15 +83,17 @@ export class PortalUrlUtility {
     firebaseKey: string;
     firebaseJWT: string | null;
     classHash: string | null;
+    activityInfo: ActivityInfo;
 
     constructor() {
       this.isTeacher = urlParams.isTeacher;
       this.domain = defaultDomain;
       this.classId = defaultClass;
       this.offeringId = defaultOffering;
+      this.activityInfo = {};
     }
 
-    async getFirebaseSettings(portalAppName: string):Promise<{key: string, jwt: string|null}> {
+    async getFirebaseSettings(portalAppName: string):Promise<{key: string, jwt: string|null, activityInfo: ActivityInfo}> {
       if (!this.firebaseKey) {
         if (urlParams.isPortalTeacher) {
           await this.extractTeacherInfo(urlParams.params as TeacherReportParams, portalAppName);
@@ -100,7 +111,7 @@ export class PortalUrlUtility {
           this.firebaseKey = `no-portal_${this.domain}-${this.classId}-${this.offeringId}`;
         }
       }
-      return {key: this.firebaseKey, jwt: this.firebaseJWT};
+      return {key: this.firebaseKey, jwt: this.firebaseJWT, activityInfo: this.activityInfo};
     }
 
     async requestJWT(domain: string, bearerToken: string, portalAppName: string, classHash?: string) {
@@ -171,6 +182,7 @@ export class PortalUrlUtility {
         }
         this.classHash = authToken.claims.class_hash;
       }
+      this.activityInfo.offeringId = this.offeringId;
     }
 
     async extractTeacherInfo(params: TeacherReportParams, portalAppName: string) {
@@ -199,6 +211,12 @@ export class PortalUrlUtility {
       const rawDomain = extractRawDomain(params.offering)!;
       this.firebaseJWT = await this.requestJWT(rawDomain, params.token, portalAppName, this.classHash);
 
+      this.activityInfo = {
+        className: classInfo.name,
+        activityName: reportEntry.activity,
+        offeringId: this.offeringId
+      };
+
       this.domain = extractDomain(params.offering);
     }
 
@@ -208,6 +226,8 @@ export class PortalUrlUtility {
       this.offeringId = offeringId;
       this.firebaseJWT = firebaseJWT;
       this.isTeacher = isTeacher;
+
+      this.activityInfo.offeringId = offeringId;
     }
 }
 

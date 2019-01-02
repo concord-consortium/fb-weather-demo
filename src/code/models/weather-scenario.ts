@@ -4,7 +4,7 @@ import { TemperatureUnit } from "./temperature";
 
 const TempUnit = types.enumeration("TempUnit", [TemperatureUnit.Celsius, TemperatureUnit.Fahrenheit]);
 
-export const TempConfig = types.model("Scale", {
+export const TempConfig = types.model("TempConfig", {
   eventUnit: TempUnit,
   bandModel: types.enumeration("BandModel", ["three-bands", "six-bands"]),
 });

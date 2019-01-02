@@ -7,6 +7,7 @@ import { simulationStore } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
 import { gFirebase } from "../middleware/firebase-imp";
 import { urlParams } from "../utilities/url-params";
+import { gPortalUrlUtility, ActivityInfo } from "../utilities/portal-url-utility";
 
 export type StationTab = "configure" | "weather";
 
@@ -14,6 +15,7 @@ export interface WeatherStationProps {
   weatherStation: IWeatherStation | null;
 }
 export interface WeatherStationState {
+  activityInfo: ActivityInfo | null;
 }
 
 @observer
@@ -21,16 +23,24 @@ export class WeatherStationView extends
   React.Component<WeatherStationProps,WeatherStationState> {
   constructor(props: WeatherStationProps, context: any) {
     super(props);
+    this.state = {activityInfo: null};
   }
 
   handleExit = () => {
     gFirebase.signOut();
   }
 
+  componentWillMount() {
+    gPortalUrlUtility.getFirebaseSettings(gFirebase.portalAppName).then( ({activityInfo}) => {
+      this.setState({activityInfo});
+    });
+  }
+
   render() {
     let name = "";
     // let callSign = "";
     const {weatherStation} = this.props,
+          {activityInfo} = this.state,
           simulation = simulationStore.selected,
           time = simulation && weatherStation && simulation.timeString,
           simulationName = simulation && simulation.displayName,
@@ -179,7 +189,7 @@ export class WeatherStationView extends
         <CardText>
           <div style={styles.info}>
             <div style={styles.simulationName}>
-              {simulationName}
+              {simulationName} {activityInfo && activityInfo.offeringId ? `#${activityInfo.offeringId}` : ""}
             </div>
             {/* <div style={styles.graphic}>
               <div>
