@@ -3,10 +3,10 @@ import { observer } from "mobx-react";
 import { Card, CardText, CardTitle } from "material-ui/Card";
 import { withRouter } from "react-router";
 
-import { PortalUrlUtility, defaultSimulationName } from "../utilities/portal-url-utility";
+import { gPortalUrlUtility, defaultSimulationName } from "../utilities/portal-url-utility";
 import { captureSimulationMetadata } from "../models/simulation-metadata";
 import { gFirebase } from "../middleware/firebase-imp";
-import * as firebase from "firebase";
+import { removeUrlParams } from "../utilities/url-params";
 
 function windowLocationOrigin() {
   // cf. https://tosbourn.com/a-fix-for-window-location-origin-in-internet-explorer/
@@ -22,6 +22,10 @@ export interface PortalViewProps {
 export interface PortalViewState {
   simulationKey: string;
   showTeacher: boolean;
+  startTitle: string;
+  startMessage: string;
+  startDetail?: string;
+  startSuggestion?: string;
 }
 
 @observer
@@ -32,23 +36,41 @@ class _PortalView extends React.Component<
   constructor(props: PortalViewProps, ctx: any) {
     super(props);
     // default to teacher
-    this.state = {simulationKey: defaultSimulationName, showTeacher: true};
+    this.state = {
+      simulationKey: defaultSimulationName,
+      showTeacher: true,
+      startTitle: "Start Simulation",
+      startMessage: "Waiting for simulation to begin..."
+    };
+  }
+
+  updateUrlParams() {
+    const orgParams = window.location.search,
+          newParams = removeUrlParams(['token', 'domain', 'domain_uid']);
+    if (orgParams && (orgParams !== newParams)) {
+      const newUrl = window.location.href.replace(orgParams, newParams);
+      history.replaceState(null, "", newUrl);
+    }
   }
 
   componentDidMount() {
-    const portalUrlUtility = new PortalUrlUtility();
-    const showTeacher = portalUrlUtility.isTeacher;
-    portalUrlUtility.getFirebaseKey().then( (key) => {
+    gPortalUrlUtility.getFirebaseSettings(gFirebase.portalAppName).then( ({key, jwt}) => {
+      const showTeacher = gPortalUrlUtility.isTeacher;
       this.setState({simulationKey:key, showTeacher: showTeacher});
+
+      // remove transient url params so they don't affect page reload
+      this.updateUrlParams();
+
+      // extract additional user/presence information
       if (showTeacher) {
         const launchTime = new Date();
         captureSimulationMetadata({
           launchOrigin: windowLocationOrigin(),
-          classId: portalUrlUtility.classId,
-          offeringId: portalUrlUtility.offeringId,
-          offeringUrl: portalUrlUtility.offeringUrl,
-          activityName: portalUrlUtility.activityName,
-          activityUrl: portalUrlUtility.activityUrl,
+          classId: gPortalUrlUtility.classId,
+          offeringId: gPortalUrlUtility.offeringId,
+          offeringUrl: gPortalUrlUtility.offeringUrl,
+          activityName: gPortalUrlUtility.activityName,
+          activityUrl: gPortalUrlUtility.activityUrl,
           launchTime: launchTime.toString(),
           utcLaunchTime: launchTime.toISOString()
         });
@@ -56,35 +78,45 @@ class _PortalView extends React.Component<
         this.props.router.push(this.nextUrl(key));
       }
       else {
+        // TODO: should be able to eliminate this wait, since there's already
+        // a wait in place at the StudentTabsView, but when we proceed from here
+        // the simulation gets created before we get there.
         // students must wait until teacher has started simulation
-        gFirebase.refForPath(`simulations/${key}`)
-          .then((ref:firebase.database.Reference) => {
-            const handleSnapshot = (snapshot: firebase.database.DataSnapshot | null) => {
-              if (snapshot && snapshot.val()) {
-                // remove handler once simulation exists
-                ref.off('value', handleSnapshot);
-                // advance to student/weather station view
-                this.props.router.push(this.nextUrl(key));
-              }
-            };
-            // attach handler for detecting simulation existence
-            ref.on('value', handleSnapshot);
-          });
+        gFirebase.waitForPathToExist(`simulations/${key}`, (snapshot: any) => {
+          // advance to student/weather station view
+          this.props.router.push(this.nextUrl(key));
+        });
       }
+    })
+    .catch((error) => {
+      this.setState({
+        startTitle: "Error",
+        startMessage: `Could not start the simulation because an error occurred.`,
+        startDetail: error.message || error.toString(),
+        startSuggestion: "Try relaunching the simulation from the portal."
+      });
     });
   }
 
   nextUrl(key: string) {
     const view = this.state.showTeacher ? "teacher" : "student";
-    return `/simulations/${key}/show/${view}`;
+    return `/simulations/${key.replace('/', '-')}/show/${view}`;
   }
 
   render() {
+    const { startTitle, startMessage, startDetail, startSuggestion } = this.state,
+          detail = startDetail ? <p>{startDetail}</p> : null,
+          spacer = startSuggestion ? <div>{"\u00A0"}</div> : null,
+          suggestion = startSuggestion ? <div>{startSuggestion}</div> : null;
     return (
       <Card>
-        <CardTitle>Start Simulation</CardTitle>
+        <CardTitle>{startTitle}</CardTitle>
         <CardText style={{}}>
-          Waiting for simulation to begin...
+          {startMessage}
+          {detail}
+          {spacer}
+          {spacer}
+          {suggestion}
         </CardText>
       </Card>
     );

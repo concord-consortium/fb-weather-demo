@@ -2,11 +2,7 @@ import { types } from "mobx-state-tree";
 import { v4 as uuid } from "uuid";
 import { PredictionType } from "../models/prediction";
 import * as moment from "moment";
-
-enum TempUnits {
-  Celsius = "C",
-  Fahrenheit = "F"
-}
+import { TemperatureUnit } from "./temperature";
 
 enum WindSpeedUnits {
   KPH = "kph",
@@ -28,18 +24,18 @@ export type IFormatWindSpeedOptions = {
 const kMetersPerSecToMPH = 2.23694,
       kMetersPerSecToKPH = 3.6,
       // hard-coded defaults that override restored values
-      kOverrides = { tempUnit: TempUnits.Celsius, showCities: true };
+      kOverrides = { tempUnit: TemperatureUnit.Celsius, showCities: true };
 
 export const SimulationSettings = types
   .model('SimulationSettings', {
     id: types.optional(types.identifier(types.string), () => uuid()),
     showBaseMap: types.optional(types.boolean, true),
-    interpolationEnabled: types.optional(types.boolean, false),
+    interpolationEnabled: types.optional(types.boolean, true),
     showTempColors: types.optional(types.boolean, false),
     showTempValues: types.optional(types.boolean, true),
     showDeltaTemp: types.optional(types.boolean, false),
     tempUnit: types.optional(types.enumeration("TempUnit",
-                                                [TempUnits.Celsius, TempUnits.Fahrenheit]),
+                                                [TemperatureUnit.Celsius, TemperatureUnit.Fahrenheit]),
                                                 kOverrides.tempUnit),
     showWindValues: types.optional(types.boolean, true),
     windSpeedUnit: types.optional(types.enumeration("WindUnit",
@@ -63,14 +59,14 @@ export const SimulationSettings = types
     return {
       formatLocalTime(time: Date | null, format?: string): string {
         if (time == null) { return ""; }
-        return moment(time).utcOffset(localUtcOffset).format(format || 'HH:mm' || 'lll');
+        return moment(time).utcOffset(localUtcOffset).format(format || 'h:mm A' || 'lll');
       },
 
       formatTemperature(temp: number, options?: IFormatTempOptions): string {
         if ((temp == null) || !isFinite(temp)) { return ""; }
         const o = options || {},
               d = o.asDifference ? 0 : 32,
-              t = self.tempUnit === TempUnits.Fahrenheit ? temp * 9 / 5 + d : temp;
+              t = self.tempUnit === TemperatureUnit.Fahrenheit ? temp * 9 / 5 + d : temp;
         let s = t.toFixed(o.precision || 0);
 
         // eliminate "-0"
@@ -88,7 +84,7 @@ export const SimulationSettings = types
         const t = parseFloat(temp);
         if ((t == null) || !isFinite(t)) { return null; }
         // convert to Celsius for internal storage
-        return self.tempUnit === TempUnits.Fahrenheit ? (t - 32) * 5 / 9 : t;
+        return self.tempUnit === TemperatureUnit.Fahrenheit ? (t - 32) * 5 / 9 : t;
       },
 
       formatWindSpeed(windSpeed: number, options?: IFormatWindSpeedOptions): string {

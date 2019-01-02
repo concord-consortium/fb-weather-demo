@@ -4,6 +4,7 @@ import { cellName, IGridCell } from "../models/grid-cell";
 import { ISimulation } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
 import RaisedButton from "material-ui/RaisedButton";
+import { precipDiv } from "./weather-styler";
 
 export interface TeacherCellPopoverProps {
   simulation: ISimulation | null;
@@ -36,9 +37,10 @@ export class TeacherCellPopover extends React.Component<TeacherCellPopoverProps>
           temperature = station && station.temperature,
           formatTempOptions = { precision: 0, withUnit: true },
           strTemp = settings && (temperature != null)
-                      ? settings.formatTemperature(temperature, formatTempOptions)
+                      ? temperature.format(formatTempOptions)
                       : "",
           strPrecip = station && station.strPrecipitation,
+          strMoisture = station && station.strMoisture(),
           disconnectGroup = () => this.disconnectGroup(group),
           kRedXChar = "\u274C",
           kSpace = "\u00A0",  // non-breaking space
@@ -53,7 +55,8 @@ export class TeacherCellPopover extends React.Component<TeacherCellPopoverProps>
       <div className={`teacher-cell-popover-contents ${cellLabelClass}`}>
         <div className="station-id">{cellLabel}</div>
         <div className="temperature">{strTemp}</div>
-        <div className="precipitation">{strPrecip}</div>
+        <div className="precipitation">{precipDiv(station)} {strPrecip}</div>
+        <div className="moisture">{strMoisture}</div>
         <div className="group">{group}</div>
         {disconnectButton}
       </div>

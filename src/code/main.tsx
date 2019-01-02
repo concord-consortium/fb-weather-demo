@@ -15,9 +15,9 @@ import { PortalView } from "./views/portal-view";
 // import { SetupGridView } from "./views/setup-grid-view";
 import { simulationStore } from "./models/simulation";
 
-require("!style-loader!css-loader!leaflet/dist/leaflet.css");
-require("!style-loader!css-loader!../html/loading.css");
-require("!style-loader!css-loader!../html/weather.css");
+require("leaflet/dist/leaflet.css");
+require("../html/loading.css");
+require("../html/weather.css");
 
 injectTapEventPlugin();
 
@@ -30,66 +30,60 @@ const log = function(msg: string) {
 gFirebase.postConnect.then( (imp:FirebaseImp)=> {
   imp.dataRef.once('value').then((snapshot:any) => {
 
-    const updateSession = function (nextSimulation: string) {
-      if (nextSimulation && nextSimulation) {
+    const updateSession = function (nextSimulation: string, callback?: () => void) {
+      if (nextSimulation) {
         simulationStore.select(nextSimulation);
-        const logString = `
-          ================================================
-          Changed Simulation path to: ${nextSimulation}
-          ================================================
-        `;
+        const logString = `Simulation path: ${nextSimulation.replace(/_/g, "/")}`;
         log(logString);
       }
       else {
         hashHistory.push('/simulations/choose');
       }
+      if (callback) { callback(); }
     };
 
     const simulationChanged = function (
       prevState: any,
       nextState: any,
       replace: any,
-      callback: Function | undefined
+      callback: () => void | undefined
     ) {
-      updateSession(nextState.params.simulationName);
-      if (callback) {
-        callback();
-      }
-    };
-
-    const onEnterSimulation = function (
-      nextState: any,
-      replace: any,
-      callback: Function | undefined
-    ) {
-      updateSession(nextState.params.simulationName);
-      if (callback) {
-        callback();
-      }
+      updateSession(nextState.params.simulationName, callback);
     };
 
     const setTeacherMode = function (
       nextState: any,
       replace: any,
-      callback: Function | undefined
+      callback: () => void | undefined
     ) {
+      const simulationName = nextState.params.simulationName;
+      if (simulationName) {
+        updateSession(simulationName);
+      }
       const simulation = simulationStore.selected;
       if (simulation) {
         simulation.setIsTeacherView(true);
-        if(callback) { callback(); }
       }
+      if(callback) { callback(); }
     };
 
     const setStudentMode = function (
       nextState: any,
       replace: any,
-      callback: Function | undefined
+      callback: () => void | undefined
     ) {
-      const simulation = simulationStore.selected;
-      if (simulation) {
-        simulation.setIsTeacherView(false);
-        if(callback) { callback(); }
+      const simulationName = nextState.params.simulationName;
+      if (simulationName) {
+        // students must wait until teacher has started simulation
+        gFirebase.waitForPathToExist(`simulations/${simulationName}`, (snapshot: any) => {
+          updateSession(simulationName);
+          const simulation = simulationStore.selected;
+          if (simulation) {
+            simulation.setIsTeacherView(false);
+          }
+        });
       }
+      if(callback) { callback(); }
     };
 
     ReactDOM.render(
@@ -100,10 +94,7 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
         >
           <IndexRedirect to="/portal-launch" />
           <Route path="/portal-launch" component={PortalView} />
-          <Route path="/simulations"
-                onChange={simulationChanged}
-                onEnter={onEnterSimulation}
-          >
+          <Route path="/simulations" onChange={simulationChanged}>
             {/* <IndexRedirect to="choose" /> */}
             {/* <Route path="choose" component={ChooseSimulationView} /> */}
             <Route path="/simulations/:simulationName">

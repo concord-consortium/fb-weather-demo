@@ -1,5 +1,7 @@
 import { types, destroy } from "mobx-state-tree";
 import { WeatherStationState, kDefaultPrecision } from "./weather-station-state";
+import { ITempConfig } from "./weather-scenario";
+import { Temperature } from "./temperature";
 
 export { kDefaultPrecision };
 
@@ -24,8 +26,12 @@ export const WeatherStation = types
     state: null as any as WeatherStationState | null
   }))
   .views(self => ({
-    get temperature(): number | null {
+    get temperature(): Temperature | null {
       return self.state && self.state.temperature;
+    },
+
+    get tempConfig(): ITempConfig | null {
+      return self.state && self.state.tempConfig;
     },
 
     get precipitation(): number | null {
@@ -34,9 +40,8 @@ export const WeatherStation = types
 
     get strPrecipitation(): string {
       const precipitation = self.state && self.state.hourlyPrecipitation;
-      return precipitation != null
-              ? (precipitation ? "Rain" : "Clear")
-              : "";
+      const names = ["None", "Low", "Moderate", "High"];
+      return precipitation != null ? names[precipitation] || "None" : "None";
     },
 
     get windSpeed(): number | null {
@@ -49,7 +54,15 @@ export const WeatherStation = types
 
     strWindDirection(precision = kDefaultPrecision.windDirection): string {
       return self.state && self.state.strWindDirection() || "";
-    }
+    },
+
+    get moisture(): number | null {
+      return self.state && self.state.moisture;
+    },
+
+    strMoisture(precision = kDefaultPrecision.moisture) {
+      return self.state && self.state.strMoisture(precision);
+    },
   }))
   .actions(self => ({
     setLocation(location: { lat: number, long: number }) {

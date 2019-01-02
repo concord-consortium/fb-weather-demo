@@ -42,7 +42,7 @@ export class TimelineView extends React.Component<
       m = m.utcOffset(scenario.utcOffset);
     }
 
-    const timeFormat = "HH:mm";
+    const timeFormat = "h:mm A";
     const timeString = m.format(timeFormat);
     return (
       <div style={style.container}>

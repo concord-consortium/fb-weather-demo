@@ -1,5 +1,6 @@
 import { types, onSnapshot } from "mobx-state-tree";
 import * as moment from 'moment';
+import { gWeatherScenarioSpec } from "./weather-scenario-spec";
 
 const kOverrides = {
         timeStep: 1,
@@ -121,6 +122,7 @@ export const SimulationControl = types
 
     return {
       play() {
+        self.setUpdateInterval(gWeatherScenarioSpec.updateInterval);
         const stopOffset = self.playOffset < self.breakOffset ? self.breakOffset : self.duration;
         _enableTimer(stopOffset);
       },

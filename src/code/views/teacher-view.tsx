@@ -11,11 +11,14 @@ import { ComponentStyleMap } from "../utilities/component-style-map";
 
 import { cellName, IGridCell } from "../models/grid-cell";
 import { simulationStore } from "../models/simulation";
+import { gWeatherScenarioSpec } from "../models/weather-scenario-spec";
 import { urlParams } from "../utilities/url-params";
 import Popover from "material-ui-next/Popover";
 import { TeacherCellPopover } from "./teacher-cell-popover";
 import { TeacherOptionsButton } from "./teacher-options-button";
 import { CopyStudentLinkButton } from "./copy-student-link-button";
+import { gPortalUrlUtility, ActivityInfo } from "../utilities/portal-url-utility";
+import { gFirebase } from "../middleware/firebase-imp";
 
 export type TeacherViewTab = "control" | "configure";
 export const MAP_TYPE_GRID = "MAP_TYPE_GRID";
@@ -27,6 +30,7 @@ export interface TeacherViewState {
   tab: TeacherViewTab;
   popoverCell: string | null;
   popoverAnchorEl: HTMLElement | null;
+  activityInfo: ActivityInfo | null;
 }
 
 const styles:ComponentStyleMap = {
@@ -96,6 +100,24 @@ const styles:ComponentStyleMap = {
   },
   image: {
     height: "10vh"
+  },
+  geoMapWrapper: {
+    position: "absolute",
+    margin: "1em 0 0 1em",
+    width: "500px",
+    height: "500px",
+    backgroundPosition: "62px 62px",
+    backgroundSize: "432px 432px",
+    backgroundRepeat: "no-repeat"
+  },
+  geoMapBackgroundAK: {
+    backgroundImage: "url(./img/Alaska-EP-Base-Map-HC.png)",
+  },
+  geoMapBackgroundNE: {
+    backgroundImage: "url(./img/EP-Base-Map-HC.png)",
+  },
+  mapViewWrapper: {
+    zIndex: 1000
   }
 };
 
@@ -110,9 +132,16 @@ export class TeacherView
     this.state = {
       tab: "control",
       popoverCell: null,
-      popoverAnchorEl: null
+      popoverAnchorEl: null,
+      activityInfo: null
     };
     this.closingCount = 0;
+  }
+
+  componentWillMount() {
+    gPortalUrlUtility.getFirebaseSettings(gFirebase.portalAppName).then( ({activityInfo}) => {
+      this.setState({activityInfo});
+    });
   }
 
   handlePredictionTypeChange = (event: any, index: number, value: string) => {
@@ -170,7 +199,8 @@ export class TeacherView
       return weatherColor(station);
     };
 
-    const showCities = simulation && simulation.settings.showCities;
+    const showCities = simulation && simulation.settings.showCities &&
+                       ! gWeatherScenarioSpec.mapConfig.geoMap;
     const titleFunc = (cell:IGridCell) => {
       const station = simulation && simulation.stations &&
                       simulation.stations.getStation(cell.weatherStationId);
@@ -201,7 +231,7 @@ export class TeacherView
                         />
                       </Popover>;
       return (
-        <div className="grid-cell-content" style={{}}>
+        <div className="grid-cell-content">
           {city}
           {precip}
           {groupLabel}
@@ -238,16 +268,35 @@ export class TeacherView
       });
     };
 
+    const styleForBackgroundGeoMap = () => {
+      switch (gWeatherScenarioSpec.mapConfig.geoMap) {
+        case "NomeAlaska": {
+          return styles.geoMapBackgroundAK;
+        }
+        case "NewEngland": {
+          return styles.geoMapBackgroundNE;
+        }
+        default: {
+          return null;
+        }
+      }
+    };
+
+    const {activityInfo} = this.state;
+    const tabLabel = activityInfo && (activityInfo.className || activityInfo.activityName || activityInfo.offeringId)
+      ? `${activityInfo.className ? `${activityInfo.className}: ` : ""}${activityInfo.activityName} ${activityInfo.offeringId ? `#${activityInfo.offeringId}` : ""}`
+      : "Control";
+
     return (
       <Card>
         <Tabs value={this.state.tab} onChange={handleChangeTab}>
-          <Tab label="Control" value="control">
+          <Tab label={tabLabel} value="control">
             <CardTitle>
               <div className="teacher-title-card-contents"
                     style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 'bold', fontSize: "14pt"}}>{time}</div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div>{simulation && simulation.name || ""}</div>
+                  <div>{simulation && simulation.displayName || ""}</div>
                   <div className="teacher-status-options">
                     <div>{usersString}</div>
                     <div className="teacher-option-buttons">
@@ -267,9 +316,14 @@ export class TeacherView
             >
               <div className="teacher-card-media-wrapper" style={styles.wrapper}>
                 <div className="teacher-card-media-map" style={styles.mapAndPrediction}>
+                  <div style={styles.mapViewWrapper}>
                     { this.renderMapView() }
+                  </div>
+                  <div style={{...styles.geoMapWrapper, ...styleForBackgroundGeoMap()}} />
                 </div>
+                <div>
                   <SegmentedControlView />
+                </div>
               </div>
             </CardMedia>
           </Tab>

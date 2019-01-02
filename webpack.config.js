@@ -1,60 +1,89 @@
 /* global module:true, require:true __dirname */
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
-const webpack = require("webpack");
-const pkg = require("./package.json");
+// const pkg = require("./package.json");
 
-module.exports = {
-  entry: {
-    app: ["./src/code/main.tsx"],
-    vendor: Object.keys(pkg.dependencies).concat(["js-base64"])
-  },
+module.exports = (env, argv) => {
 
-  output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "[name].js"
-  },
+  const devMode = argv.mode !== "production";
 
-  devtool: "source-map",
-
-  resolve: {
-    extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx", ".css"],
-  },
-
-  module: {
-    loaders: [
-      {
-        test: /\.jsx?$/,
-        loader: "babel-loader",
-        include: [
-          path.resolve(__dirname, "src"),
-          path.resolve(__dirname, "node_modules/clipboard/src")
-        ],
-      },
-      // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-      { test: /\.tsx?$/, loader: "awesome-typescript-loader", options: {configFileName: "./tsconfig.json"} },
-      {test: /\.css?$/, loader: "style-loader!css-loader!"},
-      {test: /\.(png|jpg)$/, loader: "file-loader?name=images/[name].[ext]"}
-    ]
-  },
-
-  plugins:[
-    new CopyWebpackPlugin([
-      { from: "src/html/"},
-      { from: "src/img/", to: "img"},
-      { from: "src/fonts/", to: "fonts"},
-    ]),
-
-    new webpack.optimize.CommonsChunkPlugin({
-      name: "vendor",
-      filename: "vendor.js"
-    })
-  ],
-  stats: {
-    colors: true,
-    modules: true,
-    reasons: true,
-    errorDetails: true
-  }
-
+  return {
+    context: __dirname,
+    devtool: "source-map",
+    entry: "./src/code/main.tsx",
+    mode: "development",
+    output: {
+      path: path.resolve(__dirname, "dist"),
+      filename: "app.js"
+    },
+    performance: { hints: false },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          enforce: "pre",
+          use: [
+            {
+              loader: "tslint-loader",
+              options: {
+                configFile: devMode ? "tslint-dev.json" : "tslint.json",
+                failOnHint: true
+              }
+            }
+          ]
+        },
+        {
+          test: /\.tsx?$/,
+          loader: "ts-loader",
+          options: {
+            transpileOnly: true // IMPORTANT! use transpileOnly mode to speed-up compilation
+          }
+        },
+        {
+          test: /\.css$/i,
+          use: [
+            "style-loader",
+            "css-loader",
+          ]
+        },
+        {
+          test: /\.(png|jpg)$/,
+          loader: "file-loader",
+          options: {
+            name: "img/[name].[ext]",
+          }
+        },
+      ]
+    },
+    resolve: {
+      extensions: [".ts", ".tsx", ".js"],
+    },
+    stats: {
+      colors: true,
+      modules: true,
+      reasons: true,
+      errorDetails: true
+    },
+    plugins:[
+      new ForkTsCheckerWebpackPlugin(),
+      new CopyWebpackPlugin([
+        { from: "src/html/"},
+        { from: "src/img/", to: "img"},
+        { from: "src/fonts/", to: "fonts"},
+      ]),
+    ],
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          commons: {
+            test: /[\\/]node_modules[\\/]/,
+            name: "vendor",
+            chunks: "all",
+            filename: "vendor.js"
+          }
+        }
+      }
+    },
+  };
 };

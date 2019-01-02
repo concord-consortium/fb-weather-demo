@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { cellName, GridCell } from "./grid-cell";
+import { cellName, GridCell, IGridCell } from "./grid-cell";
 import { WeatherStation } from "./weather-station";
 import { IWeatherStationStore } from "../stores/weather-station-store";
 
@@ -20,7 +20,7 @@ export const Grid = types
     stationStore: null as (IWeatherStationStore | null)
   }))
   .views(self => ({
-    gridCellAt(row:number, column:number) {
+    gridCellAt(row:number, column:number): IGridCell | undefined{
       const key=cellName(row,column);
       return self.cellMap.get(key);
     }

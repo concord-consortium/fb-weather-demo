@@ -43,6 +43,10 @@ export const Simulation = types
     presenceID: null as (string | null)
   }))
   .views(self => ({
+    get displayName(): string {
+      const parts = self.name.split("_");
+      return parts.length > 1 ? parts[1] : self.name;
+    },
     get isPlaying(): boolean {
       return self.control.isPlaying;
     },
@@ -65,7 +69,7 @@ export const Simulation = types
         m = m.utcOffset(self.scenario.utcOffset);
       }
       // formatting rules see: https://momentjs.com/
-      return m.format(format || 'HH:mm' || 'lll');
+      return m.format(format || 'h:mm A' || 'lll');
     }
   }))
   .views(self => ({
@@ -195,7 +199,7 @@ export const Simulation = types
               if (!self.time) {
                 self.control.setTime(startTime);
               }
-              station.setState(new WeatherStationState(stationData, self.control, self.settings.interpolationEnabled));
+              station.setState(new WeatherStationState(stationData, self.control, self.settings.interpolationEnabled, self.scenario.tempConfig));
             })
             .catch((err: any) => {
               console.log(`Error initializing weather station '${station.id}': ${err}`);

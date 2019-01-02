@@ -5,8 +5,9 @@ import { CardText } from "material-ui/Card";
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../models/simulation";
 import { IWeatherStation } from "../models/weather-station";
-// import { weatherColor, precipDiv } from "./weather-styler";
 import { gFirebase } from "../middleware/firebase-imp";
+import { urlParams } from "../utilities/url-params";
+import { gPortalUrlUtility, ActivityInfo } from "../utilities/portal-url-utility";
 
 export type StationTab = "configure" | "weather";
 
@@ -14,6 +15,7 @@ export interface WeatherStationProps {
   weatherStation: IWeatherStation | null;
 }
 export interface WeatherStationState {
+  activityInfo: ActivityInfo | null;
 }
 
 @observer
@@ -21,21 +23,29 @@ export class WeatherStationView extends
   React.Component<WeatherStationProps,WeatherStationState> {
   constructor(props: WeatherStationProps, context: any) {
     super(props);
+    this.state = {activityInfo: null};
   }
 
   handleExit = () => {
     gFirebase.signOut();
   }
 
+  componentWillMount() {
+    gPortalUrlUtility.getFirebaseSettings(gFirebase.portalAppName).then( ({activityInfo}) => {
+      this.setState({activityInfo});
+    });
+  }
+
   render() {
     let name = "";
     // let callSign = "";
     const {weatherStation} = this.props,
+          {activityInfo} = this.state,
           simulation = simulationStore.selected,
           time = simulation && weatherStation && simulation.timeString,
-          simulationName = simulation && simulation.name,
+          simulationName = simulation && simulation.displayName,
           temperature = weatherStation && weatherStation.temperature,
-          unitTempStr = simulation && simulation.formatTemperature(temperature, { withUnit: true });
+          unitTempStr = temperature ? temperature.format({ withUnit: true }) : "";
           // NP: Removed but saved in comments here for easy access.
           // Its likely we are going to put this back in at some point.
           // windSpeed = weatherStation && weatherStation.windSpeed,
@@ -53,7 +63,7 @@ export class WeatherStationView extends
     const styles: ComponentStyleMap = {
       info: {
         display: "grid",
-        gridAutoColumns: "minmax(50px,200px)",
+        gridAutoColumns: "minmax(50px,240px)",
         gridGap: "10px",
         gridAutoRows: "minmax(50px, auto)",
       },
@@ -75,36 +85,78 @@ export class WeatherStationView extends
       //   alignItems: "center",
       //   justifyContent: "center"
       // },
+      timeLabel: {
+        gridRow: "2",
+        gridColumn: "1",
+        fontSize: "18pt",
+        fontWeight: "bold",
+        alignSelf: "center",
+        color: "#000"
+      },
       time: {
         gridRow: "2",
         gridColumn: "2",
-        fontSize: "36pt",
+        fontSize: "32pt",
         fontWeight: "bold",
-        color: "hsla(0, 0%, 10%, 0.9)"
+        color: "#000"
       },
       callSign: {
         gridRow: "3",
         gridColumn: "2",
-        fontSize: "36pt",
+        fontSize: "32pt",
         fontWeight: "bold",
         alignSelf: "flex-start"
+      },
+      tempLabel: {
+        gridRow: "3",
+        gridColumn: "1",
+        fontSize: "18pt",
+        fontWeight: "bold",
+        alignSelf: "center",
+        color: "#000"
       },
       temp: {
         gridRow: "3",
         gridColumn: "2",
-        fontSize: "36pt",
+        fontSize: "32pt",
         fontWeight: "bold",
-        alignSelf: "center"
+        alignSelf: "center",
+        color: "#000"
+      },
+      precipLabel: {
+        gridRow: "4",
+        gridColumn: "1",
+        fontSize: "18pt",
+        fontWeight: "bold",
+        alignSelf: "center",
+        color: "#000"
       },
       precip: {
         gridRow: "4",
         gridColumn: "2",
-        fontSize: "36pt",
+        fontSize: "32pt",
         fontWeight: "bold",
-        alignSelf: "flex-end"
+        alignSelf: "flex-end",
+        color: "#000"
+      },
+      moistureLabel: {
+        gridRow: "5",
+        gridColumn: "1",
+        fontSize: "18pt",
+        fontWeight: "bold",
+        alignSelf: "center",
+        color: "#000"
+      },
+      moisture: {
+        gridRow: "5",
+        gridColumn: "2",
+        fontSize: "32pt",
+        fontWeight: "bold",
+        alignSelf: "flex-end",
+        color: "#000"
       },
       button: {
-        gridRow: "5",
+        gridRow: "6",
         gridColumn: "1",
         boxShadow: "none",
         position: "relative",
@@ -121,6 +173,7 @@ export class WeatherStationView extends
                             ? (showTemperature ? `${unitTempStr || ''}` : null)
                             : `Good ${kSpace}bye!`,
           precip = weatherStation && weatherStation.strPrecipitation,
+          moisture = weatherStation && weatherStation.strMoisture(),
           exitButton = hasPresence
                         ? <RaisedButton
                             className={"weather-station-exit-button"}
@@ -136,13 +189,16 @@ export class WeatherStationView extends
         <CardText>
           <div style={styles.info}>
             <div style={styles.simulationName}>
-              {simulationName}
+              {simulationName} {activityInfo && activityInfo.offeringId ? `#${activityInfo.offeringId}` : ""}
             </div>
             {/* <div style={styles.graphic}>
               <div>
                 {precipDiv(weatherStation)}
               </div>
             </div> */}
+            <div style={styles.timeLabel}>
+              Time:
+            </div>
             <div style={styles.time}>
               {time}
             </div>
@@ -152,12 +208,36 @@ export class WeatherStationView extends
             <div style={styles.name}>
               {name}
             </div>
-            <div style={styles.temp}>
-              {temperatureStr}
-            </div>
-            <div style={styles.precip}>
-              {precip}
-            </div>
+            {urlParams.showStudentTemperature ?
+              <>
+                <div style={styles.tempLabel}>
+                  Temperature:
+                </div>
+                <div style={styles.temp}>
+                  {temperatureStr}
+                </div>
+              </>
+              : null}
+            {urlParams.showStudentPrecipitation ?
+              <>
+                <div style={styles.precipLabel}>
+                  Precipitation:
+                </div>
+                <div style={styles.precip}>
+                  {precip}
+                </div>
+              </>
+              : null}
+            {urlParams.showStudentMoisture ?
+              <>
+                <div style={styles.moistureLabel}>
+                  Air Moisture:
+                </div>
+                <div style={styles.moisture}>
+                  {moisture}
+                </div>
+              </>
+              : null}
             {exitButton}
           </div>
         </CardText>

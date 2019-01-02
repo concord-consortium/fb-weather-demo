@@ -1,9 +1,12 @@
 import { computed } from "mobx";
 import { ISimulationControl } from "./simulation-control";
 import * as _ from "lodash";
+import { ITempConfig } from "./weather-scenario";
+import { Temperature } from "./temperature";
 
 export const kDefaultPrecision = {
-              windDirection: 0
+              windDirection: 0,
+              moisture: 0
             };
 
 export class WeatherStationState {
@@ -11,11 +14,13 @@ export class WeatherStationState {
   stationData: any;
   interpolationEnabled: boolean;
   colIndices: { [key: string]: number; };
+  tempConfig: ITempConfig;
 
-  constructor(stationData: any, simulation: ISimulationControl, interpolationEnabled: boolean) {
+  constructor(stationData: any, simulation: ISimulationControl, interpolationEnabled: boolean, tempConfig: ITempConfig) {
     this.stationData = stationData;
     this.simulation = simulation;
     this.interpolationEnabled = interpolationEnabled;
+    this.tempConfig = tempConfig;
 
     this.colIndices = {};
     stationData.cols.forEach((name: string, index: number) => {
@@ -30,7 +35,8 @@ export class WeatherStationState {
             dewPointTemperature: "dew_point_temperature",
             cloudCover: "cloud_area_fraction",
             hourlyPrecipitation: "precipitation_amount_hourly",
-            dailyPrecipitation: "precipitation_amount_24"
+            dailyPrecipitation: "precipitation_amount_24",
+            moisture: "moisture"
           };
     _.each(nameMap, (oldName: string, newName: string) => {
       if ((oldName !== newName) && (this.colIndices[oldName]) != null) {
@@ -80,7 +86,7 @@ export class WeatherStationState {
           isLowNum = isFinite(lowValue),
           isHighNum = isFinite(highValue);
     if (isLowNum && isHighNum) {
-      return lowValue + pctInterpolate * (highValue - lowValue);
+      return lowValue + Math.round(pctInterpolate * (highValue - lowValue));
     }
     if (isLowNum) { return lowValue; }
     if (isHighNum) { return highValue; }
@@ -115,7 +121,8 @@ export class WeatherStationState {
 
   @computed
   get temperature() {
-    return this.interpolate(this.colIndices.temperature);
+    const eventTemp = this.interpolate(this.colIndices.temperature);
+    return eventTemp ? new Temperature(eventTemp, this.tempConfig.eventUnit) : null;
   }
 
   @computed
@@ -151,5 +158,15 @@ export class WeatherStationState {
   @computed
   get dailyPrecipitation() {
     return this.interpolate(this.colIndices.dailyPrecipitation);
+  }
+
+  @computed
+  get moisture() {
+    return this.interpolate(this.colIndices.moisture);
+  }
+
+  strMoisture(precision = kDefaultPrecision.moisture) {
+    const d = this.moisture;
+    return (d !== null) && isFinite(d) ? d.toFixed(precision) : null;
   }
 }

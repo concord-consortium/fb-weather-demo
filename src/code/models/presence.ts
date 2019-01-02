@@ -5,9 +5,9 @@ import { simulationStore } from "../models/simulation";
 import { IWeatherStationStore } from "../stores/weather-station-store";
 import { IGroup } from "./group";
 
-export const presenceId = () => {
-  const sessionID = localStorage.getItem("CCweatherSession") || uuid();
-  localStorage.setItem("CCweatherSession", sessionID);
+const presenceId = () => {
+  const sessionID = sessionStorage.getItem("CCweatherSession") || uuid();
+  sessionStorage.setItem("CCweatherSession", sessionID);
   return sessionID;
 };
 
@@ -18,7 +18,7 @@ export enum ERole {
 
 export const Presence = types
   .model("Presence", {
-    id: types.optional(types.identifier(types.string), ()=> presenceId()),
+    id: types.optional(types.identifier(types.string), () => presenceId()),
     username: types.optional(types.string, () => "anonymous"),
     role: types.optional(types.enumeration('Role', [ERole.teacher, ERole.student]), ERole.student),
     // code allows switching pages/roles currently - track whether we've ever been a teacher

@@ -1,12 +1,14 @@
 import * as queryString from "query-string";
+import { clone } from "lodash";
+
+const domainJwtItemName = 'jwtDomain',
+      teacherJwtItemName = 'jwtTeacher',
+      studentJwtItemName = 'jwtStudent';
 
 export interface StudentLaunchParams {
   domain: string;
-  class_info_url: string;
   domain_uid: string;
-  externalId: string;
-  logging: boolean;
-  returnUrl: string;
+  token: string;
 }
 
 export interface TeacherReportParams {
@@ -27,7 +29,7 @@ function isTestingLaunchUrl() {
 }
 
 function isPortalStudentParams(params: UnionParams): params is StudentLaunchParams {
-  return ((params as StudentLaunchParams).class_info_url != null);
+  return ((params as StudentLaunchParams).domain != null) && !isPortalTeacherParams(params);
 }
 
 function isPortalTeacherParams(params: UnionParams): params is TeacherReportParams {
@@ -43,17 +45,77 @@ function hasTestTestingParam(params: UnionParams): params is TestingParams {
   return ((params as TestingParams).test !== undefined);
 }
 
+export function getTeacherJwt() {
+  const domain = sessionStorage.getItem(domainJwtItemName),
+        token = sessionStorage.getItem(teacherJwtItemName);
+  return domain && token ? { domain, token } : null;
+}
+
+export function setTeacherJwt(domainJwt: string | null, teacherJwt: string | null) {
+  if (domainJwt && teacherJwt) {
+    sessionStorage.setItem(domainJwtItemName, domainJwt);
+    sessionStorage.setItem(teacherJwtItemName, teacherJwt);
+    // can't have both student and teacher
+    sessionStorage.removeItem(studentJwtItemName);
+  }
+  else {
+    sessionStorage.removeItem(domainJwtItemName);
+    sessionStorage.removeItem(teacherJwtItemName);
+  }
+}
+
+export function getStudentJwt() {
+  const domain = sessionStorage.getItem(domainJwtItemName),
+        token = sessionStorage.getItem(studentJwtItemName);
+  return domain && token ? { domain, token } : null;
+}
+
+export function setStudentJwt(domainJwt: string | null, studentJwt: string | null) {
+  if (domainJwt && studentJwt) {
+    sessionStorage.setItem(domainJwtItemName, domainJwt);
+    sessionStorage.setItem(studentJwtItemName, studentJwt);
+    // can't have both student and teacher
+    sessionStorage.removeItem(teacherJwtItemName);
+  }
+  else {
+    sessionStorage.removeItem(domainJwtItemName);
+    sessionStorage.removeItem(studentJwtItemName);
+  }
+}
+
+const isNotFalse = (param?: string) => {
+  param = (param || "").trim().toLowerCase();
+  return !((param === "false") || (param === "0") || (param === "no"));
+};
+
 const params = queryString.parse(window.location.search),
-      isPortalTeacher = isPortalTeacherParams(params),
-      isPortalStudent = !isPortalTeacher && isPortalStudentParams(params),
+      isPortalTeacher = isPortalTeacherParams(params) || !!getTeacherJwt(),
+      isPortalStudent = !isPortalTeacher && isPortalStudentParams(params) || !!getStudentJwt(),
       isStudent = isPortalStudent || hasStudentTestingParam(params),
       isTeacher = !isStudent,
       // if `test` URL parameter is present, or if we're not launched from portal,
       // then we're testing, i.e. writing to `-test` database rather than production.
       isTesting = isTestingLaunchUrl() || hasTestTestingParam(params) ||
-                    (!isPortalTeacher && !isPortalStudent);
+                    (!isPortalTeacher && !isPortalStudent),
+      scenario = params.scenario,
+      showStudentTemperature = isNotFalse(params.showStudentTemperature),
+      showStudentPrecipitation = isNotFalse(params.showStudentPrecipitation),
+      showStudentMoisture = isNotFalse(params.showStudentMoisture),
+      interpolateTempColors = isNotFalse(params.interpolateTempColors);
 
 export const urlParams = {
-  params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting
+  params, isPortalTeacher, isPortalStudent, isTeacher, isStudent, isTesting, scenario,
+  showStudentTemperature, showStudentPrecipitation, showStudentMoisture, interpolateTempColors
 };
 
+// Returns a modified URL query/search string after removing the specified params
+export function removeUrlParams(paramsToRemove: string[]) {
+  const newParams = clone(urlParams.params);
+  paramsToRemove.forEach((param) => {
+    if (newParams[param] != null) {
+      delete newParams[param];
+    }
+  });
+  const newParamsStr = queryString.stringify(newParams);
+  return newParamsStr ? '?' + newParamsStr : '';
+}

@@ -1,8 +1,10 @@
-const weatherScenarioSpecs = require("../../json/weather-scenario-specs.json") || [];
+import { weatherScenarioSpecs } from "../../json/weather-scenario-specs.json";
 import { IWeatherScenarioSnapshot } from "./weather-scenario";
+import { TemperatureUnit } from "./temperature";
+import { urlParams } from "../utilities/url-params";
 
 // preprocess scenarios, e.g. convert TimeSpecs to Dates
-weatherScenarioSpecs.forEach((spec: IWeatherScenarioSpec) => {
+weatherScenarioSpecs.forEach((spec) => {
   let mod: IWeatherScenarioSnapshot = spec as any,
         s = spec.startTime,
         e = spec.endTime,
@@ -11,8 +13,12 @@ weatherScenarioSpecs.forEach((spec: IWeatherScenarioSpec) => {
   mod.duration = s && endTime && (endTime.getTime() - mod.startTime.getTime()) / 1000;
 });
 
-export const gWeatherScenarioSpec: IWeatherScenarioSpec =
-              weatherScenarioSpecs && weatherScenarioSpecs.length && weatherScenarioSpecs[0];
+let scenarioIndex = 0;
+if (urlParams.scenario) {
+  scenarioIndex = Math.max(0, weatherScenarioSpecs.findIndex((spec) => spec.id === urlParams.scenario));
+}
+export const gWeatherScenarioSpec = weatherScenarioSpecs[scenarioIndex];
+console.log(`Using scenario ${gWeatherScenarioSpec.id}`);
 
 export interface ITimeSpec {
   year: number;
@@ -34,12 +40,18 @@ export interface IMapConfigSpec {
     lat: number;
     long: number;
     zoom: number;
+    geoMap?: "NomeAlaska" | "NewEngland";
 }
 
 export interface IWeatherScenarioSpec {
   id: string;
   name: string;
+  tempConfig: {
+    eventUnit: TemperatureUnit,
+    bandModel: "three-bands" | "six-bands",
+  };
   eventUrl: string;
+  updateInterval: number;
   startTime?: ITimeSpec;
   endTime?: ITimeSpec;
   utcOffset?: number;
