@@ -5,7 +5,7 @@ install:
   - travis_retry yarn
   - travis_retry gem install s3_website -v 2.12.3
 script:
-- npm run build
+- npm run build:dev
 - npm run test
 after_script:
 - deploy/s3_deploy.sh
