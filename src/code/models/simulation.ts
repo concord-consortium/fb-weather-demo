@@ -207,9 +207,12 @@ export const Simulation = types
         });
       },
       filterOutboundData(snapshot:any) {
+        // only send outbound data if its a teacher, students set their presence seperately
+        if (!self.isTeacherView) {
+          return [{}, false];
+        }
         let copy = _.cloneDeep(snapshot);
-        const studentRemoveKeys = ["control", "presences", "settings"];
-        const teacherRemoveKeys = ["presences"];
+        const keysToRemove = ["presences", "predictions"];
         // remove keys from object.
         const remove = (obj:any, keys:string[]) => {
           let key;
@@ -222,11 +225,8 @@ export const Simulation = types
             }
           }
         };
-        // remove the control tree from student snapshot
-        // to prevent the replay of timestamp changes.
-        const keysToRemove = self.isTeacherView ? teacherRemoveKeys : studentRemoveKeys;
         remove(copy, keysToRemove);
-        return copy;
+        return [copy, true];
       },
       outboundPresence(snapshot:any) {
         const presences = snapshot && snapshot.presences && snapshot.presences.presences,

@@ -21,15 +21,23 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => v
     }
   };
   pendingRef.then((ref:firebase.database.Reference) => {
+    let lastJSONPresence: string|null = null;
     function updateFirebaseFromModel(snapshot:any) {
-      const data = model.filterOutboundData ? model.filterOutboundData(snapshot) : snapshot,
+      const [data, update] = model.filterOutboundData ? model.filterOutboundData(snapshot) : [snapshot, true],
             presence = model.outboundPresence && model.outboundPresence(snapshot),
             presenceRef = presence && ref.child(`presences/presences/${presence.id}`);
       // update the object (minus any filtered properties)
-      ref.update(data);
+      if (update) {
+        ref.update(data);
+      }
       // update our presence separately
       if (presenceRef) {
-        presenceRef.update(presence);
+        // only send presence if it changes
+        const jsonPresence = JSON.stringify(presence);
+        if (jsonPresence !== lastJSONPresence) {
+          presenceRef.update(presence);
+        }
+        lastJSONPresence = jsonPresence;
       }
     }
     let onValueCount = 0;
