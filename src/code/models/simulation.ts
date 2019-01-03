@@ -22,6 +22,18 @@ import { gFirebase } from "../middleware/firebase-imp";
 import * as _ from "lodash";
 import * as moment from 'moment';
 
+// from https://gist.github.com/Yimiprod/7ee176597fef230d1451
+const difference = (object: any, base: any) => {
+  const changes = (object: any, base: any) => {
+    return _.transform(object, (result, value, key) => {
+      if (!_.isEqual(value, base[key])) {
+        result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
+      }
+    });
+  };
+  return changes(object, base);
+};
+
 const kBreakProportion = 0.75;
 
 export const Simulation = types
@@ -40,7 +52,8 @@ export const Simulation = types
   })
   .volatile(self => ({
     isTeacherView: false,
-    presenceID: null as (string | null)
+    presenceID: null as (string | null),
+    lastFilteredOutbound: null as (any | null)
   }))
   .views(self => ({
     get displayName(): string {
@@ -206,11 +219,17 @@ export const Simulation = types
             });
         });
       },
+
       filterOutboundData(snapshot:any) {
         // only send outbound data if its a teacher, students set their presence seperately
         if (!self.isTeacherView) {
-          return [{}, false];
+          return {
+            data: {},
+            update: false,
+            individualKeys: false
+          };
         }
+        let setIndividualKeys = false;
         let copy = _.cloneDeep(snapshot);
         const keysToRemove = ["presences", "predictions"];
         // remove keys from object.
@@ -226,7 +245,23 @@ export const Simulation = types
           }
         };
         remove(copy, keysToRemove);
-        return [copy, true];
+        if (self.isPlaying && self.lastFilteredOutbound) {
+          const diff: any = difference(copy, self.lastFilteredOutbound);
+          const numKeys = Object.keys(diff).length;
+          setIndividualKeys = (numKeys === 0) || ((numKeys === 1) && diff.control);
+          self.lastFilteredOutbound = copy;
+          if (setIndividualKeys) {
+            copy = diff;
+          }
+        }
+        else {
+          self.lastFilteredOutbound = copy;
+        }
+        return {
+          data: copy,
+          update: true,
+          individualKeys: setIndividualKeys
+        };
       },
       outboundPresence(snapshot:any) {
         const presences = snapshot && snapshot.presences && snapshot.presences.presences,

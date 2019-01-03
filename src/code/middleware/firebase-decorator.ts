@@ -3,7 +3,19 @@ import { onSnapshot, applySnapshot } from "mobx-state-tree";
 import { gFirebase } from "./firebase-imp";
 import { ISimulationSnapshot } from "../models/simulation";
 import { urlParams } from "../utilities/url-params";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isObject } from "lodash";
+
+const setEachKey = (parent: firebase.database.Reference, data: any) => {
+  Object.keys(data).forEach((key) => {
+    const child = parent.child(key);
+    if (isObject(data[key])) {
+      setEachKey(child, data[key]);
+    }
+    else {
+      child.set(data[key]);
+    }
+  });
+};
 
 export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => void) => {
   const pendingRef = gFirebase.refForPath(relativeDataPath);
@@ -23,12 +35,23 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => v
   pendingRef.then((ref:firebase.database.Reference) => {
     let lastJSONPresence: string|null = null;
     function updateFirebaseFromModel(snapshot:any) {
-      const [data, update] = model.filterOutboundData ? model.filterOutboundData(snapshot) : [snapshot, true],
-            presence = model.outboundPresence && model.outboundPresence(snapshot),
-            presenceRef = presence && ref.child(`presences/presences/${presence.id}`);
+      const {data, update, individualKeys } = model.filterOutboundData
+        ? model.filterOutboundData(snapshot)
+        : {
+            data: snapshot,
+            update: true,
+            individualKeys: false
+        };
+      const presence = model.outboundPresence && model.outboundPresence(snapshot);
+      const presenceRef = presence && ref.child(`presences/presences/${presence.id}`);
       // update the object (minus any filtered properties)
       if (update) {
-        ref.update(data);
+        if(individualKeys) {
+          setEachKey(ref, data);
+        }
+        else {
+          ref.update(data);
+        }
       }
       // update our presence separately
       if (presenceRef) {
