@@ -1,0 +1,71 @@
+{
+  "start_conditions": [
+    {
+      "time": "7:00 AM",
+      "coord": "D-2",
+      "rain_level": "Moderate",
+      "humidity": "8",
+      "temperature": "57"
+    },
+    {
+      "time": "7:00 AM",
+      "coord": "B-3",
+      "rain_level": "Low",
+      "humidity": "7",
+      "temperature": "52"
+    },
+    {
+      "time": "7:00 AM",
+      "coord": "F-6",
+      "rain_level": "None",
+      "humidity": "9",
+      "temperature": "63"
+    }
+  ],
+  "skip_conditions": [
+    {
+      "time": "4:00 PM",
+      "coord": "D-2",
+      "rain_level": "None",
+      "humidity": "5",
+      "temperature": "46"
+    },
+    {
+      "time": "4:00 PM",
+      "coord": "B-3",
+      "rain_level": "Low",
+      "humidity": "5",
+      "temperature": "45"
+    },
+    {
+      "time": "4:00 PM",
+      "coord": "F-6",
+      "rain_level": "Low",
+      "humidity": "9",
+      "temperature": "63"
+    }
+  ],
+  "end_conditions": [
+    {
+      "time": "7:00 PM",
+      "coord": "D-2",
+      "rain_level": "None",
+      "humidity": "3",
+      "temperature": "40"
+    },
+    {
+      "time": "7:00 PM",
+      "coord": "B-3",
+      "rain_level": "None",
+      "humidity": "4",
+      "temperature": "41"
+    },
+    {
+      "time": "7:00 PM",
+      "coord": "F-6",
+      "rain_level": "High",
+      "humidity": "9",
+      "temperature": "61"
+    }
+  ]
+}
