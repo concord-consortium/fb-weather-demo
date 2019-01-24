@@ -280,7 +280,7 @@ export const Simulation = types
         const firebase = gFirebase;
         gFirebase.postConnect.then( () => {
           const id = firebase.user && firebase.user.uid;
-          if(!id || self.presences.selected && self.presences.selected.id === id) {
+          if(!id) {
             return;
           }
           const path =`simulations/${self.id}`;
