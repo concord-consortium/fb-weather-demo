@@ -46,28 +46,25 @@ export const PresenceStore = types
       const firebase = gFirebase;
       const presence = Presence.create(snapshot);
       const path = `${_path}/presences/presences/${snapshot.id}`;
-      const presref = firebase.dataRef.child(path);
-      presref.onDisconnect().remove();
+      firebase.refForPath(path).then((presref) => presref.onDisconnect().remove());
       // add presence to map
       self.presences.put(presence);
       return presence;
     },
     deletePresence(_path: string, presenceID: string) {
-      const path = `${_path}/presences/presences/${presenceID}`,
-            presenceRef = gFirebase.dataRef.child(path);
-      if (presenceRef) {
-        presenceRef.set(null);
-      }
+      const path = `${_path}/presences/presences/${presenceID}`;
+      gFirebase.refForPath(path).then((presenceRef) => presenceRef.set(null));
     },
     deleteAllOtherPresences(_path: string) {
       const selfPresence = self.selected,
             selfPresenceID = selfPresence && selfPresence.id,
             selfPresenceSnapshot = selfPresence && getSnapshot(selfPresence);
       if (selfPresenceID) {
-        const path = `${_path}/presences/presences`,
-              presencesRef = gFirebase.dataRef.child(path),
-              presences = { [selfPresenceID]: selfPresenceSnapshot };
-        presencesRef.set(presences);
+        const path = `${_path}/presences/presences`;
+        gFirebase.refForPath(path).then((presencesRef) => {
+          const presences = { [selfPresenceID]: selfPresenceSnapshot };
+          presencesRef.set(presences);
+        });
       }
     }
   }));

@@ -234,7 +234,7 @@ export class FirebaseImp {
   }
 
   refForPath(path:string) {
-    return new Promise( (resolve, reject) => {
+    return new Promise<firebase.database.Reference>( (resolve, reject) => {
       this.postConnect.then( (imp) => {
         resolve(imp.dataRef.child(path.replace(/_/g, "/")));
       });
