@@ -87,6 +87,11 @@ export class ChooseGroupView
   }
 
   renderChooseButton() {
+    const simulation = simulationStore.selected;
+    const presence = simulation && simulation.selectedPresence;
+    if (!presence) {
+      return(<div>The simulation has disconnected - please refresh.</div>);
+    }
     if(this.state.chosenGroup === "") { return <div/>; }
     const style = styles.chooseButton;
     const {onDone} = this.props;

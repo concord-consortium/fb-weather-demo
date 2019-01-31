@@ -17,7 +17,6 @@ export interface ChooseCellStsate {
   chosenCell: IGridCell | null;
 }
 
-
 @observer
 export class ChooseCellView
   extends React.Component<ChooseCellProps, ChooseCellStsate> {
@@ -26,8 +25,10 @@ export class ChooseCellView
     this.state = {chosenCell: null};
   }
 
-
-  renderChooseButton(chosenCell?:IGridCell|null) {
+  renderChooseButton(chosenCell?:IGridCell|null, presence?: IPresence|null) {
+    if (!presence) {
+      return(<div>The simulation has disconnected - please refresh.</div>);
+    }
     if(!chosenCell) { return <div/>; }
     const style:React.CSSProperties = {
       color: "white",
@@ -97,7 +98,7 @@ export class ChooseCellView
             titleFunc={titleFunc}
             onCellClick={onClick}
             rollOverFunc={ (cell) => cell &&  cell.displayName}/>
-            {this.renderChooseButton(chosenCell) }
+            {this.renderChooseButton(chosenCell, presence)}
         </CardText>
       </div>
     );
