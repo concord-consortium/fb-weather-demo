@@ -141,6 +141,11 @@ export class TeacherView
   componentWillMount() {
     gPortalUrlUtility.getFirebaseSettings(gFirebase.portalAppName).then( ({activityInfo}) => {
       this.setState({activityInfo});
+
+      const simulation = simulationStore.selected;
+      if (simulation) {
+        simulation.setUpdateInterval(gWeatherScenarioSpec.updateInterval);
+      }
     });
   }
 
