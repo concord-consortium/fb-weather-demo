@@ -7,6 +7,7 @@ import { simulationStore } from "../models/simulation";
 import { IGridCell } from "../models/grid-cell";
 import { IPresence } from "../models/presence";
 import { GridView } from "./grid-view";
+import { RefreshButton } from "../utilities/refresh-button";
 
 import * as _ from "lodash";
 
@@ -17,7 +18,6 @@ export interface ChooseCellStsate {
   chosenCell: IGridCell | null;
 }
 
-
 @observer
 export class ChooseCellView
   extends React.Component<ChooseCellProps, ChooseCellStsate> {
@@ -26,8 +26,14 @@ export class ChooseCellView
     this.state = {chosenCell: null};
   }
 
-
-  renderChooseButton(chosenCell?:IGridCell|null) {
+  renderChooseButton(chosenCell?:IGridCell|null, presence?: IPresence|null) {
+    // It is possible that between the time the student has selected a
+    // group from the pull down, and they go to click on the "choose"
+    // button, that the teacher could have disconnected them. If so, we
+    // display a message and present a button to reload the page.
+    if (!presence) {
+      return(<RefreshButton />);
+    }
     if(!chosenCell) { return <div/>; }
     const style:React.CSSProperties = {
       color: "white",
@@ -97,7 +103,7 @@ export class ChooseCellView
             titleFunc={titleFunc}
             onCellClick={onClick}
             rollOverFunc={ (cell) => cell &&  cell.displayName}/>
-            {this.renderChooseButton(chosenCell) }
+            {this.renderChooseButton(chosenCell, presence)}
         </CardText>
       </div>
     );
