@@ -2,7 +2,7 @@ import * as firebase from "firebase";
 import { gPortalUrlUtility } from "../utilities/portal-url-utility";
 
 const DEFAULT_SIMULATION = "default";
-const DEFAULT_VERSION_STRING = "1.4.0";
+const DEFAULT_VERSION_STRING = "1.4.1";
 
 interface FirebaseListener {
   setState(state: any): void;
