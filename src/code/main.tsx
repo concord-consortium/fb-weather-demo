@@ -116,4 +116,4 @@ gFirebase.postConnect.then( (imp:FirebaseImp)=> {
       document.getElementById("App")
     );
   });
-});
+}).catch((err) => alert(err.toString()));
