@@ -8,6 +8,7 @@ import MenuItem from 'material-ui/MenuItem';
 import {IGroup} from "../models/group";
 import { simulationStore } from "../models/simulation";
 import { ComponentStyleMap } from "../utilities/component-style-map";
+import { RefreshButton } from "../utilities/refresh-button";
 
 export type StationTab = "configure" | "weather";
 
@@ -87,6 +88,15 @@ export class ChooseGroupView
   }
 
   renderChooseButton() {
+    const simulation = simulationStore.selected;
+    const presence = simulation && simulation.selectedPresence;
+    if (!presence) {
+      // It is possible that between the time the student has selected a
+      // group from the pull down, and they go to click on the "choose"
+      // button, that the teacher could have disconnected them. If so, we
+      // display a message and present a button to reload the page.
+      return(<RefreshButton />);
+    }
     if(this.state.chosenGroup === "") { return <div/>; }
     const style = styles.chooseButton;
     const {onDone} = this.props;

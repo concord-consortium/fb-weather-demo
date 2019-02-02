@@ -2,7 +2,7 @@ import * as firebase from "firebase";
 import { gPortalUrlUtility } from "../utilities/portal-url-utility";
 
 const DEFAULT_SIMULATION = "default";
-const DEFAULT_VERSION_STRING = "1.4.0";
+const DEFAULT_VERSION_STRING = "1.4.1";
 
 interface FirebaseListener {
   setState(state: any): void;
@@ -119,20 +119,24 @@ export class FirebaseImp {
     let auth = firebase.auth();
     const imp = this;
     this.postConnect = new Promise((resolve, reject) => {
-      auth.onAuthStateChanged((user: firebase.User | null) => {
-        if (this.isSignedOut) {
-          this.user = null;
-          this.dataRef.off();
-        }
-        else if (user) {
-          this.log(user.displayName + " authenticated");
-          this.finishAuth({ user: user } );
-          resolve(imp);
-        }
-        else {
-          this.reqAuth(reject);
-        }
-      });
+      auth.signOut()
+        .then(() => {
+          auth.onAuthStateChanged((user: firebase.User | null) => {
+            if (this.isSignedOut) {
+              this.user = null;
+              this.dataRef.off();
+            }
+            else if (user) {
+              this.log(user.displayName + " authenticated");
+              this.finishAuth({ user: user } );
+              resolve(imp);
+            }
+            else {
+              this.reqAuth(reject);
+            }
+          });
+        })
+        .catch(reject);
     });
   }
 

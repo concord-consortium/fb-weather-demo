@@ -145,7 +145,13 @@ export const Simulation = types
     get presenceStation(): IWeatherStation | null {
       const selectedPresence = self.presences.selected;
       return selectedPresence && selectedPresence.weatherStation || null;
-    }
+    },
+    get updateInterval() {
+      return self.control.updateInterval;
+    },
+    setUpdateInterval(updateInterval: number) {
+      self.control.setUpdateInterval(updateInterval);
+    },
   }))
   .actions(self => ({
     setPresenceID(presenceID: string | null) {
