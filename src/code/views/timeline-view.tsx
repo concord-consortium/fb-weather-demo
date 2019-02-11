@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as moment from 'moment';
 
+import Slider from 'material-ui/Slider';
 import { ComponentStyleMap } from "../utilities/component-style-map";
 import { simulationStore } from "../models/simulation";
 
@@ -10,6 +11,7 @@ export interface TimelineViewProps {
   breakTime: Date | null;
   endTime: Date | null;
 }
+
 export interface TimelineViewState {
   splitTime?: number|null;
 }
@@ -22,10 +24,10 @@ export class TimelineView extends React.Component<
     const style:ComponentStyleMap = {
       container: {
         fontSize: "9pt",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
+        // display: "flex",
+        // alignItems: "center",
+        // justifyContent: "center",
+        // flexDirection: "column",
         margin: "0.5em",
         width: "100px"
       },
@@ -61,56 +63,91 @@ export class TimelineView extends React.Component<
     const current    = (currentTime && currentTime.getTime() || 0);
     const duration   = end - start;
     const splitFrac    = (split - start) / duration;
-    const currentFac   = (current - start) / duration;
 
     const style:ComponentStyleMap = {
       container: {
-        display: "flex",
-        flexDirection: "row",
-        margin: "1em",
-        alignItems: "center",
-        width: "100%"
+        display: "grid",
+        gridTemplateRows: "42px 10px",
+        gridTemplateColumns: "1fr 1fr 1fr",
+        rowGap: 0,
+        columnCap: 0
       },
-      bar: {
-        display: "inline-block",
-        height: "12px",
-        width: "50vw",
-        border: "1px solid gray",
-        margin: "0px",
-        padding: "0px"
+      startTime: {
+        gridRow: "1",
+        gridColumn: "1",
+        position: "relative",
+        left: "50px",
+        paddingTop: "20px"
       },
-      filling: {
-        height: "12px",
-        margin: "0px",
-        padding: "0px",
-        width: `${currentFac * 100}%`,
-        backgroundColor: "rgb(0, 188, 212)"
+      slider: {
+        gridRow: "1",
+        gridColumn: "2",
+        width: "15em",
+        top: "10px"
+      },
+      endTime: {
+        gridRow: "1",
+        gridColumn: "3",
+        paddingTop: "20px"
+      },
+      splitTime: {
+        gridRow: "2/3",
+        gridColumn: "2"
       },
       splitMarker: {
-        margin: "0px",
-        padding: "0px",
         position: "relative",
+        margin: "-2px",
+        padding: "0px",
+        paddingTop: "1px",
         backgroundColor: "black",
         width: "4px",
         left: `${splitFrac * 100}%`,
         height: "8px"
+      },
+      splitMarkerLabel: {
+        paddingTop: "4px",
+        marginLeft: "-20px"
       }
     };
+
+    const stop = () => {
+      const s = simulationStore.selected;
+      if (s) {
+        s.stop();
+      }
+    };
+
+    const setTime = (value: number) => {
+      const s = simulationStore.selected;
+      const newTime = new Date(value);
+      if (s) {
+        s.stop();
+        s.setTime(newTime);
+        }
+    };
+
+    const onScrubberMove = (_:any, value: number) => {
+      stop();
+      setTime(value);
+    };
+
     return (
       <div style={style.container}>
-        <div style={style.start}>
+        <div style={style.startTime}>
           {this.renderMoment(startTime as Date)}
         </div>
-        <div style={style.bar}>
-          <div style={style.filling} />
+        <div style={style.slider}>
+          <Slider min={start} max={end} value={current} onChange={onScrubberMove} />
+        </div>
+        <div style={style.endTime}>
+          {this.renderMoment(endTime as Date)}
+        </div>
+        <div style={style.splitTime}>
           <div style={style.splitMarker}>
-            <div style={{position:"relative", top: "12px", left: "-55px"}}>
+            <div style={style.splitMarkerLabel}>
               {this.renderMoment(breakTime as Date)}
             </div>
           </div>
-        </div>
-        <div style={style.end}>
-          {this.renderMoment(endTime as Date)}
         </div>
       </div>
     );

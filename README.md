@@ -48,3 +48,26 @@ if they are not already installed  your development system.  Also install `live-
 * `src/js/firebase-imp.ts` – Manages all connections to firebase.
 * `src/js/data-store.ts` – Monolithic application state management. Brokers through `firebase-imp`. TODO: split this store into multiple smaller stores, extracting common core firebase setting / getting. Also look in to automating this with mobX triggers.
 * `src/js/main.tsx` – Configures the nested react-router routes, and the setups up the initial React view. The general form of URL routes is `/sessions/<sessionName>/show/<viewname>`.
+
+## A note about Dependencies:
+
+As this codebase has evolved, the dependencies between versions of the various
+packages have become a bit brittle.
+
+Beware of adding new packages, or updating
+packages already in use, in that it can be impossible to build without a
+significant effort to update many of the other packages. This may not be worth
+the development time, give the constraints of the problem or feature being addressed.
+
+Also, it is worth keeping in mind the exact versions of development tools used
+in the dev environment. Here
+are the current tools used to build the project, as of February, 2019.
+
+~~~
+  $ node --version
+  v8.15.0
+  $ yarn --version
+  1.13.0
+  $ npm --version
+  6.4.1
+~~~
