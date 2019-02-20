@@ -152,7 +152,7 @@ export class TimelineView extends React.Component<
           {this.renderMoment(startTime as Date)}
         </div>
         <div style={style.slider}>
-          <Slider min={start} max={end} value={current} onChange={onScrubberMove} />
+          {start < end ? <Slider min={start} max={end} value={current} onChange={onScrubberMove} /> : undefined}
         </div>
         <div style={style.endTime}>
           {this.renderMoment(endTime as Date)}
