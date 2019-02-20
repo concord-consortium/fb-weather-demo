@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as moment from 'moment';
+import * as _ from 'lodash';
 
 import Slider from 'material-ui/Slider';
 import { ComponentStyleMap } from "../utilities/component-style-map";
@@ -93,10 +94,11 @@ export class TimelineView extends React.Component<
       },
       splitTime: {
         gridRow: "2/3",
-        gridColumn: "2"
+        gridColumn: "2",
+        position: "relative"
       },
       splitMarker: {
-        position: "relative",
+        position: "absolute",
         margin: "-2px",
         padding: "0px",
         paddingTop: "1px",
@@ -132,6 +134,18 @@ export class TimelineView extends React.Component<
       setTime(value);
     };
 
+    const hourMarkers:JSX.Element[] = [];
+    const oneHour = 1000 * 60 * 60;
+    const numHours = duration / oneHour;
+    for (let i = 0; i <= numHours; i++) {
+      const hour = start + (i * oneHour);
+      const hourFraction = (hour - start) / duration;
+      const splitStyle = _.assign({}, style.splitMarker, {left: `${hourFraction * 100}%`, backgroundColor: "lightgrey"});
+      if (hourFraction !== splitFrac) {
+        hourMarkers.push(<div key={i} style={splitStyle} />);
+      }
+    }
+
     return (
       <div style={style.container}>
         <div style={style.startTime}>
@@ -149,6 +163,7 @@ export class TimelineView extends React.Component<
               {this.renderMoment(breakTime as Date)}
             </div>
           </div>
+          {hourMarkers}
         </div>
       </div>
     );
