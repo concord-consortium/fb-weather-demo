@@ -90,6 +90,7 @@ export class SegmentedControlView extends React.Component<
 
   render() {
     const simulation = simulationStore.selected;
+    const time = simulation && simulation.timeString;
     const isPlaying = !!(simulation && simulation.isPlaying);
     const reset = () => simulation && simulation.rewind();
     const play = () => simulation && simulation.play();
@@ -120,6 +121,11 @@ export class SegmentedControlView extends React.Component<
       iconStyle: {
         color: "#FFF",
         fontSize: 24
+      },
+      time: {
+        marginTop: 10,
+        fontSize: 14,
+        fontWeight: "bold"
       }
     };
     return(
@@ -157,6 +163,7 @@ export class SegmentedControlView extends React.Component<
               Skip
             </Button>
           </div>
+          <div style={style.time}>{time}</div>
           <TimelineView
             startTime={startTime}
             breakTime={breakTime}

@@ -70,7 +70,8 @@ export class TimelineView extends React.Component<
         gridTemplateRows: "42px 10px",
         gridTemplateColumns: "1fr 1fr 1fr",
         rowGap: 0,
-        columnCap: 0
+        columnCap: 0,
+        marginTop: -25
       },
       startTime: {
         gridRow: "1",
