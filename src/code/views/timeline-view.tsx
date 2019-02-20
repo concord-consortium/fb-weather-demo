@@ -72,7 +72,7 @@ export class TimelineView extends React.Component<
         gridTemplateColumns: "1fr 1fr 1fr",
         rowGap: 0,
         columnCap: 0,
-        marginTop: -25
+        marginTop: -18
       },
       startTime: {
         gridRow: "1",
@@ -95,7 +95,8 @@ export class TimelineView extends React.Component<
       splitTime: {
         gridRow: "2/3",
         gridColumn: "2",
-        position: "relative"
+        position: "relative",
+        marginTop: -12
       },
       splitMarker: {
         position: "absolute",

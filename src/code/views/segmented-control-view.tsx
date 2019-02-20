@@ -123,7 +123,7 @@ export class SegmentedControlView extends React.Component<
         fontSize: 24
       },
       time: {
-        marginTop: 10,
+        marginTop: 13,
         fontSize: 14,
         fontWeight: "bold"
       }
