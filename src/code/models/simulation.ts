@@ -34,7 +34,7 @@ const difference = (object: any, base: any) => {
   return changes(object, base);
 };
 
-const kBreakProportion = 0.75;
+const kBreakProportion = 0.66666666666666666667; // use 0.75 for 4pm;
 
 export const Simulation = types
   .model('Simulation', {
