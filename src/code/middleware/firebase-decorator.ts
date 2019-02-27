@@ -17,6 +17,10 @@ const setEachKey = (parent: firebase.database.Reference, data: any) => {
   });
 };
 
+(window as any).CONCORD_DEBUG = {
+  applySnapshot: true
+};
+
 export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => void) => {
   const pendingRef = gFirebase.refForPath(relativeDataPath);
   let updateModelFromFirebaseCount = 0;
@@ -29,7 +33,12 @@ export const Firebasify = (model:any, relativeDataPath:string, callBack?:() => v
         v = cloneDeep(v);
         v.control.isPlaying = false;
       }
-      applySnapshot(model, v);
+      if ((window as any).CONCORD_DEBUG.applySnapshot) {
+        applySnapshot(model, v);
+      }
+      else {
+        console.log("DEBUG: applySnapshot", model);
+      }
     }
   };
   pendingRef.then((ref:firebase.database.Reference) => {
