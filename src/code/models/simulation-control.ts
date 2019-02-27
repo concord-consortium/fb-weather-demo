@@ -7,6 +7,8 @@ const kOverrides = {
         updateInterval: 1
       };
 
+const kTickRate = 2000;
+
 export const SimulationControl = types
   .model("SimulationControl", {
     startTime: types.maybe(types.Date), // UTC date
@@ -96,11 +98,13 @@ export const SimulationControl = types
         _stop();
       },
       timerTick(stopOffset: number) {
-        if (stopOffset && self.playOffset >= stopOffset) {
+        const interval = self.timeScale * Math.round(((kTickRate / 1000) / self.updateInterval));
+        if (stopOffset && (self.playOffset + interval >= stopOffset)) {
+          _setPlayOffset(stopOffset);
           _stop();
         }
         else {
-          _setPlayOffset(self.playOffset + self.timeScale);
+          _setPlayOffset(self.playOffset + interval);
         }
       }
     };
@@ -108,13 +112,11 @@ export const SimulationControl = types
   .actions(self => {
 
     function _enableTimer(stopOffset: number) {
-      const sleepMs = self.updateInterval * 1000;
-
       if (!self.isPlaying) {
         self.clearTimer();
         self.timer = window.setInterval(() => {
           self.timerTick(stopOffset);
-        }, sleepMs);
+        }, kTickRate);
         self.isPlaying = true;
       }
     }
