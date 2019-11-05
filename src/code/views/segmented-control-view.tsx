@@ -67,10 +67,16 @@ export class SegmentedControlView extends React.Component<
         '2x': 0.1666666666,
         '3x': 0.1111111111,
       };
-      const lastIndex = Object.keys(updateIntervalMap).length - 1;
+
       const options = Object.keys(updateIntervalMap).map((key, index) => {
-        const style = index !== lastIndex ? {marginRight: 20} : {};
-        return <RadioButton key={key} value={updateIntervalMap[key]} label={key} style={style} />;
+        const style = {width: 'auto', marginRight: 30};
+        return <RadioButton
+          key={key}
+          value={updateIntervalMap[key]}
+          label={key}
+          style={style}
+          iconStyle={{marginRight: '5px'}}
+          />;
       });
       const changeUpdateInterval = (e:any, newInterval: any) => {
         simulation.stop();
@@ -81,7 +87,7 @@ export class SegmentedControlView extends React.Component<
       const value = updateIntervalMap[selectedInterval];
 
       return (
-        <RadioGroup name="speed" onChange={changeUpdateInterval} valueSelected={value} style={{ display: 'flex' }}>
+        <RadioGroup name="speed" onChange={changeUpdateInterval} valueSelected={value} style={{ display: 'flex', width: '300px', justifyContent: 'space-around'}}>
           { options }
         </RadioGroup>
       );
