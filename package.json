@@ -33,7 +33,7 @@
     "iframe-phone": "^1.2.0",
     "jsonwebtoken": "^8.1.1",
     "leaflet": "^1.0.3",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.21",
     "material-ui": "^0.20.0",
     "material-ui-next": "npm:material-ui@next",
     "mobx": "^3.4.1",
