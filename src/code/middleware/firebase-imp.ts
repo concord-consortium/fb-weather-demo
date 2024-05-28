@@ -61,7 +61,7 @@ export class FirebaseImp {
     this.pendingCallbacks = [];
     this.configs = {
       dev: {
-        apiKey: "AIzaSyAlgebbG2k820uai5qZT6T8yMONvuSl-wI",
+        apiKey: atob("QUl6YVN5QWxnZWJiRzJrODIwdWFpNXFaVDZUOHlNT052dVNsLXdJ"),
         authDomain: "weather-dev-eae1d.firebaseapp.com",
         databaseURL: "https://weather-dev-eae1d.firebaseio.com",
         projectId: "weather-dev-eae1d",
@@ -69,7 +69,7 @@ export class FirebaseImp {
         messagingSenderId: "857031925472"
       },
       staging: {
-        apiKey: "AIzaSyDRSQsaFvE6p5N6qHreRKpGMR2J04iKQDc",
+        apiKey: atob("QUl6YVN5RFJTUXNhRnZFNnA1TjZxSHJlUktwR01SMkowNGlLUURj"),
         authDomain: "weather-staging-a85f9.firebaseapp.com",
         databaseURL: "https://weather-staging-a85f9.firebaseio.com",
         projectId: "weather-staging-a85f9",
@@ -77,7 +77,7 @@ export class FirebaseImp {
         messagingSenderId: "1048466787110"
       },
       production: {
-        apiKey: "AIzaSyAglPFMReyiX9r33RDLkWkBNAMGUKdY9os",
+        apiKey: atob("QUl6YVN5QWdsUEZNUmV5aVg5cjMzUkRMa1drQk5BTUdVS2RZOW9z"),
         authDomain: "weather-1892e.firebaseapp.com",
         databaseURL: "https://weather-1892e.firebaseio.com",
         projectId: "weather-1892e",
